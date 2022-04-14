@@ -88,6 +88,12 @@ namespace sge {
 	template<class T> using SPtr = eastl::shared_ptr<T>;
 	template<class T> using WPtr = eastl::weak_ptr<T>;
 
+	template<class T, typename ... Args>
+	UPtr<T> createUPtr(Args&& ... args_)
+	{
+		return eastl::unique_ptr<T>(eastl::forward<Args>(args_)...);
+	};
+
 	template<class T> using Span = eastl::span<T>;
 	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
 

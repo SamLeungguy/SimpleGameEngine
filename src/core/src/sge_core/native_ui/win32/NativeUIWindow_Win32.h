@@ -4,6 +4,7 @@
 
 #include "../base/NativeUIWindow_Base.h"
 
+
 #if SGE_OS_WINDOWS
 namespace sge {
 

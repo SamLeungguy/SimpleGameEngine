@@ -1,5 +1,7 @@
 #include "NativeUIApp_Win32.h"
 
+#if SGE_OS_WINDOWS
+
 namespace sge {
 
 void NativeUIApp_Win32::onCreate(CreateDesc& desc_)
@@ -27,3 +29,6 @@ void NativeUIApp_Win32::onQuit()
 }
 
 }
+
+#endif
+
