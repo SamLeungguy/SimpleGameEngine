@@ -18,6 +18,7 @@ public:
 
 	virtual void onCreate(CreateDesc& desc_) override;
 	virtual void onSetWindowTitleBar(StrView title_) override;
+	virtual void onDrawNeeded() override;
 
 	HWND _hwnd;
 

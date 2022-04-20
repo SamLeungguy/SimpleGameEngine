@@ -28,24 +28,24 @@ namespace sge {
 		wc.lpszClassName = className;
 		wc.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
 
-		if (!desc_.closeButton) {
+		if (!desc_.isCloseButton) {
 			wc.style |= CS_NOCLOSE;
 		}
 
 		DWORD dwStyle = 0;
 		DWORD dwExStyle = WS_EX_ACCEPTFILES;
-		if (desc_.alwaysOnTop) dwExStyle |= WS_EX_TOPMOST;
+		if (desc_.isAlwaysOnTop) dwExStyle |= WS_EX_TOPMOST;
 
 		switch (desc_.type) {
 			case CreateDesc::Type::ToolWindow:
 			case CreateDesc::Type::NormalWindow: {
 				dwStyle |= WS_OVERLAPPED | WS_SYSMENU;
 
-				if (desc_.closeButton)	dwStyle	|= WS_SYSMENU;
-				if (desc_.resizable)	dwStyle	|= WS_THICKFRAME;
-				if (desc_.titleBar)		dwStyle	|= WS_CAPTION;
-				if (desc_.minButton)	dwStyle	|= WS_MINIMIZEBOX;
-				if (desc_.maxButton)	dwStyle	|= WS_MAXIMIZEBOX;
+				if (desc_.isCloseButton)	dwStyle	|= WS_SYSMENU;
+				if (desc_.isResizable)	dwStyle	|= WS_THICKFRAME;
+				if (desc_.isTitleBar)		dwStyle	|= WS_CAPTION;
+				if (desc_.isMinButton)	dwStyle	|= WS_MINIMIZEBOX;
+				if (desc_.isMaxButton)	dwStyle	|= WS_MAXIMIZEBOX;
 			}break;
 
 			case CreateDesc::Type::PopupWindow: {
@@ -67,7 +67,7 @@ namespace sge {
 		}
 
 		auto rect = desc_.rect;
-		if (desc_.centerToScreen) {
+		if (desc_.isCenterToScreen) {
 			auto screenSize = Vec2f((float)GetSystemMetrics(SM_CXSCREEN), (float)GetSystemMetrics(SM_CYSCREEN));
 			rect.pos = (screenSize - rect.size) / 2;
 		}
@@ -94,6 +94,11 @@ namespace sge {
 		::SetWindowText(_hwnd, tmp.c_str());
 	}
 
+	void NativeUIWindow_Win32::onDrawNeeded()
+	{
+		::InvalidateRect(_hwnd, nullptr, false);
+	}
+
 	LRESULT WINAPI NativeUIWindow_Win32::s_wndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_)
 	{
 		switch (msg_) 
@@ -113,6 +118,16 @@ namespace sge {
 				}
 			}break;
 
+			case WM_PAINT: {
+				PAINTSTRUCT ps;
+				BeginPaint(hwnd_, &ps);
+				if (auto* thisObj = s_getThis(hwnd_)) {
+					thisObj->onDraw();
+					return 0;
+				}
+				EndPaint(hwnd_, &ps);
+			}break;
+
 			case WM_CLOSE: {
 				if (auto* thisObj = s_getThis(hwnd_)) {
 					thisObj->onCloseButton();
@@ -124,9 +139,9 @@ namespace sge {
 				if (auto* thisObj = s_getThis(hwnd_)) {
 					u16 a = LOWORD(wParam_);
 					switch (a) {
-					case WA_ACTIVE:		thisObj->onActive(true);  break;
-					case WA_CLICKACTIVE:thisObj->onActive(true);  break;
-					case WA_INACTIVE:	thisObj->onActive(false); break;
+						case WA_ACTIVE:		thisObj->onActive(true);  break;
+						case WA_CLICKACTIVE:thisObj->onActive(true);  break;
+						case WA_INACTIVE:	thisObj->onActive(false); break;
 					}
 				}
 			}break;

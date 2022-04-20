@@ -167,6 +167,46 @@ namespace sge {
 		void operator=(const NonCopyable&) = delete;
 	};
 
+	template<class T>
+	class ComPtr : public NonCopyable
+	{
+	public:
+		ComPtr() = default;
+		~ComPtr() noexcept { reset(nullptr); }
+		ComPtr(const ComPtr& rhs_) { reset(rhs_._p); }
+		void operator=(const ComPtr& rhs_) { if (_p == rhs_._p) return; reset(rhs_._p); }
+
+		T* operator->() noexcept			{ return _p; }
+		operator T* () noexcept				{ return _p; }
+
+				T* ptr() noexcept			{ return _p; }
+		const	T* ptr() const  noexcept	{ return _p; }
+
+		void reset(T* p_)
+		{
+			if (_p == p_)
+				return;
+
+			if (_p)
+			{
+				_p->Release();
+				_p = nullptr;
+			}
+			_p = p_;
+			if (_p)
+			{
+				_p->AddRef();
+			}
+		}
+
+		T** ptrForInit() noexcept { reset(nullptr); return &_p; }
+
+		T* detach() { T* pOut = _p = nullptr; return o; }
+
+	private:
+		T* _p = nullptr;
+	};
+
 	template<class T> inline void sge_delete(T* p) { delete p; }
 
 } // namespace

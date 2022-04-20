@@ -4,13 +4,19 @@
 
 #include <fmt/chrono.h>
 
-
 namespace sge {
 
 class MainWin : public NativeUIWindow
 {
+	using Base = NativeUIWindow;
 public:
+	virtual void onCreate(CreateDesc& desc_) override;
 	virtual void onCloseButton() override;
+
+	virtual void onDraw() override;
+
+	UPtr<RenderContext> _upRenderContext;
+
 private:
 };
 
@@ -20,18 +26,32 @@ class EditorApp : public NativeUIApp
 public:
 	virtual void onCreate(CreateDesc& desc_) override;
 
-	virtual void onRun() override;
-
 private:
 	MainWin _mainWin;
 
-	UPtr<GraphicsContext> _upGraphicsContext;
 };
 
 #pragma region MainWin_impl
+void MainWin::onCreate(CreateDesc& desc_)
+{
+	Base::onCreate(desc_);
+
+	RenderContext::CreateDesc renderContextDesc;
+	renderContextDesc.pWindow = this;
+	_upRenderContext.reset(RenderContext::create(renderContextDesc));
+}
 void MainWin::onCloseButton()
 {
 	NativeUIApp::current()->quit(0);
+}
+
+void MainWin::onDraw()
+{
+	Base::onDraw();
+	if (_upRenderContext) {
+		_upRenderContext->render();
+	}
+	drawNeeded();
 }
 
 #pragma endregion
@@ -39,8 +59,23 @@ void MainWin::onCloseButton()
 #pragma region EditorApp_Imlpl
 void EditorApp::onCreate(CreateDesc& desc_)
 {
+	{
+		String file = getExecutableFilename();
+		String path = FilePath::getDir(file);
+		path.append("/../../../../../../examples/Test101");
+		setCurrentDir(path);
+
+		auto dir = getCurrentDir();
+		SGE_LOG("dir = {}", dir);
+	}
+
 	Base::onCreate(desc_);
 
+	Renderer::CreateDesc renderDesc;
+	//renderDesc.apiType = Renderer::ApiType::OpenGL;
+	Renderer::create(renderDesc);
+
+	//--
 	NativeUIWindow::CreateDesc winDesc;
 	winDesc.isMainWindow = true;
 	_mainWin.create(winDesc);
@@ -48,20 +83,6 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	winDesc.rect.h = s_temp_height;
 	_mainWin.setWindowTitle("SGE Editor");
 
-	_upGraphicsContext = eastl::make_unique<GraphicsContext>();
-	_upGraphicsContext->init(_mainWin._hwnd);
-}
-
-void EditorApp::onRun()
-{
-	_upGraphicsContext->swapBuffers();
-
-	while (GetMessage(&_win32_msg, NULL, 0, 0)) {
-		TranslateMessage(&_win32_msg);
-		DispatchMessage(&_win32_msg);
-	}
-
-	willQuit();
 }
 
 #pragma endregion
