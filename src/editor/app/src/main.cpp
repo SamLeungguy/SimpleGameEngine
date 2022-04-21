@@ -48,9 +48,24 @@ void MainWin::onCloseButton()
 void MainWin::onDraw()
 {
 	Base::onDraw();
-	if (_upRenderContext) {
-		_upRenderContext->render();
+	if (!_upRenderContext)
+		return;
+	
+	for (size_t i = 0; i < 100; i++)
+	{
+		Rect2i rect;
+		rect.x = 0;
+		rect.y = 1;
+		rect.w = 2;
+		rect.h = 3;
+
+		RenderCommandBuffer::drawIndex(12);
+		RenderCommandBuffer::setViewport(rect);
+		RenderCommandBuffer::drawIndex(24);
 	}
+
+	_upRenderContext->render();
+
 	drawNeeded();
 }
 

@@ -19,6 +19,8 @@ void RenderContext::render()
 
 	onTestDraw();
 
+	Renderer::current()->getRenderCommnadBuffer()->execute();
+
 	onSwapBuffers();
 	onEndRender();
 }

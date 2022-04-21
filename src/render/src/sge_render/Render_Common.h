@@ -2,6 +2,8 @@
 
 namespace sge {
 
+#define SGE_RENDER_CMD_BIND_FN(fn_) [this](auto&&... args) -> decltype(auto) { return this->fn_(std::forward<decltype(args)>(args)...); }
+
 struct RenderAdapterInfo
 {
 	String	adapterName;
@@ -11,6 +13,15 @@ struct RenderAdapterInfo
 	bool hasComputeShader = false;
 	bool isShaderHasFloat64 = false;
 	int minThreadGroupSize = 1;
+};
+
+enum class PrimitiveType
+{
+	None = 0,
+	Triangle,
+	Triangle_Strip,
+	Line,
+	Line_Strip,
 };
 
 }

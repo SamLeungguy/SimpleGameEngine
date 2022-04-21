@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Render_Common.h"
+#include "RenderCommandBuffer.h"
 
 namespace sge {
 
@@ -32,6 +33,8 @@ public:
 
 	const RenderAdapterInfo& adapterInfo() const;
 
+	RenderCommandBuffer* getRenderCommnadBuffer();
+
 	bool isVsync() const;
 
 	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc) = 0;
@@ -40,11 +43,15 @@ protected:
 	static Renderer* _pCurrent;
 	RenderAdapterInfo _adapterInfo;
 	bool _isVsync : 1;
+
+	RenderCommandBuffer* _pRenderCommandBuffer = nullptr;
 };
 
 inline Renderer* Renderer::current() { return _pCurrent; }
 
 inline const RenderAdapterInfo& Renderer::adapterInfo() const { return _adapterInfo; }
+
+inline RenderCommandBuffer* Renderer::getRenderCommnadBuffer() { return _pRenderCommandBuffer; }
 
 inline bool Renderer::isVsync() const { return _isVsync; }
 
