@@ -29,6 +29,7 @@
 #include <EASTL/fixed_string.h>
 #include <EASTL/string_view.h>
 #include <EASTL/span.h>
+#include <EASTL/list.h>
 
 #include <EASTL/map.h>
 #include <EASTL/hash_map.h>
@@ -98,6 +99,8 @@ namespace sge {
 	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
 
 	template<class T> using Vector = eastl::vector<T>;
+
+	template<class T> using List = eastl::list<T>;
 
 	template<class T> using StrViewT = eastl::basic_string_view<T>;
 	using StrViewA = StrViewT<char>;

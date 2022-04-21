@@ -123,6 +123,7 @@ namespace sge {
 				BeginPaint(hwnd_, &ps);
 				if (auto* thisObj = s_getThis(hwnd_)) {
 					thisObj->onDraw();
+					EndPaint(hwnd_, &ps);
 					return 0;
 				}
 				EndPaint(hwnd_, &ps);
