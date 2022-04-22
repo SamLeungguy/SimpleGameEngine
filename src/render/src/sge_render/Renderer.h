@@ -6,7 +6,16 @@
 namespace sge {
 
 class RenderContext;
+class VertexBuffer;
+class IndexBuffer;
+class Shader;
+
 struct RenderContext_CreateDesc;
+struct VertexBuffer_CreateDesc;
+struct IndexBuffer_CreateDesc;
+struct Shader_CreateDesc;
+
+struct VertexLayout;
 
 class Renderer : public NonCopyable
 {
@@ -31,13 +40,18 @@ public:
 	Renderer();
 	virtual ~Renderer();
 
+	VertexLayout* createVertexLayout();
+
 	const RenderAdapterInfo& adapterInfo() const;
 
 	RenderCommandBuffer* getRenderCommnadBuffer();
 
 	bool isVsync() const;
-
+	
 	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc) = 0;
+	virtual VertexBuffer* onCreateVertexBuffer(VertexBuffer_CreateDesc& desc_) = 0;
+	virtual IndexBuffer* onCreateIndexBuffer(IndexBuffer_CreateDesc& desc_) = 0;
+	virtual Shader* onCreateShader(Shader_CreateDesc& desc_) = 0;
 
 protected:
 	static Renderer* _pCurrent;

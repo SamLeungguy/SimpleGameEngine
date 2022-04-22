@@ -26,6 +26,9 @@ public:
 
 protected:
 	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc_) override;
+	virtual VertexBuffer* onCreateVertexBuffer(VertexBuffer_CreateDesc& desc_) override;
+	virtual IndexBuffer* onCreateIndexBuffer(IndexBuffer_CreateDesc& desc_) override;
+	virtual Shader* onCreateShader(Shader_CreateDesc& desc_) override;
 
 	ComPtr<DX11_IDXGIFactory>		_cpDxgiFactory;
 	ComPtr<DX11_IDXGIDevice>		_cpDxgiDevice;

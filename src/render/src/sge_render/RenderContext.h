@@ -17,7 +17,7 @@ public:
 
 	static RenderContext* create(CreateDesc& desc_);
 
-	RenderContext(CreateDesc desc_);
+	RenderContext(CreateDesc& desc_);
 	virtual ~RenderContext() = default;
 
 	void render();

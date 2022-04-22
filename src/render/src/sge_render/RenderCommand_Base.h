@@ -38,7 +38,10 @@ public:
 		return false;
 	}*/
 
-	RenderCommnadType type = RenderCommnadType::None;
+	RenderCommnadType getType() { return _type; }
+
+protected:
+	RenderCommnadType _type = RenderCommnadType::None;
 };
 
 class RenderCommandDispatcher
@@ -59,7 +62,7 @@ public:
 	template<typename T, typename Func>
 	u64 dispatch(const Func func_)
 	{
-		if (_pBase->type == T::getStaticType())
+		if (_pBase->getType() == T::getStaticType())
 		{
 			cmdSize = func_(static_cast<T*>(_pBase));
 			return cmdSize;

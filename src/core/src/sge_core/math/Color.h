@@ -42,7 +42,7 @@ public:
 	};
 
 	Color4() = default;
-	Color4(const T& r_, const T& g_, , const T& b_, , const T& a_) : r(r_), g(g_), b(b_), a(a_) {}
+	Color4(const T& r_, const T& g_,const T& b_, const T& a_) : r(r_), g(g_), b(b_), a(a_) {}
 
 	Color4 operator+(const Color4& r) const { return Color4(r + r.r, g + r.g); }
 	Color4 operator-(const Color4& r) const { return Color4(r - r.r, g - r.g); }

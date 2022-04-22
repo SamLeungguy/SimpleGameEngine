@@ -12,6 +12,7 @@ namespace sge {
 class RenderCommandBuffer_DX11 : public RenderCommandBuffer
 {
 	using Base = RenderCommandBuffer;
+	using Util = DX11Util;
 public:
 	RenderCommandBuffer_DX11() = default;
 	virtual ~RenderCommandBuffer_DX11();

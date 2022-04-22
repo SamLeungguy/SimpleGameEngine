@@ -1,5 +1,8 @@
 #include "Renderer_DX11.h"
 #include "RenderContext_DX11.h"
+#include "VertexBuffer_DX11.h"
+#include "IndexBuffer_DX11.h"
+#include "Shader_DX11.h"
 
 #if SGE_RENDER_HAS_DX11
 
@@ -99,6 +102,21 @@ Renderer_DX11::Renderer_DX11(CreateDesc& desc_)
 RenderContext* Renderer_DX11::onCreateContext(RenderContext_CreateDesc& desc_)
 {
 	return new RenderContext_DX11(desc_);
+}
+
+VertexBuffer* Renderer_DX11::onCreateVertexBuffer(VertexBuffer_CreateDesc& desc_)
+{
+	return new VertexBuffer_DX11(desc_);
+}
+
+IndexBuffer* Renderer_DX11::onCreateIndexBuffer(IndexBuffer_CreateDesc& desc_)
+{
+	return new IndexBuffer_DX11(desc_);
+}
+
+Shader* Renderer_DX11::onCreateShader(Shader_CreateDesc& desc_)
+{
+	return new Shader_DX11(desc_);
 }
 
 }

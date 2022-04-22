@@ -3,6 +3,7 @@
 
 #include "RenderCommands.h"
 
+
 #include <new>
 
 namespace sge {
@@ -15,14 +16,26 @@ RenderCommandBuffer::~RenderCommandBuffer()
 {
 }
 
-void RenderCommandBuffer::drawIndex(u32 indexCount_)
+void RenderCommandBuffer::drawIndex(RenderMesh* pRenderMesh_, Shader* pShader_)
 {
 	void* p = Renderer::current()->getRenderCommnadBuffer()->_linearAllocator.allocate(sizeof(RenderCommand_Draw));
 
 	//SGE_LOG("sizeof(RenderCommand_Draw): {}", sizeof(RenderCommand_Draw));
 
 	RenderCommand_Draw cmd;
-	cmd.IndexCount = indexCount_;
+
+	cmd.primitiveType = PrimitiveType::Triangle;
+
+	cmd.pShader = pShader_;
+
+	cmd.pVertexLayout = &pRenderMesh_->vertexLayout;
+
+	cmd.vertexCount = pRenderMesh_->upVertexBuffer->getCount();
+	cmd.pVertexBuffer = pRenderMesh_->upVertexBuffer.get();
+
+	cmd.IndexCount = pRenderMesh_->upIndexBuffer->getCount();
+	cmd.pIndexBuffer= pRenderMesh_->upIndexBuffer.get();
+
 	new (p) RenderCommand_Draw(cmd);
 }
 
@@ -39,6 +52,18 @@ void RenderCommandBuffer::setViewport(const Rect2i& rect_)
 	//RenderCommand_Base* pBase = static_cast<RenderCommand_SetViewport*>(p);
 	new (p) RenderCommand_SetViewport(cmd);
 }
+
+//void RenderCommandBuffer::drawIndex(const RenderCommand_Draw& cmd_)
+//{
+//	void* p = Renderer::current()->getRenderCommnadBuffer()->_linearAllocator.allocate(sizeof(RenderCommand_Draw));
+//	new (p) RenderCommand_Draw(cmd_);
+//}
+//
+//void RenderCommandBuffer::setViewport(const RenderCommand_SetViewport& cmd_)
+//{
+//	void* p = Renderer::current()->getRenderCommnadBuffer()->_linearAllocator.allocate(sizeof(RenderCommand_SetViewport));
+//	new (p) RenderCommand_SetViewport(cmd_);
+//}
 
 void RenderCommandBuffer::execute()
 {

@@ -23,9 +23,11 @@ public:
 
 	PrimitiveType primitiveType = PrimitiveType::Triangle;
 
-	VertexLayout* pVertexLayout = nullptr;
-	VertexBuffer* upVertexBuffer = nullptr;
-	IndexBuffer* upIndexBuffer = nullptr;
+	Shader*			pShader = nullptr;
+
+	VertexLayout*	pVertexLayout = nullptr;
+	VertexBuffer*	pVertexBuffer = nullptr;
+	IndexBuffer*	pIndexBuffer = nullptr;
 
 	u32 vertexCount = 0;
 	u32 IndexCount = 0;

@@ -33,6 +33,11 @@ Renderer::~Renderer()
 	delete _pRenderCommandBuffer;
 }
 
+VertexLayout* Renderer::createVertexLayout()
+{
+	return nullptr;
+}
+
 Renderer* Renderer::create(CreateDesc& desc_)
 {
 	Renderer* p = nullptr;

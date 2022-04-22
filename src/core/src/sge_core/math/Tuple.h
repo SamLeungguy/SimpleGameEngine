@@ -1,7 +1,35 @@
 #pragma once
+#include "Vec2.h"
 #include "Vec3.h"
 
 namespace sge {
+
+template<class T>
+class Tuple2 {
+public:
+	using ElementType = T;
+	static const size_t kElementCount = 2;
+
+	union {
+		struct { T x, y; };
+		T data[kElementCount];
+	};
+
+	Tuple2() = default;
+	Tuple2(const T& x_, const T& y_) : x(x_), y(y_) {}
+	Tuple2(const Vec2<T>& v_) : x(v_.x), y(v_.y) {}
+
+	Tuple2 operator+(const Tuple2& r) const { return Tuple2(x + r.x, y + r.y); }
+	Tuple2 operator-(const Tuple2& r) const { return Tuple2(x - r.x, y - r.y); }
+	Tuple2 operator*(const Tuple2& r) const { return Tuple2(x * r.x, y * r.y); }
+	Tuple2 operator/(const Tuple2& r) const { return Tuple2(x / r.x, y / r.y); }
+
+	Tuple2 operator+(const T& s) const { return Tuple2(x + s, y + s); }
+	Tuple2 operator-(const T& s) const { return Tuple2(x - s, y - s); }
+	Tuple2 operator*(const T& s) const { return Tuple2(x * s, y * s); }
+	Tuple2 operator/(const T& s) const { return Tuple2(x / s, y / s); }
+};
+using Tuple2f = Tuple2<float>;
 
 template<class T>
 class Tuple3 {

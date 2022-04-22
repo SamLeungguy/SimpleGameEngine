@@ -66,6 +66,72 @@ struct DX11Util
 
 	static void reportError();
 
+	static D3D11_USAGE toBufferUsage_DX11(BufferUsage usage_)
+	{
+		switch (usage_)
+		{
+			case BufferUsage::Static:	return D3D11_USAGE_DYNAMIC;
+			case BufferUsage::Dynamic:	return D3D11_USAGE_DEFAULT;
+			case BufferUsage::Default:	return D3D11_USAGE_DEFAULT;
+			default: break;
+		}
+		SGE_ASSERT(0);
+		return D3D11_USAGE_DEFAULT;
+	}
+
+	static D3D_PRIMITIVE_TOPOLOGY toPrimitiveType_DX11(PrimitiveType type_)
+	{
+		switch (type_)
+		{
+			case PrimitiveType::Triangle:			return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;		// D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+			case PrimitiveType::Triangle_Strip:		return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;		// D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+			case PrimitiveType::Line:				return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;		// D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+			case PrimitiveType::Line_Strip:			return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;		// D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+			default: break;
+		}
+		SGE_ASSERT(0);
+		return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	}
+
+	static const StrView toSemanticName_DX11(VertexSematic sematic_)
+	{
+		switch (sematic_)
+		{
+			case VertexSematic::Pos:		return "POSITION";
+			case VertexSematic::Uv0:		return "TEXCOORD";
+			case VertexSematic::Uv1:		return "TEXCOORD";
+			case VertexSematic::Uv2:		return "TEXCOORD";
+			case VertexSematic::Uv3:		return "TEXCOORD";
+			case VertexSematic::Uv4:		return "TEXCOORD";
+			case VertexSematic::Uv5:		return "TEXCOORD";
+			case VertexSematic::Uv6:		return "TEXCOORD";
+			case VertexSematic::Uv7:		return "TEXCOORD";
+			case VertexSematic::Color:		return "COLOR";
+			default: break;
+		}
+
+		return nullptr;
+	}
+
+
+	static DXGI_FORMAT  toRenderDataFormat_DX11(RenderDataType type_)
+	{
+		switch (type_)
+		{
+			case RenderDataType::Float32:		return DXGI_FORMAT_R8G8B8A8_UNORM;
+			case RenderDataType::Float32x2: 	return DXGI_FORMAT_R32G32_FLOAT;
+			case RenderDataType::Float32x3: 	return DXGI_FORMAT_R32G32B32_FLOAT;
+			case RenderDataType::Float32x4: 	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			case RenderDataType::Int8: 			return DXGI_FORMAT_R8_SINT;
+			case RenderDataType::Int16: 		return DXGI_FORMAT_R16_SINT;
+			case RenderDataType::Int32: 		return DXGI_FORMAT_R32_SINT;
+			case RenderDataType::Int64:			SGE_ASSERT(0); return DXGI_FORMAT_UNKNOWN;
+			default: break;
+		}
+		SGE_ASSERT(0);
+		return DXGI_FORMAT_UNKNOWN;
+	}
+
 	static Renderer_DX11*			renderer();
 	static DX11_ID3DDevice*			d3dDevice();
 	static DX11_ID3DDeviceContext*	d3dDeviceContext();
