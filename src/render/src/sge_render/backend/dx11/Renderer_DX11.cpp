@@ -85,7 +85,7 @@ Renderer_DX11::Renderer_DX11(CreateDesc& desc_)
 
 		SGE_LOG("Render Adapter\n  name={}\n  mem={}G"
 			, _adapterInfo.adapterName
-			, Math::ByteToG(_adapterInfo.memorySize));
+			, Math::byteToG(_adapterInfo.memorySize));
 	}
 
 	hr = _cpDxgiAdapter->GetParent(IID_PPV_ARGS(_cpDxgiFactory.ptrForInit()));

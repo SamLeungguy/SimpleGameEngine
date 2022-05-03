@@ -73,8 +73,8 @@ void MainWin::onCloseButton()
 void MainWin::onDraw()
 {
 	Base::onDraw();
-	if (!_spRenderContext)
-		return;
+	//if (!_spRenderContext)
+	//	return;
 
 	_spRenderContext->setFrameBufferSize(clientRect().size);
 

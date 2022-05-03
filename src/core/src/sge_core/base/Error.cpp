@@ -2,9 +2,8 @@
 
 namespace sge {
 
-	Error::Error(const SrcLoc& loc_, StrView msg_)
-		:
-		_loc(loc_), _msg(msg_)
-	{
-	}
-}
+Error::Error(const SrcLoc& loc, StrView msg)
+	: _loc(loc), _msg(msg)
+{}
+
+} // namespace

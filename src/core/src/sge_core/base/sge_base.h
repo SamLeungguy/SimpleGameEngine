@@ -1,20 +1,23 @@
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif
+
 #include "../detect_platform/sge_detect_platform.h"
 
 #if SGE_OS_WINDOWS
-#define NOMINMAX 1
-
-#include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
-#include <ws2tcpip.h> // struct sockaddr_in6
-#pragma comment(lib, "Ws2_32.lib")
-
-#include <Windows.h>
+	#define NOMINMAX 1
+	#include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
+	#include <ws2tcpip.h> // struct sockaddr_in6
+	#pragma comment(lib, "Ws2_32.lib")
+	#include <Windows.h>
+	#include <intsafe.h>
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h> // struct sockaddr_in
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netdb.h>
+	#include <netinet/in.h> // struct sockaddr_in
 #endif
 
 #include <cassert>
@@ -188,46 +191,6 @@ private:
 
 template<class T> inline void sge_delete(T* p) { delete p; }
 
-template<class T>
-class ComPtr : public NonCopyable
-{
-public:
-	ComPtr() = default;
-	~ComPtr() noexcept { reset(nullptr); }
-	ComPtr(const ComPtr& rhs_) { reset(rhs_._p); }
-	void operator=(const ComPtr& rhs_) { if (_p == rhs_._p) return; reset(rhs_._p); }
-
-	T* operator->() noexcept			{ return _p; }
-	operator T* () noexcept				{ return _p; }
-
-			T* ptr() noexcept			{ return _p; }
-	const	T* ptr() const  noexcept	{ return _p; }
-
-	void reset(T* p_)
-	{
-		if (_p == p_)
-			return;
-
-		if (_p)
-		{
-			_p->Release();
-			_p = nullptr;
-		}
-		_p = p_;
-		if (_p)
-		{
-			_p->AddRef();
-		}
-	}
-
-	T** ptrForInit() noexcept { reset(nullptr); return &_p; }
-
-	T* detach() { T* pOut = _p = nullptr; return o; }
-
-private:
-	T* _p = nullptr;
-};
-
 class RefCountBase : public NonCopyable
 {
 public:
@@ -237,53 +200,6 @@ public:
 class Object : public RefCountBase {
 public:
 	virtual ~Object() = default;
-};
-
-template<class T>
-class SPtr : public NonCopyable
-{
-public:
-	SPtr() = default;
-	~SPtr() noexcept { reset(nullptr); }
-	SPtr(T* ptr_) { reset(ptr_); }
-	void operator=(T* ptr_) { if (ptr_ == _ptr) return; reset(ptr_); }
-
-	SPtr(SPtr&& rhs_) { reset(rhs_._ptr); rhs_._ptr = nullptr; }
-	void operator=(SPtr&& rhs_) { if (_ptr == rhs_._ptr) return; reset(rhs_._ptr); rhs_._ptr = nullptr; }
-
-	T* operator->() noexcept			{ return _ptr; }
-	operator T* () noexcept				{ return _ptr; }
-
-			T* ptr() noexcept			{ return _ptr; }
-	const	T* ptr() const  noexcept	{ return _ptr; }
-
-	void reset(T* ptr_)
-	{
-		static_assert(std::is_base_of<RefCountBase, T>::value, "");
-		if (_ptr == ptr_)
-			return;
-
-		if (_ptr)
-		{
-			auto c = --_ptr->_refCount;
-			if (c <= 0)
-			{
-				sge_delete(_ptr);
-			}
-			_ptr = nullptr;
-		}
-
-		_ptr = ptr_;
-		if (ptr_)
-		{
-			_ptr->_refCount++;
-		}
-	}
-
-	T* detach() { T* o = _ptr; _ptr = nullptr; return o; }
-
-private:
-	T* _ptr = nullptr;
 };
 
 } // namespace

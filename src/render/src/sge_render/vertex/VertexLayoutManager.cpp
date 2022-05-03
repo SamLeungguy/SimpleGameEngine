@@ -58,7 +58,7 @@ VertexLayout* VertexLayoutManager::_createLayout(VertexType type_)
 {
 	auto* p = getLayout(type_);
 	if (p) {
-		SGE_ASSERT(false);
+		throw SGE_ERROR("duplicated layout");
 	}
 	return &_table[type_];
 }

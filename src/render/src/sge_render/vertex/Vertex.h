@@ -102,6 +102,9 @@ struct Vertex_SemanticUtil
 	{
 		return static_cast<Semantic>((enumInt(type_) << 8) | index_);
 	}
+	static constexpr u16 _make(Type type, Index index) {
+		return static_cast<u16>(make(type, index));
+	};
 	static constexpr Type getType(Semantic semantic_) { return static_cast<Type>(enumInt(semantic_) >> 8); }
 	static constexpr Index getIndex(Semantic semantic_) { return static_cast<Index>(enumInt(semantic_)); }
 };
@@ -111,23 +114,23 @@ enum class Vertex_Semantic : u16
 	None = 0,
 	Pos			= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Pos, 0)),
 
-	Color0		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 0)),
-	Color1		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 1)),
-	Color2		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 2)),
-	Color3		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 3)),
+	Color0		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 0),
+	Color1		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 1),
+	Color2		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 2),
+	Color3		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 3),
 
-	TexCoord0	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 0)),
-	TexCoord1	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 1)),
-	TexCoord2	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 2)),
-	TexCoord3	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 3)),
-	TexCoord4	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 4)),
-	TexCoord5	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 5)),
-	TexCoord6	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 6)),
-	TexCoord7	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 7)),
+	TexCoord0	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 0),
+	TexCoord1	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 1),
+	TexCoord2	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 2),
+	TexCoord3	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 3),
+	TexCoord4	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 4),
+	TexCoord5	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 5),
+	TexCoord6	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 6),
+	TexCoord7	= Vertex_SemanticUtil::_make(Vertex_SemanticType::TexCoord, 7),
 
-	Normal		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Normal, 0)),
-	Tangent		= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Tangent, 0)),
-	Binormal	= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Binormal, 0)),
+	Normal		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Normal, 0),
+	Tangent		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Tangent, 0),
+	Binormal	= Vertex_SemanticUtil::_make(Vertex_SemanticType::Binormal, 0),
 };
 
 struct VertexLayout
@@ -299,6 +302,11 @@ struct VertexT_Binormal : public Base
 
 		Base::onRegister(pLayout_);
 		pLayout_->addElement(Semantic::Binormal, &VertexT_Binormal::binormals);
+	}
+
+	static const VertexLayout* getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(VertexT_Binormal::s_type);
+		return s;
 	}
 };
 
