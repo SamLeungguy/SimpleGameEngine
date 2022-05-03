@@ -1,4 +1,5 @@
 #include "NativeUIWindow_Win32.h"
+#include "Win32Util.h"
 
 #include "sge_core/base/Error.h"
 
@@ -132,6 +133,17 @@ namespace sge {
 			case WM_CLOSE: {
 				if (auto* thisObj = s_getThis(hwnd_)) {
 					thisObj->onCloseButton();
+					return 0;
+				}
+			}break;
+
+			case WM_SIZE: {
+				if (auto* thisObj = s_getThis(hwnd_)) {
+					RECT clientRect;
+					::GetClientRect(hwnd_, &clientRect);
+					Rect2f newClientRect = Win32Util::toRect2f(clientRect);
+
+					thisObj->onClientRectChanged(newClientRect);
 					return 0;
 				}
 			}break;

@@ -3,6 +3,8 @@
 #include "Render_Common_DX11.h"
 #include "../../RenderContext.h"
 
+#include <sge_render/command/RenderCommand.h>
+
 #if SGE_OS_WINDOWS
 
 namespace sge {
@@ -15,16 +17,20 @@ namespace sge {
 		RenderContext_DX11(CreateDesc desc_);
 		virtual ~RenderContext_DX11() = default;
 
-	protected:
-		void _createRenderTarget();
+		void onCmd_ClearFrameBuffers(RenderCommand_ClearFrameBuffers& cmd_);
+		void onCmd_SwapBuffers(RenderCommand_SwapBuffers& cmd_);
+		void onCmd_DrawCall(RenderCommand_DrawCall& cmd_);
 
+	protected:
 		virtual void onBeginRender() override;
 		virtual void onEndRender() override;
+		virtual void onSetFrameBufferSize(Vec2f newSize_) override;
+		virtual void onCommit(RenderCommandBuffer& cmdBuf_) override;
 
-		virtual void onTestDraw() override;
+		DX11_ID3DInputLayout* _getTestInputLayout(const VertexLayout* src);
 
-		virtual void onClearColorAndDepthBuffer() override;
-		virtual void onSwapBuffers() override;
+		void _createRenderTarget();
+		void _setTestShaders();
 
 	protected:
 		Renderer_DX11* _pRenderer = nullptr;
@@ -37,7 +43,9 @@ namespace sge {
 		ComPtr<DX11_ID3DBuffer>				_cpTestVertexBuffer;
 		ComPtr<DX11_ID3DVertexShader>		_cpTestVertexShader;
 		ComPtr<DX11_ID3DPixelShader>		_cpTestPixelShader;
-		ComPtr<DX11_ID3DInputLayout>		_cpTestInputLayout;
+		ComPtr<ID3DBlob>					_cpTestVertexShaderBytecode;
+
+		VectorMap<const VertexLayout*, ComPtr<DX11_ID3DInputLayout>> _testInputLayouts;
 	};
 
 }

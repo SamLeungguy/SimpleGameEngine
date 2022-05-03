@@ -3,9 +3,14 @@
 #include "sge_core/base/sge_base.h"
 
 #include "sge_core/math/Math.h"
-#include "sge_core/math/Color.h"
-#include "sge_core/math/Tuple.h"
 #include "sge_core/math/Vec3.h"
+#include "sge_core/math/Tuple2.h"
+#include "sge_core/math/Tuple3.h"
+#include "sge_core/math/Tuple4.h"
+
+#include "sge_core/math/Rect2.h"
+
+#include "sge_core/graph/Color.h"
 
 //#include "sge_core/base/BinDeserializer.h"
 //#include "sge_core/base/BinSerializer.h"

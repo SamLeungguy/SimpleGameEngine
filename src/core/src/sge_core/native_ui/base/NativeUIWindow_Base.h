@@ -52,6 +52,8 @@ namespace sge {
 
 		void drawNeeded() { onDrawNeeded(); }
 
+		const Rect2f& clientRect() const { return _clientRect; }
+
 		virtual void onCloseButton() {}
 		virtual void onActive(bool isActive_) {};
 		virtual void onDraw() {}
@@ -59,6 +61,9 @@ namespace sge {
 	protected:
 		virtual void onCreate(CreateDesc& desc_) {}
 		virtual void onSetWindowTitleBar(StrView title_) {}
+		virtual void onClientRectChanged(const Rect2f& rc_) { _clientRect = rc_; }
 		virtual void onDrawNeeded() {};
+
+		Rect2f	_clientRect{ 0,0,0,0 };
 	};
 }

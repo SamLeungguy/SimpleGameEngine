@@ -3,27 +3,18 @@
 
 namespace sge {
 
-RenderContext* RenderContext::create(CreateDesc& desc_)
-{
-	return Renderer::current()->onCreateContext(desc_);
-}
-
 RenderContext::RenderContext(CreateDesc& desc_)
 {
+
 }
 
-void RenderContext::render()
+void RenderContext::setFrameBufferSize(Vec2f newSize_)
 {
-	onBeginRender();
-	onClearColorAndDepthBuffer();
+	if (_frameBufferSize == newSize_)
+		return;
 
-	//onTestDraw();
-
-	Renderer::current()->getRenderCommnadBuffer()->execute();
-
-	onSwapBuffers();
-	onEndRender();
+	_frameBufferSize = newSize_;
+	onSetFrameBufferSize(newSize_);
 }
-
 
 }

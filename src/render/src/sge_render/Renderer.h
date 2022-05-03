@@ -1,19 +1,15 @@
 #pragma once
 
 #include "Render_Common.h"
-#include "RenderCommandBuffer.h"
+#include "command/RenderCommands.h"
 
 namespace sge {
 
 class RenderContext;
-class VertexBuffer;
-class IndexBuffer;
-class Shader;
+class RenderGpuBuffer;
 
 struct RenderContext_CreateDesc;
-struct VertexBuffer_CreateDesc;
-struct IndexBuffer_CreateDesc;
-struct Shader_CreateDesc;
+struct RenderGpuBuffer_CreateDesc;
 
 struct VertexLayout;
 
@@ -44,28 +40,25 @@ public:
 
 	const RenderAdapterInfo& adapterInfo() const;
 
-	RenderCommandBuffer* getRenderCommnadBuffer();
-
 	bool isVsync() const;
 	
+	RenderContext* createContext(RenderContext_CreateDesc& desc)		{ return onCreateContext(desc); }
+	RenderGpuBuffer* createGpuBuffer(RenderGpuBuffer_CreateDesc& desc)	{ return onCreateGpuBuffer(desc); }
+
+protected:
 	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc) = 0;
-	virtual VertexBuffer* onCreateVertexBuffer(VertexBuffer_CreateDesc& desc_) = 0;
-	virtual IndexBuffer* onCreateIndexBuffer(IndexBuffer_CreateDesc& desc_) = 0;
-	virtual Shader* onCreateShader(Shader_CreateDesc& desc_) = 0;
+	virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc) = 0;
 
 protected:
 	static Renderer* _pCurrent;
 	RenderAdapterInfo _adapterInfo;
 	bool _isVsync : 1;
 
-	RenderCommandBuffer* _pRenderCommandBuffer = nullptr;
 };
 
 inline Renderer* Renderer::current() { return _pCurrent; }
 
 inline const RenderAdapterInfo& Renderer::adapterInfo() const { return _adapterInfo; }
-
-inline RenderCommandBuffer* Renderer::getRenderCommnadBuffer() { return _pRenderCommandBuffer; }
 
 inline bool Renderer::isVsync() const { return _isVsync; }
 

@@ -17,11 +17,10 @@ public:
 
 	virtual void onDraw() override;
 
-	UPtr<RenderContext> _upRenderContext;
+	SPtr<RenderContext> _spRenderContext;
+	RenderCommandBuffer _cmdBuf;
+	RenderMesh	_renderMesh;
 
-	// test
-	UPtr<RenderMesh>	_upRenderMesh;
-	UPtr<Shader>		_upShader;
 private:
 };
 
@@ -39,11 +38,32 @@ private:
 #pragma region MainWin_impl
 void MainWin::onCreate(CreateDesc& desc_)
 {
+	SGE_DUMP_VAR(sizeof(Vertex_Pos));
+	SGE_DUMP_VAR(sizeof(Vertex_PosColor));
+	//		SGE_DUMP_VAR(sizeof(Vertex_PosColorUv));
+	//		SGE_DUMP_VAR(sizeof(Vertex_PosColorUv2));
+
 	Base::onCreate(desc_);
 
 	RenderContext::CreateDesc renderContextDesc;
 	renderContextDesc.pWindow = this;
-	_upRenderContext.reset(RenderContext::create(renderContextDesc));
+	_spRenderContext.reset(Renderer::current()->createContext(renderContextDesc));
+
+	{
+		EditMesh editMesh;
+
+		editMesh.positions.emplace_back(0.0f, 0.5f, 0.0f);
+		editMesh.positions.emplace_back(0.5f, -0.5f, 0.0f);
+		editMesh.positions.emplace_back(-0.5f, -0.5f, 0.0f);
+
+		editMesh.colors.emplace_back(255, 0, 0, 255);
+		editMesh.colors.emplace_back(0, 255, 0, 255);
+		editMesh.colors.emplace_back(0, 0, 255, 255);
+
+		_renderMesh.create(editMesh);
+
+		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
+	}
 }
 void MainWin::onCloseButton()
 {
@@ -53,36 +73,22 @@ void MainWin::onCloseButton()
 void MainWin::onDraw()
 {
 	Base::onDraw();
-	if (!_upRenderContext)
+	if (!_spRenderContext)
 		return;
 
-	Rect2i rect;
-	rect.x = 0;
-	rect.y = 0;
-	rect.w = 800;
-	rect.h = 600;
+	_spRenderContext->setFrameBufferSize(clientRect().size);
 
-	if (_upRenderMesh)
-	{
-		RenderCommandBuffer::setViewport(rect);
-		RenderCommandBuffer::drawIndex(_upRenderMesh.get(), _upShader.get());
-	}
+	_spRenderContext->beginRender();
+
+	_cmdBuf.reset();
+	_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
+	_cmdBuf.drawMesh(_renderMesh);
+	_cmdBuf.swapBuffers();
+
+	_spRenderContext->commit(_cmdBuf);
+
+	_spRenderContext->endRender();
 	
-	/*for (size_t i = 0; i < 100; i++)
-	{
-		Rect2i rect;
-		rect.x = 0;
-		rect.y = 1;
-		rect.w = 2;
-		rect.h = 3;
-
-		RenderCommandBuffer::drawIndex(12);
-		RenderCommandBuffer::setViewport(rect);
-		RenderCommandBuffer::drawIndex(24);
-	}*/
-
-	_upRenderContext->render();
-
 	drawNeeded();
 }
 
@@ -111,83 +117,9 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	NativeUIWindow::CreateDesc winDesc;
 	winDesc.isMainWindow = true;
 	_mainWin.create(winDesc);
-	winDesc.rect.w = s_temp_width;
-	winDesc.rect.h = s_temp_height;
+	winDesc.rect.w = 800;
+	winDesc.rect.h = 600;
 	_mainWin.setWindowTitle("SGE Editor");
-
-	// test
-	{
-		Mesh mesh;
-#if draw_triangle
-		u64 vertexCount = 3;
-#else
-		u64 vertexCount = 4;
-#endif
-		Vector<Tuple3f> positions;
-		positions.reserve(vertexCount);
-#if draw_triangle
-		positions.push_back({ 0.0f,   0.5f, 0.0f });
-		positions.push_back({ 0.5f,  -0.5f, 0.0f });
-		positions.push_back({ -0.5f, -0.5f, 0.0f });
-#else
-		positions.push_back({ 0.5f,  0.5f, 0.0f });
-		positions.push_back({ 0.5f, -0.5f, 0.0f });
-		positions.push_back({ -0.5f, 0.5f, 0.0f });
-		positions.push_back({ -0.5f, -0.5f, 0.0f });
-#endif
-		mesh.setPositions(positions);
-
-		Vector<Tuple2f> uv0;
-		uv0.reserve(vertexCount);
-#if draw_triangle
-		uv0.push_back({ 0.0f,   1.0f});
-		uv0.push_back({ 0.5f,  -0.5f});
-		uv0.push_back({ -0.5f, -0.5f});
-#else
-		uv0.push_back({ 1.0f, 1.0f });
-		uv0.push_back({ 1.0f, 0.0f });
-		uv0.push_back({ 0.0f, 1.0f });
-		uv0.push_back({ 0.0f, 0.0f });
-#endif
-		mesh.setUVs(uv0, 0);
-
-		Vector<Color4f> colors;
-		colors.reserve(vertexCount);
-#if draw_triangle
-		colors.push_back({ 1.0f, 0.0f, 0.0f, 1.0f });
-		colors.push_back({ 0.0f, 1.0f, 0.0f, 1.0f });
-		colors.push_back({ 0.0f, 0.0f, 1.0f, 1.0f });
-#else
-		colors.push_back({ 1.0f, 0.0f, 0.0f, 1.0f });
-		colors.push_back({ 0.0f, 1.0f, 0.0f, 1.0f });
-		colors.push_back({ 0.0f, 0.0f, 1.0f, 1.0f });
-		colors.push_back({ 1.0f, 1.0f, 1.0f, 1.0f });
-#endif
-		mesh.setColors(colors);
-
-		Vector<u32> indices;
-		indices.reserve(vertexCount);
-#if draw_triangle
-		indices.push_back(0);
-		indices.push_back(1);
-		indices.push_back(2);
-#else
-		indices.push_back(0);
-		indices.push_back(1);
-		indices.push_back(2);
-		indices.push_back(3);
-		indices.push_back(2);
-		indices.push_back(1);
-#endif
-		mesh.setIndices(indices);
-
-		_mainWin._upRenderMesh.reset(RenderMesh::create(mesh));
-
-		Shader_CreateDesc shaderCD;
-		shaderCD.filepath = L"Assets/Shaders/test2.hlsl";
-		shaderCD.pVertexLayout = &_mainWin._upRenderMesh->vertexLayout;
-		_mainWin._upShader.reset(Shader::create(shaderCD));
-	}
 }
 
 #pragma endregion
