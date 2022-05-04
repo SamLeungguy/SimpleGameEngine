@@ -132,7 +132,7 @@ void RenderMesh::create(const EditMesh& src_)
 	{
 		RenderGpuBuffer::CreateDesc desc;
 		desc.type = RenderGpuBufferType::Index;
-		desc.bufferSize = _indexCount * sizeof(u16);
+		desc.bufferSize = _indexCount * sizeof(EditMesh::IndexType);
 		_spIndexBuffer = pRenderer->createGpuBuffer(desc);
 
 		Span<const u8> indexData(reinterpret_cast<const u8*>(src_.indices.data()), desc.bufferSize);

@@ -45,6 +45,10 @@ namespace sge {
 		ComPtr<DX11_ID3DPixelShader>		_cpTestPixelShader;
 		ComPtr<ID3DBlob>					_cpTestVertexShaderBytecode;
 
+		ComPtr<DX11_ID3DRasterizerState>	_cpTestRasterizerState;
+		ComPtr<DX11_ID3DDepthStencilState>	_cpTestDepthStencilState;
+		ComPtr<DX11_ID3DBlendState>			_cpTestBlendState;
+
 		VectorMap<const VertexLayout*, ComPtr<DX11_ID3DInputLayout>> _testInputLayouts;
 	};
 

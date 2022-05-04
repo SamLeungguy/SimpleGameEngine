@@ -10,6 +10,8 @@ public:
 
 	RenderPrimitiveType	primitive = RenderPrimitiveType::Triangles;
 
+	using IndexType = u32;
+
 	Vector<Tuple3f>	positions;
 	Vector<Tuple2f>	uvs[s_uvCountMax];
 	Vector<Color4b> colors;
@@ -18,7 +20,7 @@ public:
 	Vector<Tuple3f>	tangents;
 	Vector<Tuple3f>	binormals;
 
-	Vector<u16> indices;
+	Vector<IndexType> indices;
 
 	void clear();
 };

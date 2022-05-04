@@ -72,14 +72,16 @@ void MainWin::onCreate(CreateDesc& desc_)
 		editMesh.indices.emplace_back(1);
 		editMesh.indices.emplace_back(2);
 
-		//WavefrontObjLoader loader;
-		//loader.load(editMesh, "Assets/Meshes/postprocessQuad.obj");
+		WavefrontObjLoader loader;
+		//loader.load(editMesh, "Assets/Meshes/sphere.obj");
+		//loader.load(editMesh, "Assets/Meshes/pentagon.obj");
+		//loader.load(editMesh, "Assets/Meshes/monkey.obj");
+		//loader.load(editMesh, "Assets/Meshes/cube.obj");
+		loader.load(editMesh, "Assets/Meshes/ico_sphere.obj");
 
 		_renderMesh.create(editMesh);
 
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
-
-
 	}
 }
 void MainWin::onCloseButton()

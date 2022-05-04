@@ -55,7 +55,6 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 	u64 vertexCount = 0;
 	u64 faceCount = 0;
-	u8 faceSize = 0;
 
 	constexpr StrView token_newLine = "\n";
 	constexpr char token_name = 'o';
@@ -72,9 +71,6 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 	while (nextLineView.size() > 0 && nextLineView[0] != token_pos)
 	{
-		//currentLine++;
-		//cursor += spilt.first.size() + token_newLine.size();		// count the spilt token(\n)
-		//spilt = StringUtil::splitByChar(spilt.second, token_newLine);
 		s_moveFileCursor(currentLine, cursor, spilt, token_newLine);
 
 		curLineView = spilt.first;
@@ -109,6 +105,8 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 			tempNextLineView = s.second;
 			vertexCount++;
 		}
+		int a = 0;
+		a++;
 	}
 
 	// token 'v' get vertex position
@@ -146,7 +144,7 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 				_tmpPositions.emplace_back(pos[0], pos[1], pos[2]);
 
-				SGE_DUMP_VAR_3(_tmpPositions[i].x, _tmpPositions[i].y, _tmpPositions[i].z);
+				//SGE_DUMP_VAR_3(_tmpPositions[i].x, _tmpPositions[i].y, _tmpPositions[i].z);
 
 				s_moveFileCursor(currentLine, cursor, spilt, token_newLine);
 				curLineView = spilt.first;
@@ -173,10 +171,14 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 			float uv[uvArraySize];
 
 			bool isParseSuccess = true;
+			bool hasNextUv = true;
 
-			for (size_t i = 0; i < vertexCount; i++)
+			for (size_t i = 0; hasNextUv; i++)
 			{
 				s = StringUtil::splitByChar(curLineView, ' ');
+				hasNextUv = s.first.size() > 0 && s.first.find(token_uv) != StrView::npos;
+				if (!hasNextUv)
+					break;
 
 				s = StringUtil::splitByChar(s.second, ' ');
 				isParseSuccess = StringUtil::tryParse(s.first, uv[0]);
@@ -187,7 +189,7 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 				_tmpUvs.emplace_back(uv[0], uv[1]);
 
-				SGE_DUMP_VAR(_tmpUvs[i].x, _tmpUvs[i].y);
+				//SGE_DUMP_VAR(_tmpUvs[i].x, _tmpUvs[i].y);
 
 				s_moveFileCursor(currentLine, cursor, spilt, token_newLine);
 				curLineView = spilt.first;
@@ -233,7 +235,7 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 				_tmpNormals.emplace_back(normal[0], normal[1], normal[2]);
 
-				SGE_DUMP_VAR_3(_tmpNormals[i].x, _tmpNormals[i].y, _tmpNormals[i].z);
+				//SGE_DUMP_VAR_3(_tmpNormals[i].x, _tmpNormals[i].y, _tmpNormals[i].z);
 
 				s_moveFileCursor(currentLine, cursor, spilt, token_newLine);
 				curLineView = spilt.first;
@@ -270,18 +272,6 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 		StrView tempCurLineView = s.first;
 		StrView tempNextLineView = s.second;
 
-		// get face size
-		if (tempCurLineView.size() > 0 && tempCurLineView[0] == token_face[0])
-		{
-			s = StringUtil::splitByChar(tempCurLineView, ' ');
-
-			while (s.second.size() > 0)
-			{
-				s = StringUtil::splitByChar(s.second, ' ');
-				faceSize++;
-			}
-		}
-
 		while (tempCurLineView.size() > 0 && tempCurLineView[0] == token_face[0])
 		{
 			s = StringUtil::splitByChar(tempNextLineView, token_newLine);
@@ -290,7 +280,7 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 			faceCount++;
 		}
 
-		if (faceCount <= 0 || faceSize <= 0)
+		if (faceCount <= 0)
 		{
 			SGE_ASSERT("invaild face count!");
 		}
@@ -304,10 +294,9 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 		auto s = StringUtil::splitByChar(curLineView, ' ');
 
-		outMesh.indices.reserve(faceCount);
+		constexpr int max_support_face_size = 6;
 
-		Vector_<u32, 16> face;
-		face.resize(faceSize);
+		outMesh.indices.reserve(faceCount * max_support_face_size);
 
 		i64 v = 0;
 		i64 vt = 0;
@@ -315,12 +304,40 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 
 		for (size_t i = 0; i < faceCount; i++)
 		{
+#if 0
+			u8 faceSize = 0;
+
+			// get face size
+			if (curLineView.size() > 0 && curLineView[0] == token_face[0])
+			{
+				auto tmp_split = StringUtil::splitByChar(curLineView, ' ');
+
+				while (tmp_split.second.size() > 0)
+				{
+					tmp_split = StringUtil::splitByChar(tmp_split.second, ' ');
+					faceSize++;
+				}
+			}
+			else
+			{
+				throw SGE_ERROR("no face in this line {}", currentLine);
+				continue;
+			}
+
+			SGE_ASSERT(faceSize <= max_support_face_size && faceSize >= 3);
+#endif // 0
+
 			s = StringUtil::splitByChar(curLineView, ' ');
 			s = StringUtil::splitByChar(s.second, ' ');
 
-			for (size_t f = 0; f < faceSize; f++)
+			for (EditMesh::IndexType f = 0; f < max_support_face_size; f++)
 			{
 				auto tempSplit = StringUtil::splitByChar(s.first, '/');
+
+				if (tempSplit.second.size() == 0)	// break if no more v/vt/vn
+				{
+					break;
+				}
 
 				if (StringUtil::tryParse(tempSplit.first, v))
 				{
@@ -335,7 +352,7 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 						v -= 1;
 
 					outMesh.positions.emplace_back(_tmpPositions[v]);
-					face[f] = static_cast<u32>(v);
+					//SGE_DUMP_VAR(v, _tmpPositions[v].x, _tmpPositions[v].y, _tmpPositions[v].z);
 				}
 				else
 				{
@@ -378,24 +395,81 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 				else
 					outMesh.normals.emplace_back(0.0f, 0.0f, 0.0f);
 
+				if (f < 3)
+				{
+					outMesh.indices.emplace_back(static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1));
+				}
+				else if (f < 4)
+				{
+					auto f3 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+					outMesh.indices.emplace_back(f3 - 1);
+					outMesh.indices.emplace_back(f3);
+					outMesh.indices.emplace_back(f3 - f);
+				}
+				else if (f < 5)
+				{
+					auto f4 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+					outMesh.indices.emplace_back(f4 - 1);
+					outMesh.indices.emplace_back(f4);
+					outMesh.indices.emplace_back(f4 - f);
+				}
+				else if (f < 6)
+				{
+					auto f5 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+					outMesh.indices.emplace_back(f5 - 1);
+					outMesh.indices.emplace_back(f5);
+					outMesh.indices.emplace_back(f5 - f);
+				}
+				else
+				{
+					throw SGE_ERROR("not support face size {}", f);
+				}
+
+#if 0
+				if (faceSize == 3)
+				{
+					outMesh.indices.emplace_back(static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1));
+				}
+				else if (faceSize == 4)
+				{
+					if (f < 3)
+					{
+						outMesh.indices.emplace_back(static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1));
+					}
+					else
+					{
+						auto f3 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+						outMesh.indices.emplace_back(f3 - 1);
+						outMesh.indices.emplace_back(f3);
+						outMesh.indices.emplace_back(f3 - 3);
+					}
+				}
+				else if (faceSize == 5)
+				{
+					if (f < 3)
+					{
+						outMesh.indices.emplace_back(static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1));
+					}
+					else if (f < 4)
+					{
+						auto f3 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+						outMesh.indices.emplace_back(f3 - 1);
+						outMesh.indices.emplace_back(f3);
+						outMesh.indices.emplace_back(f3 - 3);
+					}
+					else
+					{
+						auto f4 = static_cast<EditMesh::IndexType>(outMesh.positions.size() - 1);
+						outMesh.indices.emplace_back(f4 - 1);
+						outMesh.indices.emplace_back(f4);
+						outMesh.indices.emplace_back(f4 - 4);
+					}
+				}
+#endif // 0
+
 				SGE_ASSERT(tempSplit.second.size() == 0);
 
 				s = StringUtil::splitByChar(s.second, ' ');
-			}
-
-			if (faceSize == 3)
-			{
-				outMesh.indices.emplace_back(face[0]);
-				outMesh.indices.emplace_back(face[1]);
-				outMesh.indices.emplace_back(face[2]);
-			}
-			else if (faceSize == 4)
-			{
-
-			}
-			else
-			{
-				SGE_ASSERT(0, "not suppported face size!");
 			}
 
 			s_moveFileCursor(currentLine, cursor, spilt, token_newLine);

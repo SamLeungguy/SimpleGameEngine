@@ -1,6 +1,6 @@
 struct appdata
 {
-    float4 position : SV_POSITION;
+    float4 position : POSITION;
     float2 uv       : TEXCOORD;
     float3 normal   : NORMAL;
     //float4 color : COLOR;
@@ -25,12 +25,10 @@ v2f vs_main(appdata v)
     return output;
 }
 
-
 float4 ps_main(v2f i) : SV_TARGET
 {
-    i.position.w = 1.0;
-    i.uv.x = 1.0;
-    i.normal.x = 0.0;
-
+    return float4(i.uv.x, i.uv.y, i.position.z, 1.0f);
+    return float4(0.2f, 1.0, 1.0, 1.0);
+    //return position;
     return float4( i.uv.x, i.normal.y, i.position.z, 1.0 );
 }
