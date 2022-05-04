@@ -7,4 +7,5 @@
 #include "sge_render/vertex/VertexLayoutManager.h"
 #include "sge_render/mesh/RenderMesh.h"
 
+#include "sge_render/mesh/WavefrontObjLoader.h"
 

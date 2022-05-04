@@ -12,8 +12,12 @@ public:
 
 	RenderPrimitiveType getPrimitive() const { return _primitive; }
 
-	size_t getVertexCount() const { return _vertexCount; }
-	RenderGpuBuffer* getVertexBuffer() { return _spVertexBuffer; }
+	size_t getVertexCount() const		{ return _vertexCount; }
+	RenderGpuBuffer* getVertexBuffer()	{ return _spVertexBuffer; }
+
+	size_t getIndexCount() const		{ return _indexCount; }
+	RenderGpuBuffer* getIndexBuffer()	{ return _spIndexBuffer; }
+
 	const VertexLayout* getVertexLayout() const { return _pVertexLayout; }
 
 private:
@@ -21,8 +25,11 @@ private:
 	RenderPrimitiveType _primitive = RenderPrimitiveType::None;
 
 	size_t _vertexCount = 0;
+	size_t _indexCount = 0;
+
 	const VertexLayout* _pVertexLayout = nullptr;
 	SPtr<RenderGpuBuffer>	_spVertexBuffer;
+	SPtr<RenderGpuBuffer>	_spIndexBuffer;
 };
 
 }

@@ -8,6 +8,8 @@ class EditMesh : public NonCopyable {
 public:
 	static const u8 s_uvCountMax = 4;
 
+	RenderPrimitiveType	primitive = RenderPrimitiveType::Triangles;
+
 	Vector<Tuple3f>	positions;
 	Vector<Tuple2f>	uvs[s_uvCountMax];
 	Vector<Color4b> colors;
@@ -16,7 +18,9 @@ public:
 	Vector<Tuple3f>	tangents;
 	Vector<Tuple3f>	binormals;
 
-	void loadObjFile(StrView filename);
+	Vector<u16> indices;
+
+	void clear();
 };
 
 }

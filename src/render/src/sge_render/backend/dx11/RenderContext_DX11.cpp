@@ -64,6 +64,9 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	auto* vertexBuffer = static_cast<RenderGpuBuffer_DX11*>(cmd_.spVertexBuffer.ptr());
 	if (!vertexBuffer) { SGE_ASSERT(false); return; }
 
+	auto* indexBuffer = static_cast<RenderGpuBuffer_DX11*>(cmd_.spIndexBuffer.ptr());
+	//if (!indexBuffer) { SGE_ASSERT(false); return; }
+
 	if (cmd_.vertexCount <= 0) { SGE_ASSERT(false); return; }
 	if (cmd_.primitive == RenderPrimitiveType::None) { SGE_ASSERT(false); return; }
 
@@ -84,7 +87,16 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 
 	DX11_ID3DBuffer* ppVertexBuffers[] = { vertexBuffer->getBuffer() };
 	ctx->IASetVertexBuffers(0, 1, ppVertexBuffers, &stride, &offset);
-	ctx->Draw(vertexCount, 0);
+
+	if (indexBuffer)
+	{
+		ctx->IASetIndexBuffer(indexBuffer->getBuffer(), DXGI_FORMAT_R16_UINT, 0);
+		ctx->DrawIndexed(static_cast<UINT>(cmd_.indexCount), 0, 0);
+	}
+	else
+	{
+		ctx->Draw(vertexCount, 0);
+	}
 }
 
 void RenderContext_DX11::_createRenderTarget()
@@ -213,6 +225,7 @@ DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout
 		return it->second;
 	}
 
+#if 1 // original code
 	Vector_<D3D11_INPUT_ELEMENT_DESC, 32> inputDesc;
 
 	for (auto& e : src->elements) {
@@ -229,6 +242,10 @@ DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout
 
 	ComPtr<DX11_ID3DInputLayout>	outLayout;
 
+	SGE_DUMP_VAR(_cpTestVertexShaderBytecode->GetBufferSize());
+	SGE_DUMP_VAR(static_cast<UINT>(inputDesc.size()));
+	SGE_DUMP_VAR(_cpTestVertexShaderBytecode->GetBufferPointer());
+
 	auto* dev = _pRenderer->d3dDevice();
 	auto hr = dev->CreateInputLayout(inputDesc.data()
 		, static_cast<UINT>(inputDesc.size())
@@ -239,6 +256,26 @@ DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout
 
 	_testInputLayouts[src] = outLayout;
 	return outLayout;
+#else
+	ComPtr<DX11_ID3DInputLayout>	outLayout;
+	const D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	auto* dev = _pRenderer->d3dDevice();
+	auto hr = dev->CreateInputLayout(layout
+		, 3
+		, _cpTestVertexShaderBytecode->GetBufferPointer()
+		, _cpTestVertexShaderBytecode->GetBufferSize()
+		, outLayout.ptrForInit());
+	Util::throwIfError(hr);
+
+	_testInputLayouts[src] = outLayout;
+	return outLayout;
+#endif // 0
+
 }
 
 }

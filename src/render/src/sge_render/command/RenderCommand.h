@@ -62,7 +62,10 @@ public:
 	RenderPrimitiveType		primitive = RenderPrimitiveType::None;
 	const VertexLayout* pVertexLayout = nullptr;
 	SPtr<RenderGpuBuffer>	spVertexBuffer;
+	SPtr<RenderGpuBuffer>	spIndexBuffer;
+
 	size_t vertexCount = 0;
+	size_t indexCount = 0;
 };
 
 class RenderCommandBuffer : public NonCopyable {

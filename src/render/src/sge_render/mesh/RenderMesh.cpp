@@ -115,6 +115,8 @@ void RenderMesh::create(const EditMesh& src_)
 		}
 	}
 
+	_indexCount = src_.indices.size();
+
 	//-----
 	auto* pRenderer = Renderer::current();
 	{
@@ -124,6 +126,18 @@ void RenderMesh::create(const EditMesh& src_)
 		_spVertexBuffer = pRenderer->createGpuBuffer(desc);
 		
 		_spVertexBuffer->uploadToGpu(vertexData);
+	}
+
+	if(_indexCount)
+	{
+		RenderGpuBuffer::CreateDesc desc;
+		desc.type = RenderGpuBufferType::Index;
+		desc.bufferSize = _indexCount * sizeof(u16);
+		_spIndexBuffer = pRenderer->createGpuBuffer(desc);
+
+		Span<const u8> indexData(reinterpret_cast<const u8*>(src_.indices.data()), desc.bufferSize);
+		
+		_spIndexBuffer->uploadToGpu(indexData);
 	}
 }
 

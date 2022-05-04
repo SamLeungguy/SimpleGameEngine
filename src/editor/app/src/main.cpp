@@ -56,13 +56,30 @@ void MainWin::onCreate(CreateDesc& desc_)
 		editMesh.positions.emplace_back(0.5f, -0.5f, 0.0f);
 		editMesh.positions.emplace_back(-0.5f, -0.5f, 0.0f);
 
-		editMesh.colors.emplace_back(255, 0, 0, 255);
+		/*editMesh.colors.emplace_back(255, 0, 0, 255);
 		editMesh.colors.emplace_back(0, 255, 0, 255);
-		editMesh.colors.emplace_back(0, 0, 255, 255);
+		editMesh.colors.emplace_back(0, 0, 255, 255);*/
+
+		editMesh.uvs[0].emplace_back(0.0f, 0.0f);
+		editMesh.uvs[0].emplace_back(0.5f, 0.0f);
+		editMesh.uvs[0].emplace_back(-0.5f,0.0f);
+
+		editMesh.normals.emplace_back(0.0f, 0.5f, 0.0f);
+		editMesh.normals.emplace_back(0.5f, -0.5f, 0.0f);
+		editMesh.normals.emplace_back(-0.5f, -0.5f, 0.0f);
+
+		editMesh.indices.emplace_back(0);
+		editMesh.indices.emplace_back(1);
+		editMesh.indices.emplace_back(2);
+
+		//WavefrontObjLoader loader;
+		//loader.load(editMesh, "Assets/Meshes/postprocessQuad.obj");
 
 		_renderMesh.create(editMesh);
 
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
+
+
 	}
 }
 void MainWin::onCloseButton()
