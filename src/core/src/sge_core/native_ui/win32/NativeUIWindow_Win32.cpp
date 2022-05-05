@@ -84,6 +84,12 @@ namespace sge {
 			throw SGE_ERROR("cannot create native window");
 		}
 
+		_hdc = GetDC(_hwnd);
+		if (!_hdc)
+		{
+			throw SGE_ERROR("cannot get dc");
+		}
+
 		ShowWindow(_hwnd, SW_SHOW);
 	}
 
@@ -120,14 +126,21 @@ namespace sge {
 			}break;
 
 			case WM_PAINT: {
+#if 1
+				if (auto* thisObj = s_getThis(hwnd_)) {
+					thisObj->onDraw();
+					::SwapBuffers(thisObj->_hdc);
+				}
+				return 0;
+#else
 				PAINTSTRUCT ps;
 				BeginPaint(hwnd_, &ps);
 				if (auto* thisObj = s_getThis(hwnd_)) {
 					thisObj->onDraw();
-					EndPaint(hwnd_, &ps);
-					return 0;
 				}
 				EndPaint(hwnd_, &ps);
+				return 0;
+#endif // 0
 			}break;
 
 			case WM_CLOSE: {

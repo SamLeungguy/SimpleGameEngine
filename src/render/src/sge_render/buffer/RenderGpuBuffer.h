@@ -30,6 +30,8 @@ public:
 		if (data_.size() + offset_ > _desc.bufferSize) {
 			throw SGE_ERROR("out of range");
 		}
+		SGE_ASSERT(data_.size() == _desc.bufferSize);
+
 		onUploadToGpu(data_, offset_);
 	}
 

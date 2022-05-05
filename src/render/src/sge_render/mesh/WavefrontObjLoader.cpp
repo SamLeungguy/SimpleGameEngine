@@ -42,6 +42,10 @@ void WavefrontObjLoader::load(EditMesh& mesh_, StrView filepath_)
 {
 	mesh_.clear();
 
+	_tmpPositions.clear();
+	_tmpNormals.clear();
+	_tmpUvs.clear();
+
 	String fileData;
 	readFile(fileData, filepath_);
 

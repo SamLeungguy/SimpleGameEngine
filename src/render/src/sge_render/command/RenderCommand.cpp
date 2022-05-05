@@ -10,12 +10,12 @@ RenderCommandBuffer::RenderCommandBuffer()
 void RenderCommandBuffer::drawMesh(RenderMesh& mesh_)
 {
 	auto* cmd = newCommand<RenderCommand_DrawCall>();
-	cmd->primitive = mesh_.getPrimitive();
-	cmd->pVertexLayout = mesh_.getVertexLayout();
+	cmd->primitive		= mesh_.getPrimitive();
+	cmd->pVertexLayout	= mesh_.getVertexLayout();
 	cmd->spVertexBuffer = mesh_.getVertexBuffer();
-	cmd->spIndexBuffer = mesh_.getIndexBuffer();
-	cmd->vertexCount = mesh_.getVertexCount();
-	cmd->indexCount = mesh_.getIndexCount();
+	cmd->spIndexBuffer	= mesh_.getIndexBuffer();
+	cmd->vertexCount	= mesh_.getVertexCount();
+	cmd->indexCount		= mesh_.getIndexCount();
 }
 
 void RenderCommandBuffer::reset()

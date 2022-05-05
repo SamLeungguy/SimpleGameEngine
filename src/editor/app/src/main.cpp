@@ -20,6 +20,7 @@ public:
 	SPtr<RenderContext> _spRenderContext;
 	RenderCommandBuffer _cmdBuf;
 	RenderMesh	_renderMesh;
+	RenderMesh	_renderMesh2;
 
 private:
 };
@@ -77,9 +78,12 @@ void MainWin::onCreate(CreateDesc& desc_)
 		//loader.load(editMesh, "Assets/Meshes/pentagon.obj");
 		//loader.load(editMesh, "Assets/Meshes/monkey.obj");
 		//loader.load(editMesh, "Assets/Meshes/cube.obj");
-		loader.load(editMesh, "Assets/Meshes/ico_sphere.obj");
 
+		loader.load(editMesh, "Assets/Meshes/ico_sphere.obj");
 		_renderMesh.create(editMesh);
+
+		loader.load(editMesh, "Assets/Meshes/monkey.obj");
+		_renderMesh2.create(editMesh);
 
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
 	}
@@ -101,7 +105,29 @@ void MainWin::onDraw()
 
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
-	_cmdBuf.drawMesh(_renderMesh);
+
+#if 0
+	if (_renderMesh.getVertexCount() > 0)
+	{
+		_cmdBuf.drawMesh(_renderMesh);
+	}
+	else if (_renderMesh2.getVertexCount() > 0)
+	{
+		_cmdBuf.drawMesh(_renderMesh2);
+	}
+#else
+	static u64 frame = 0;
+	if (frame % 30 > 10)
+	{
+		_cmdBuf.drawMesh(_renderMesh);
+	}
+	else
+	{
+		_cmdBuf.drawMesh(_renderMesh2);
+	}
+	frame++;
+#endif // 0
+
 	_cmdBuf.swapBuffers();
 
 	_spRenderContext->commit(_cmdBuf);
@@ -129,7 +155,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	Base::onCreate(desc_);
 
 	Renderer::CreateDesc renderDesc;
-	//renderDesc.apiType = Renderer::ApiType::OpenGL;
+	renderDesc.apiType = Renderer::ApiType::OpenGL;
 	Renderer::create(renderDesc);
 
 	//--

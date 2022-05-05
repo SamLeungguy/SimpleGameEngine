@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Render_Common.h"
-#include "command/RenderCommands.h"
 
 namespace sge {
 

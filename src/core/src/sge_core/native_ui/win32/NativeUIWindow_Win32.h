@@ -20,7 +20,8 @@ public:
 	virtual void onSetWindowTitleBar(StrView title_) override;
 	virtual void onDrawNeeded() override;
 
-	HWND _hwnd;
+	HWND _hwnd	= nullptr;
+	HDC	_hdc	= nullptr;
 
 private:
 	static LRESULT WINAPI s_wndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_);

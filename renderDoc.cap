@@ -5,7 +5,7 @@
         "commandLine": "",
         "environment": [
         ],
-        "executable": "D:\\Repo\\Game_Develop\\Engine\\Workshop\\me\\SimpleGameEngine\\build\\SimpleGameEngine-x64-windows\\src\\editor\\app\\Debug\\sge_editor_app.exe",
+        "executable": "build\\SimpleGameEngine-x64-windows\\src\\editor\\app\\Debug\\sge_editor_app.exe",
         "inject": false,
         "numQueuedFrames": 0,
         "options": {

@@ -3,6 +3,9 @@
 #include "backend/dx11/Renderer_DX11.h"
 #include "backend/dx11/RenderCommandBuffer_DX11.h"
 
+#include "backend/opengl/Renderer_gl.h"
+#include "backend/opengl/RenderCommandBuffer_gl.h"
+
 namespace sge {
 
 Renderer* Renderer::_pCurrent = nullptr;
@@ -42,7 +45,8 @@ Renderer* Renderer::create(CreateDesc& desc_)
 
 	switch (desc_.apiType)
 	{
-		case ApiType::DX11: p = new Renderer_DX11(desc_);	break;
+		case ApiType::DX11:		p = new Renderer_DX11(desc_);	break;
+		case ApiType::OpenGL:	p = new Renderer_gl(desc_);	break;
 
 		default: throw SGE_ERROR("unsupported graphic api!");
 	}
