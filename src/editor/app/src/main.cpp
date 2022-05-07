@@ -79,10 +79,10 @@ void MainWin::onCreate(CreateDesc& desc_)
 		//loader.load(editMesh, "Assets/Meshes/monkey.obj");
 		//loader.load(editMesh, "Assets/Meshes/cube.obj");
 
-		loader.load(editMesh, "Assets/Meshes/ico_sphere.obj");
+		WavefrontObjLoader::loadFile(editMesh, "Assets/Meshes/ico_sphere.obj");
 		_renderMesh.create(editMesh);
 
-		loader.load(editMesh, "Assets/Meshes/monkey.obj");
+		WavefrontObjLoader::loadFile(editMesh, "Assets/Meshes/monkey.obj");
 		_renderMesh2.create(editMesh);
 
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
