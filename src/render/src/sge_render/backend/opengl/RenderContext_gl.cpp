@@ -276,8 +276,6 @@ void RenderContext_gl::onCmd_SwapBuffers(RenderCommand_SwapBuffers& cmd_)
 
 void RenderContext_gl::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 {
-	SGE_ASSERT("not yet update, still no sub mesh version (week003 WavefrontObjLoader)");
-
 	if (!cmd_.pVertexLayout) { SGE_ASSERT(false); return; }
 
 	auto* vertexBuffer = static_cast<RenderGpuBuffer_gl*>(cmd_.spVertexBuffer.ptr());
@@ -337,9 +335,7 @@ void RenderContext_gl::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 		SGE_ASSERT(indexBufferID);
 		glDebugCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID));
 
-		//SGE_DUMP_VAR(vertexBufferID, indexBufferID, indexCount);
-
-		glDebugCall(glDrawElements(Util::getGLPrimitiveTopology(cmd_.primitive), indexCount, indexType, 0));
+		glDebugCall(glDrawElements(Util::getGLPrimitiveTopology(cmd_.primitive), indexCount, GL_UNSIGNED_INT, 0));
 	}
 	else
 	{

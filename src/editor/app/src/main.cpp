@@ -155,7 +155,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	Base::onCreate(desc_);
 
 	Renderer::CreateDesc renderDesc;
-	//renderDesc.apiType = Renderer::ApiType::OpenGL;
+	renderDesc.apiType = Renderer::ApiType::OpenGL;
 	Renderer::create(renderDesc);
 
 	//--
