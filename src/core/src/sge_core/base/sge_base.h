@@ -183,10 +183,11 @@ public:
 	NonCopyable() = default;
 
 private:
-	NonCopyable(NonCopyable&&) = delete;
-
 	NonCopyable(const NonCopyable&) = delete;
 	void operator=(const NonCopyable&) = delete;
+
+	NonCopyable(NonCopyable&&) = delete;
+	void operator=(NonCopyable&&) = delete;
 };
 
 template<class T> inline void sge_delete(T* p) { delete p; }
