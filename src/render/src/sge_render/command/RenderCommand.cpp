@@ -7,15 +7,25 @@ RenderCommandBuffer::RenderCommandBuffer()
 	_allocator.init();
 }
 
-void RenderCommandBuffer::drawMesh(RenderMesh& mesh_)
+void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_)
+{
+	for (auto& sm : mesh_.subMeshes()) {
+		drawSubMesh(debugLoc_, sm);
+	}
+}
+
+void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_)
 {
 	auto* cmd = newCommand<RenderCommand_DrawCall>();
-	cmd->primitive		= mesh_.getPrimitive();
-	cmd->pVertexLayout	= mesh_.getVertexLayout();
-	cmd->spVertexBuffer = mesh_.getVertexBuffer();
-	cmd->spIndexBuffer	= mesh_.getIndexBuffer();
-	cmd->vertexCount	= mesh_.getVertexCount();
-	cmd->indexCount		= mesh_.getIndexCount();
+	cmd->debugLoc = debugLoc_;
+
+	cmd->primitive		= subMesh_.getPrimitive();
+	cmd->pVertexLayout	= subMesh_.getVertexLayout();
+	cmd->spVertexBuffer	= subMesh_.getVertexBuffer();
+	cmd->vertexCount	= subMesh_.getVertexCount();
+	cmd->spIndexBuffer	= subMesh_.getIndexBuffer();
+	cmd->indexType		= subMesh_.getIndexType();
+	cmd->indexCount		= subMesh_.getIndexCount();
 }
 
 void RenderCommandBuffer::reset()

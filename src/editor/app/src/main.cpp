@@ -109,21 +109,21 @@ void MainWin::onDraw()
 #if 0
 	if (_renderMesh.getVertexCount() > 0)
 	{
-		_cmdBuf.drawMesh(_renderMesh);
+		_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
 	}
 	else if (_renderMesh2.getVertexCount() > 0)
 	{
-		_cmdBuf.drawMesh(_renderMesh2);
+		_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
 	}
 #else
 	static u64 frame = 0;
-	if (frame % 30 > 10)
+	if (frame % 40 > 20)
 	{
-		_cmdBuf.drawMesh(_renderMesh);
+		_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
 	}
 	else
 	{
-		_cmdBuf.drawMesh(_renderMesh2);
+		_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
 	}
 	frame++;
 #endif // 0
@@ -155,7 +155,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	Base::onCreate(desc_);
 
 	Renderer::CreateDesc renderDesc;
-	renderDesc.apiType = Renderer::ApiType::OpenGL;
+	//renderDesc.apiType = Renderer::ApiType::OpenGL;
 	Renderer::create(renderDesc);
 
 	//--

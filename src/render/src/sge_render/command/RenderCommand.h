@@ -8,6 +8,7 @@
 namespace sge {
 
 class RenderMesh;
+class RenderSubMesh;
 
 enum class RenderCommandType {
 	None,
@@ -25,6 +26,10 @@ public:
 	virtual ~RenderCommand() {}
 
 	Type type() const { return _type; }
+
+#if _DEBUG
+	SrcLoc	debugLoc;
+#endif
 
 private:
 	Type _type = Type::None;
@@ -61,6 +66,8 @@ public:
 
 	RenderPrimitiveType		primitive = RenderPrimitiveType::None;
 	const VertexLayout* pVertexLayout = nullptr;
+	RenderDataType			indexType = RenderDataType::UInt16;
+
 	SPtr<RenderGpuBuffer>	spVertexBuffer;
 	SPtr<RenderGpuBuffer>	spIndexBuffer;
 
@@ -76,7 +83,8 @@ public:
 	RenderCommand_ClearFrameBuffers* clearFrameBuffers() { return newCommand<RenderCommand_ClearFrameBuffers>(); }
 	RenderCommand_SwapBuffers* swapBuffers() { return newCommand<RenderCommand_SwapBuffers>(); }
 
-	void drawMesh(RenderMesh& mesh_);
+	void drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_);
+	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_);
 
 	void reset();
 

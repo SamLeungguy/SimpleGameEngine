@@ -43,7 +43,7 @@ namespace sge {
 		ComPtr<DX11_ID3DBuffer>				_cpTestVertexBuffer;
 		ComPtr<DX11_ID3DVertexShader>		_cpTestVertexShader;
 		ComPtr<DX11_ID3DPixelShader>		_cpTestPixelShader;
-		ComPtr<ID3DBlob>					_cpTestVertexShaderBytecode;
+		ComPtr<DX11_ID3DBlob>				_cpTestVertexShaderBytecode;
 
 		ComPtr<DX11_ID3DRasterizerState>	_cpTestRasterizerState;
 		ComPtr<DX11_ID3DDepthStencilState>	_cpTestDepthStencilState;

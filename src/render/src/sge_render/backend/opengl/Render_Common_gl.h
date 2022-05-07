@@ -85,6 +85,16 @@ inline GLenum GLUtil::getGLFormat(RenderDataType v_)
 		case SRC::Int32x3:		return GL_INT; break;
 		case SRC::Int32x4:		return GL_INT; break;
 			//--
+		case SRC::UInt16:		return GL_UNSIGNED_SHORT; break;
+		case SRC::UInt16x2:		return GL_UNSIGNED_SHORT; break;
+		case SRC::UInt16x3:		return GL_UNSIGNED_SHORT; break;
+		case SRC::UInt16x4:		return GL_UNSIGNED_SHORT; break;
+			//--
+		case SRC::UInt32:		return GL_UNSIGNED_INT; break;
+		case SRC::UInt32x2:		return GL_UNSIGNED_INT; break;
+		case SRC::UInt32x3:		return GL_UNSIGNED_INT; break;
+		case SRC::UInt32x4:		return GL_UNSIGNED_INT; break;
+			//--
 		case SRC::UNorm8:		return GL_UNSIGNED_BYTE; break;
 		case SRC::UNorm8x2:		return GL_UNSIGNED_BYTE; break;
 		case SRC::UNorm8x3:		return GL_UNSIGNED_BYTE; break;

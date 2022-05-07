@@ -63,11 +63,14 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	auto* vertexBuffer = static_cast<RenderGpuBuffer_DX11*>(cmd_.spVertexBuffer.ptr());
 	if (!vertexBuffer) { SGE_ASSERT(false); return; }
 
-	auto* indexBuffer = static_cast<RenderGpuBuffer_DX11*>(cmd_.spIndexBuffer.ptr());
-	//if (!indexBuffer) { SGE_ASSERT(false); return; }
-
 	if (cmd_.vertexCount <= 0) { SGE_ASSERT(false); return; }
 	if (cmd_.primitive == RenderPrimitiveType::None) { SGE_ASSERT(false); return; }
+
+	RenderGpuBuffer_DX11* indexBuffer = nullptr;
+	if (cmd_.indexCount > 0) {
+		indexBuffer = static_cast<RenderGpuBuffer_DX11*>(cmd_.spIndexBuffer.ptr());
+		if (!indexBuffer) { SGE_ASSERT(false); return; }
+	}
 
 	_setTestShaders();
 
@@ -83,14 +86,16 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	UINT stride = static_cast<UINT>(cmd_.pVertexLayout->stride);
 	UINT offset = 0;
 	UINT vertexCount = static_cast<UINT>(cmd_.vertexCount);
+	UINT indexCount = static_cast<UINT>(cmd_.indexCount);
 
 	DX11_ID3DBuffer* ppVertexBuffers[] = { vertexBuffer->getBuffer() };
 	ctx->IASetVertexBuffers(0, 1, ppVertexBuffers, &stride, &offset);
 
 	if (indexBuffer)
 	{
-		ctx->IASetIndexBuffer(indexBuffer->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
-		ctx->DrawIndexed(static_cast<UINT>(cmd_.indexCount), 0, 0);
+		auto indexType = Util::getDxFormat(cmd_.indexType);
+		ctx->IASetIndexBuffer(indexBuffer->getBuffer(), indexType, 0);
+		ctx->DrawIndexed(indexCount, 0, 0);
 	}
 	else
 	{
