@@ -21,6 +21,9 @@ struct StringUtil {
 	static std::pair<StrView, StrView> splitByChar(StrView view, StrView seperators);
 	static std::pair<StrView, StrView> splitByChar(StrView view, char seperator);
 
+	static std::pair<StrView, StrView> splitByChar_Inclusive(StrView view, StrView seperators_);
+	static std::pair<StrView, StrView> splitByChar_Inclusive(StrView view, char seperator_);
+
 	static StrView	trimChar(StrView view, StrView seperators);
 
 	static bool tryParse(StrView view, i8& outValue);
@@ -55,6 +58,35 @@ inline
 std::pair<sge::StrView, sge::StrView> StringUtil::splitByChar(StrView view, char seperator) {
 	return splitByChar(view, StrView(&seperator, 1));
 }
+
+#if 1
+inline std::pair<StrView, StrView> StringUtil::splitByChar_Inclusive(StrView view, StrView seperators_)
+{
+	auto* s = view.begin();
+	auto* e = view.end();
+	for (auto* p = s; p < e; p++) {
+		if (hasChar(seperators_, *p)) {
+			if (p == s)
+			{
+				auto r0 = StrView(s, 1);
+				auto r1 = StrView(p + 1, e - p - 1);
+				return { r0, r1 };
+			}
+
+			auto r0 = StrView(s, p - s);
+			auto r1 = StrView(p, e - p);
+			return { r0, r1 };
+		}
+	}
+	return { view, StrView() };
+}
+
+inline std::pair<StrView, StrView> StringUtil::splitByChar_Inclusive(StrView view, char seperator_)
+{
+	return splitByChar_Inclusive(view, StrView(&seperator_, 1));
+}
+#endif // 1
+
 
 inline
 StrView StringUtil::trimChar(StrView view, StrView charList) {

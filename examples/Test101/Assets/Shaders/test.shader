@@ -1,3 +1,32 @@
+Shader "Test"      //optional name, maybe a path to that shader
+{
+    Properties{Color4f     color = {1.0, 1.0, 1.0, 1.0}
+        float4x4    MVP
+        int         num   = 1
+    }
+
+    Premutation
+    {
+        bool    xxx_enable  true
+        int     xxx_const   1
+    }
+
+    Pass "Pass0"    //optional name
+    {
+        Queue       "Transparent"
+        Cull        "None"
+
+        BlendRGB    Add One OneMinusSrcAlpha
+        BlendAlpha  Add One OneMinusSrcAlpha
+
+        DepthTest   Always
+        DepthWrite  false
+
+        VsFunc      vs_main
+        PsFunc      ps_main
+    }
+}
+
 struct appdata
 {
     float4 position : POSITION;

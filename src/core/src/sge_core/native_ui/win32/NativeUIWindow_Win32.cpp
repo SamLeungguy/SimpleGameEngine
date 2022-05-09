@@ -43,10 +43,10 @@ namespace sge {
 				dwStyle |= WS_OVERLAPPED | WS_SYSMENU;
 
 				if (desc_.isCloseButton)	dwStyle	|= WS_SYSMENU;
-				if (desc_.isResizable)	dwStyle	|= WS_THICKFRAME;
+				if (desc_.isResizable)		dwStyle	|= WS_THICKFRAME;
 				if (desc_.isTitleBar)		dwStyle	|= WS_CAPTION;
-				if (desc_.isMinButton)	dwStyle	|= WS_MINIMIZEBOX;
-				if (desc_.isMaxButton)	dwStyle	|= WS_MAXIMIZEBOX;
+				if (desc_.isMinButton)		dwStyle	|= WS_MINIMIZEBOX;
+				if (desc_.isMaxButton)		dwStyle	|= WS_MAXIMIZEBOX;
 			}break;
 
 			case CreateDesc::Type::PopupWindow: {

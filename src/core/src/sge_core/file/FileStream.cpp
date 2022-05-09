@@ -44,6 +44,28 @@ void FileStream::close()
 	_fd = s_invaild();
 }
 
+#if 0
+static ::HANDLE _s_createFile(TempStringW& filename_, DWORD create_flags_, DWORD access_flags_, DWORD share_flags_)
+{
+	auto fd = ::CreateFile(filename_.c_str(), access_flags_, share_flags_, NULL, create_flags_, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (fd == FileStream::s_invaild())
+	{
+		DWORD err = ::GetLastError();
+		switch (err)
+		{
+		case ERROR_FILE_NOT_FOUND:		throw SGE_ERROR("file not found");
+		case ERROR_PATH_NOT_FOUND:		throw SGE_ERROR("path not found");
+		case ERROR_FILE_EXISTS:			throw SGE_ERROR("file doesn't exists");
+		case ERROR_ALREADY_EXISTS:		throw SGE_ERROR("file already exists");
+		case ERROR_ACCESS_DENIED:		throw SGE_ERROR("access denied");
+		case ERROR_SHARING_VIOLATION:	throw SGE_ERROR("sharing violation");
+		default:						throw SGE_ERROR("open file error");
+		}
+	}
+	return fd;
+}
+#endif // 0
+
 void FileStream::open(StrView filename_, FileMode mode_, FileAccess access_, FileSharerMode shareMode_)
 {
 	close();
@@ -55,16 +77,16 @@ void FileStream::open(StrView filename_, FileMode mode_, FileAccess access_, Fil
 
 	switch (mode_)
 	{
-		case CreateNew:		create_flags |= CREATE_NEW;		break;
-		case OpenExists:	create_flags |= OPEN_EXISTING;	break;
-		case OpenOrCreate:	create_flags |= OPEN_ALWAYS;	break;
+		case FileMode::CreateNew:		create_flags |= CREATE_NEW;		break;
+		case FileMode::OpenExists:		create_flags |= OPEN_EXISTING;	break;
+		case FileMode::OpenOrCreate:	create_flags |= OPEN_ALWAYS;	break;
 	}
 
 	switch (access_)
 	{
 		case FileAccess::Read:		access_flags |= GENERIC_READ;					break;
-		case FileAccess::ReadWrite:	access_flags |= GENERIC_WRITE;					break;
-		case FileAccess::WriteOnly:	access_flags |= GENERIC_READ | GENERIC_WRITE;	break;
+		case FileAccess::ReadWrite:	access_flags |= GENERIC_READ | GENERIC_WRITE;	break;
+		case FileAccess::WriteOnly:	access_flags |= GENERIC_WRITE;					break;
 	}
 
 	switch (shareMode_)
@@ -72,7 +94,7 @@ void FileStream::open(StrView filename_, FileMode mode_, FileAccess access_, Fil
 		case FileSharerMode::None:			break;
 		case FileSharerMode::Read:		share_flags |= FILE_SHARE_READ;						break;
 		case FileSharerMode::Write:		share_flags |= FILE_SHARE_WRITE;					break;
-		case FileSharerMode::ReadWrite:	share_flags |= FILE_SHARE_WRITE | FILE_SHARE_WRITE; break;
+		case FileSharerMode::ReadWrite:	share_flags |= FILE_SHARE_READ | FILE_SHARE_WRITE; break;
 	}
 
 	TempStringW filenameW;
@@ -84,6 +106,33 @@ void FileStream::open(StrView filename_, FileMode mode_, FileAccess access_, Fil
 		DWORD err = ::GetLastError();
 		switch (err)
 		{
+		case ERROR_FILE_NOT_FOUND:		throw SGE_ERROR("file not found");
+		case ERROR_PATH_NOT_FOUND:		throw SGE_ERROR("path not found");
+		case ERROR_FILE_EXISTS:			throw SGE_ERROR("file doesn't exists");
+		case ERROR_ALREADY_EXISTS:		throw SGE_ERROR("file already exists");
+		case ERROR_ACCESS_DENIED:		throw SGE_ERROR("access denied");
+		case ERROR_SHARING_VIOLATION:	throw SGE_ERROR("sharing violation");
+		default:						throw SGE_ERROR("open file error");
+		}
+	}
+#if 0
+
+
+	if (mode_ == FileMode::OpenOrCreate && !_isFileExist(filenameW))
+	{
+		auto new_create_flags = CREATE_NEW;
+		_fd = _s_createFile(filenameW, new_create_flags, access_flags, share_flags);
+		close();
+		_fd = _s_createFile(filenameW, create_flags, access_flags, share_flags);
+	}
+	else
+	{
+		_fd = ::CreateFile(filenameW.c_str(), access_flags, share_flags, NULL, create_flags, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (_fd == s_invaild())
+		{
+			DWORD err = ::GetLastError();
+			switch (err)
+			{
 			case ERROR_FILE_NOT_FOUND:		throw SGE_ERROR("file not found");
 			case ERROR_PATH_NOT_FOUND:		throw SGE_ERROR("path not found");
 			case ERROR_FILE_EXISTS:			throw SGE_ERROR("file doesn't exists");
@@ -91,8 +140,11 @@ void FileStream::open(StrView filename_, FileMode mode_, FileAccess access_, Fil
 			case ERROR_ACCESS_DENIED:		throw SGE_ERROR("access denied");
 			case ERROR_SHARING_VIOLATION:	throw SGE_ERROR("sharing violation");
 			default:						throw SGE_ERROR("open file error");
+			}
 		}
 	}
+#endif // 0
+
 }
 
 void FileStream::flush()

@@ -36,7 +36,6 @@ private:
 	MainWin _mainWin;
 };
 
-#pragma region MainWin_impl
 void MainWin::onCreate(CreateDesc& desc_)
 {
 	SGE_DUMP_VAR(sizeof(Vertex_Pos));
@@ -106,12 +105,12 @@ void MainWin::onDraw()
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
 
-#if 0
-	if (_renderMesh.getVertexCount() > 0)
+#if 1
+	if (_renderMesh.subMeshes().size() > 0)
 	{
 		_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
 	}
-	else if (_renderMesh2.getVertexCount() > 0)
+	else if (_renderMesh2.subMeshes().size() > 0)
 	{
 		_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
 	}
@@ -137,9 +136,6 @@ void MainWin::onDraw()
 	drawNeeded();
 }
 
-#pragma endregion
-
-#pragma region EditorApp_Imlpl
 void EditorApp::onCreate(CreateDesc& desc_)
 {
 	{
@@ -155,7 +151,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	Base::onCreate(desc_);
 
 	Renderer::CreateDesc renderDesc;
-	renderDesc.apiType = Renderer::ApiType::OpenGL;
+	//renderDesc.apiType = Renderer::ApiType::OpenGL;
 	Renderer::create(renderDesc);
 
 	//--
@@ -166,8 +162,6 @@ void EditorApp::onCreate(CreateDesc& desc_)
 	winDesc.rect.h = 600;
 	_mainWin.setWindowTitle("SGE Editor");
 }
-
-#pragma endregion
 
 }
 

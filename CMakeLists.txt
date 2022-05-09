@@ -13,6 +13,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(GLEW CONFIG REQUIRED)
 find_package(EABase CONFIG REQUIRED)
 find_package(EASTL CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 function(sge_source_group src_path src_files)
 	foreach(FILE ${src_files}) 
@@ -64,6 +65,7 @@ add_subdirectory(src/core/test)
 
 #-- render --
 add_subdirectory(src/render)
+add_subdirectory(src/render/shader_compiler)
 
 #-- engine
 add_subdirectory(src/engine)

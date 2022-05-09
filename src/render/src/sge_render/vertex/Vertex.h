@@ -214,6 +214,11 @@ struct VertexT_Pos : public VertexBase
 	{
 		pLayout_->addElement(Semantic::Pos, &VertexT_Pos::pos);
 	}
+
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
+		return s;
+	}
 };
 
 template<class Color_Type, u8 Color_Count, class Base>
@@ -230,6 +235,11 @@ struct VertexT_Color : public Base
 	{
 		Base::onRegister(pLayout_);
 		pLayout_->addElement(Semantic::Color0, &VertexT_Color::colors);
+	}
+
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
+		return s;
 	}
 };
 
@@ -248,6 +258,11 @@ struct VertexT_Uv : public Base
 		Base::onRegister(pLayout_);
 		pLayout_->addElement(Semantic::TexCoord0, &VertexT_Uv::uvs);
 	}
+
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
+		return s;
+	}
 };
 
 template<class Normal_Type, u8 Normal_Count, class Base>
@@ -264,6 +279,11 @@ struct VertexT_Normal : public Base
 	{
 		Base::onRegister(pLayout_);
 		pLayout_->addElement(Semantic::Normal, &VertexT_Normal::normals);
+	}
+
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
+		return s;
 	}
 };
 
@@ -283,6 +303,11 @@ struct VertexT_Tangent : public Base
 
 		Base::onRegister(pLayout_);
 		pLayout_->addElement(Semantic::Tangent, &VertexT_Tangent::tangents);
+	}
+
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
+		return s;
 	}
 };
 
@@ -304,8 +329,8 @@ struct VertexT_Binormal : public Base
 		pLayout_->addElement(Semantic::Binormal, &VertexT_Binormal::binormals);
 	}
 
-	static const VertexLayout* getLayout() {
-		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(VertexT_Binormal::s_type);
+	static const VertexLayout* s_getLayout() {
+		static const VertexLayout* s = VertexLayoutManager::current()->getLayout(s_type);
 		return s;
 	}
 };

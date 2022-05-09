@@ -10,8 +10,15 @@ public:
 	MemMapFile() = default;
 	~MemMapFile();
 
-	void open(StrView filename_);
+	//void open(StrView filename_);
 	void close();
+	
+	void openRead(StrView filename_);
+	void openAppend(StrView filename_);
+	void openWrite(StrView filename_, bool truncate_);
+
+	void open(StrView filename_, FileMode mode_, FileAccess access_, FileSharerMode shareMode_);
+	void writeBytes(Span<const u8>	data_);
 
 	const u8* data()	const;
 	size_t size()		const;

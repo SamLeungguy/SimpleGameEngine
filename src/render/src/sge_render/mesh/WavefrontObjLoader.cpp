@@ -6,7 +6,7 @@ namespace sge {
 void WavefrontObjLoader::loadFile(EditMesh& mesh_, StrView filename_)
 {
 	MemMapFile mm;
-	mm.open(filename_);
+	mm.openRead(filename_);
 	loadMem(mesh_, mm);
 }
 
