@@ -28,6 +28,7 @@
 #include "sge_core/pointer/ComPtr.h"
 
 #include "sge_core/file/FilePath.h"
+#include "sge_core/file/MemMapFile.h"
 
 #include "sge_core/log/Log.h"
 

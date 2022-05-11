@@ -1,0 +1,67 @@
+{
+    "profile": "vs_5_0",
+    "csWorkgroupSize": [
+        1,
+        1,
+        1
+    ],
+    "inputs": [
+        {
+            "name": "a_pos",
+            "attrd": "POSITITON0",
+            "dataType": "Float32x4"
+        },
+        {
+            "name": "a_uv",
+            "attrd": "TEXCOORD0",
+            "dataType": "Float32x2"
+        },
+        {
+            "name": "a_normal",
+            "attrd": "NORMAL0",
+            "dataType": "Float32x3"
+        }
+    ],
+    "params": null,
+    "uniformBuffers": {
+        "name": "$Globals",
+        "bindPoint": 0,
+        "bindCount": 1,
+        "dataSize": 176,
+        "variables": [
+            {
+                "name": "col",
+                "offset": 0,
+                "dataType": "Float32_4x4"
+            },
+            {
+                "name": "mvp",
+                "offset": 1,
+                "dataType": "Float32_4x4"
+            },
+            {
+                "name": "vp",
+                "offset": 2,
+                "dataType": "Float32_4x4"
+            }
+        ]
+    },
+    "textures": {
+        "name": "",
+        "bindPoint": 0,
+        "bindCount": 1,
+        "dataSize": 176
+    },
+    "samplers": {
+        "name": "",
+        "bindPoint": 0,
+        "bindCount": 1,
+        "dataSize": 176
+    },
+    "storageBuffers": {
+        "name": "$Globals",
+        "bindPoint": 0,
+        "bindCount": 1,
+        "dataSize": 176
+    }
+}

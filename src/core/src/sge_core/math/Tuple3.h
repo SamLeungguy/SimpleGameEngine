@@ -19,4 +19,8 @@ struct Tuple3 {
 using Tuple3f = Tuple3<float>;
 using Tuple3d = Tuple3<double>;
 
+using Tuple3i = Tuple3<int>;
+
+using Tuple3u = Tuple3<unsigned int>;
+
 }

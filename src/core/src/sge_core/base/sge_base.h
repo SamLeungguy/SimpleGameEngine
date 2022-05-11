@@ -48,6 +48,9 @@
 #include <EASTL/shared_ptr.h>
 #include <EASTL/weak_ptr.h>
 
+#include <EASTL/functional.h>
+#include <EASTL/sort.h>
+
 #include "sge_macro.h"
 
 //==== EASTL ====
@@ -125,7 +128,7 @@ template<class T> using Vector = eastl::vector<T>;
 template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
 template<class KEY, class VALUE> using VectorMap = eastl::vector_map<KEY, VALUE>;
 
-template<class VALUE> using StringMap = eastl::string_map<VALUE>;
+template<class VALUE, typename Predicate = eastl::str_less<const char*>> using StringMap = eastl::string_map<VALUE, Predicate>;
 
 template<class KEY> using Set = eastl::set<KEY>;
 

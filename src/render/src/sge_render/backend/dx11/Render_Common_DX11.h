@@ -92,6 +92,10 @@ struct DX11Util
 	static DXGI_FORMAT				getDxFormat(RenderDataType v);
 	static const char* getDxSemanticName(Vertex_SemanticType t);
 
+	static Vertex_SemanticType getSemanticType(const char* name_);
+	static RenderDataType getRenderDataType(const char* name_);
+	static RenderDataType getRenderDataTypeBySemanticName(const char* name_);
+
 	static Renderer_DX11*			renderer();
 	static DX11_ID3DDevice*			d3dDevice();
 	static DX11_ID3DDeviceContext*	d3dDeviceContext();
@@ -127,8 +131,94 @@ inline const char* DX11Util::getDxSemanticName(Vertex_SemanticType t) {
 	}
 }
 
-inline
-DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
+inline Vertex_SemanticType getSemanticType(const char* name_)
+{
+	using SRC = Vertex_SemanticType;
+
+	size_t hs = Math::hashStr(name_);
+	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
+										, Math::hashStr("NORMAL"), Math::hashStr("TANGENT"), Math::hashStr("BINORMAL") };
+
+	if (hs == compares[0]) return SRC::Pos;
+	if (hs == compares[1]) return SRC::Color;
+	if (hs == compares[2]) return SRC::TexCoord;
+	if (hs == compares[3]) return SRC::Normal;
+	if (hs == compares[4]) return SRC::Tangent;
+	if (hs == compares[5]) return SRC::Binormal;
+
+	throw SGE_ERROR("{}", "invalid");
+
+	return SRC::None;
+}
+
+inline RenderDataType DX11Util::getRenderDataType(const char* name_)
+{
+	using SRC = RenderDataType;
+
+	size_t hs = Math::hashStr(name_);
+
+#define MY_ARRAY_ELEMENTS(hash, type) Math::hashStr(#type), Math::hashStr(#type "2"), Math::hashStr(#type "3"), Math::hashStr(#type "4")
+
+#define MY_TYPE_IF_NOT_0(type, biteSize, count, i)	\
+	if(hs == compares[i]) return SRC::type ## biteSize ## x ## count	\
+//---------------
+
+#define MY_TYPE_IF(type, biteSize, col)								\
+	if(hs == compares[col * 4 + 0]) return SRC::type ## biteSize;	\
+	MY_TYPE_IF_NOT_0(type, biteSize, 2, col * 4 + 1);				\
+	MY_TYPE_IF_NOT_0(type, biteSize, 3, col * 4 + 2);				\
+	MY_TYPE_IF_NOT_0(type, biteSize, 4, col * 4 + 3);				\
+//---------------
+
+	// follow dx11 hlsl shader data type name
+	static const size_t compares[] = {
+	MY_ARRAY_ELEMENTS(h, half),
+	MY_ARRAY_ELEMENTS(h, float),
+	MY_ARRAY_ELEMENTS(h, int),
+
+
+	//Math::hashStr("matrix"),
+	//Math::hashStr("float4x4"),
+	};
+
+	MY_TYPE_IF(Float, 16,	0);
+	MY_TYPE_IF(Float, 32,	1);
+	MY_TYPE_IF(Int, 32,		2);
+
+
+	//if (hs == compares[12]) return SRC::Float32x4x4;
+	//if (hs == compares[13]) return SRC::Float32x4x4;
+
+	throw SGE_ERROR("{}", "invalid");
+
+	return SRC::None;
+
+#undef MY_ARRAY_ELEMENTS
+#undef MY_TYPE_IF
+#undef MY_TYPE_IF_NOT_0
+}
+
+inline RenderDataType DX11Util::getRenderDataTypeBySemanticName(const char* name_)
+{
+	using SRC = RenderDataType;
+
+	size_t hs = Math::hashStr(name_);
+	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
+										, Math::hashStr("NORMAL"), Math::hashStr("TANGENT"), Math::hashStr("BINORMAL") };
+
+	if (hs == compares[0]) return SRC::Float32x4;
+	if (hs == compares[1]) return SRC::Float32x4;
+	if (hs == compares[2]) return SRC::Float32x2;
+	if (hs == compares[3]) return SRC::Float32x3;
+	if (hs == compares[4]) return SRC::Float32x3;
+	if (hs == compares[5]) return SRC::Float32x3;
+
+	throw SGE_ERROR("{}", "invalid");
+
+	return SRC::None;
+}
+
+inline DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
 	using SRC = RenderDataType;
 	switch (v) {
 		case SRC::Int8:			return DXGI_FORMAT_R8_SINT; break;

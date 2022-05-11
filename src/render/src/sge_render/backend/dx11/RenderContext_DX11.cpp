@@ -3,6 +3,7 @@
 #include "RenderGpuBuffer_DX11.h"
 
 #if SGE_OS_WINDOWS
+#include <d3d11shader.h>
 
 namespace sge {
 
@@ -146,6 +147,8 @@ void RenderContext_DX11::_createRenderTarget()
 
 void RenderContext_DX11::_setTestShaders()
 {
+	// shd determine how many passes this shader have
+
 	HRESULT hr;
 	const wchar_t* shaderFile = L"Assets/Shaders/test.hlsl";
 
@@ -162,6 +165,28 @@ void RenderContext_DX11::_setTestShaders()
 
 		hr = dev->CreateVertexShader(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), nullptr, _cpTestVertexShader.ptrForInit());
 		Util::throwIfError(hr);
+
+#if 0   // Test Load binary from file
+		{
+			MemMapFile mm2;
+			mm2.openRead("LocalTemp/Imported/test.shader/dx11/pass0_vs.bin");
+
+			hr = dev->CreateVertexShader(mm2.data(), mm2.size(), nullptr, _cpTestVertexShader.ptrForInit());
+			Util::throwIfError(hr);
+
+			ComPtr<ID3D11ShaderReflection> cpReflection;
+			hr = D3DReflect(mm2.data(), mm2.size(), IID_PPV_ARGS(cpReflection.ptrForInit()));
+			Util::throwIfError(hr);
+
+			D3D11_SHADER_DESC desc;
+			cpReflection->GetDesc(&desc);
+
+			SGE_DUMP_VAR(desc.ConstantBuffers);
+			SGE_DUMP_VAR(desc.InputParameters);
+		}
+#endif // 0
+
+
 	}
 
 	if (!_cpTestPixelShader) {

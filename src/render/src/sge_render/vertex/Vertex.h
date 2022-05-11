@@ -112,7 +112,7 @@ struct Vertex_SemanticUtil
 enum class Vertex_Semantic : u16
 {
 	None = 0,
-	Pos			= enumInt(Vertex_SemanticUtil::make(Vertex_SemanticType::Pos, 0)),
+	Pos			= Vertex_SemanticUtil::_make(Vertex_SemanticType::Pos, 0),
 
 	Color0		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 0),
 	Color1		= Vertex_SemanticUtil::_make(Vertex_SemanticType::Color, 1),

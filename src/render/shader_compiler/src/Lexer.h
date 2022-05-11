@@ -2,7 +2,7 @@
 
 namespace sge {
 
-class Lexer //: public NonCopyable
+class Lexer : public NonCopyable
 {
 public:
 	enum class TokenType
@@ -29,11 +29,25 @@ public:
 public:
 	static StringMap<int> s_keywordMap;
 	static StringMap<int> s_operatorMap;
+	static bool s_isInited;
+	static char* s_printTokenType(Lexer::TokenType type_)
+	{
+		switch (type_)
+		{
+		case sge::Lexer::TokenType::Keyword:		return "Keyword";
+		case sge::Lexer::TokenType::Identifier:		return "Identifier";
+		case sge::Lexer::TokenType::Operator:		return "Operator";
+		case sge::Lexer::TokenType::Number:			return "Number";
+		case sge::Lexer::TokenType::String:			return "String";
+		}
+		return "Error";
+	}
 
-	static Vector<Token> parse(StrView filename_);
+	Lexer();
+	
+	Vector<Token> parse(StrView filename_);
 
 private:
-	Lexer();
 
 	void loadFile(StrView filename_);
 	void loadMem(Span<const u8> src_);
@@ -58,7 +72,7 @@ private:
 	static bool _isNumber(StrView token_);
 	static bool _isString(StrView token_);
 
-private:
+public:
 	u32 _lineNumber = 0;
 	StrView _source;
 	StrView _sourceRemain;
@@ -70,11 +84,11 @@ private:
 
 	bool _isStartParsing = false;		// true if detected keyword-> Shader
 	bool _isEnded = false;
-	u32 _LCBracketCount = 0;
+	u32 _leftCBracketCount = 0;
 
+	MemMapFile _memMap;
+private:
 	Vector<Token>* _pTokens = nullptr;
-
-	//bool 
 };
 
 #if 1
@@ -87,7 +101,8 @@ inline Lexer::TokenType Lexer::_try_getTokenType(StrView token_)
 		return Type::None;
 
 	if (_isOperator(token_))	{ return Type::Operator; }
-	if (_isString(token_))		{ return Type::String; }
+	if (_isString(token_))		{ 
+		return Type::String; }
 	if (_isKeyword(token_))		{ return Type::Keyword; }
 	if (_isNumber(token_))		{ return Type::Number; }
 	if (_isIdentifier(token_))	{ return Type::Identifier; }
@@ -122,7 +137,19 @@ inline bool Lexer::_isNumber(StrView token_)
 	}
 	return pBeg == pEnd;
 }
-inline bool Lexer::_isString(StrView token_)		{ auto last = token_.size() - 1; return token_[0] == '\\' && token_[1] == '\"' && token_[last - 1] == '\\' && token_[last] == '\"'; }
+inline bool Lexer::_isString(StrView token_)		
+{ 
+	if (token_.size() < 4)
+		return false;
+	auto last = token_.size() - 1; 
+#if 0
+	for (size_t i = 0; i < token_.size(); i++)
+	{
+		SGE_LOG("{} : {}", i, token_[i]);
+	}
+#endif // 0
+	return token_[0] == '\"' && token_[last] == '\"'; 
+}
 #endif // 1
 
 

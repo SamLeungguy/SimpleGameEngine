@@ -107,6 +107,11 @@ RenderGpuBuffer* Renderer_DX11::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& de
 	return new RenderGpuBuffer_DX11(desc_);
 }
 
+RenderShader* Renderer_DX11::onCreateShader(RenderShader_CreateDesc& desc_)
+{
+	return nullptr;
+}
+
 }
 
 #endif // SGE_RENDER_HAS_DX11

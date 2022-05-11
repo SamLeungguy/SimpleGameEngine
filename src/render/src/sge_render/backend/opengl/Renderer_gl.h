@@ -20,6 +20,7 @@ public:
 protected:
 	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc_) override;
 	virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_) override;
+	virtual RenderShader* onCreateShader(RenderShader_CreateDesc& desc_) override;
 
 private:
 

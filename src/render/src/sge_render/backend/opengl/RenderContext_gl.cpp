@@ -335,7 +335,7 @@ void RenderContext_gl::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 		SGE_ASSERT(indexBufferID);
 		glDebugCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID));
 
-		glDebugCall(glDrawElements(Util::getGLPrimitiveTopology(cmd_.primitive), indexCount, GL_UNSIGNED_INT, 0));
+		glDebugCall(glDrawElements(Util::getGLPrimitiveTopology(cmd_.primitive), indexCount, indexType, 0));
 	}
 	else
 	{
