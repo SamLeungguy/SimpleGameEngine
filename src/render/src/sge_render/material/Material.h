@@ -8,7 +8,7 @@ namespace sge {
 
 struct ShaderPass
 {
-	Vector<ShaderInfo> _shaderInfos;
+	Vector<SPtr<ShaderInfo>> _shaderInfoSPtrs;		// vs, ps, / gs/ ts / cs
 	SPtr<RenderShader> _spShader;
 };
 

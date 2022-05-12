@@ -20,7 +20,7 @@ public:
 		String			name;
 		size_t			hash;
 
-		RenderDataType	data_type;
+		RenderDataType	dataType;
 		u16				offset = 0;
 		u16				size = 0;
 	};
@@ -63,9 +63,11 @@ struct ShaderParsedInfo : public Object			// one per whole shader
 		
 		String depthTest;					// shd be depthTest enum
 		bool depthWrite = false;			// shd be depthWrite enum
+		
+		String shaderFuncs[enumInt(ShaderType::Count)]/* = {"vs_main",  "ps_main", "", "", ""}*/;
 
-		String vsFunc	= "vs_main";
-		String psFunc	= "ps_main";
+		//String vsFunc	= "vs_main";
+		//String psFunc	= "ps_main";
 	};
 
 	String shaderName;

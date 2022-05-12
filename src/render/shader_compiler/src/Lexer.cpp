@@ -1,10 +1,7 @@
 #include "Lexer.h"
 #include "sge_core/file/MemMapFile.h"
 
-#include <nlohmann/json.hpp>
-
-// for convenience
-using json = nlohmann::json;
+#define _DEBUG_LEXER 0
 
 namespace sge {
 
@@ -73,9 +70,10 @@ Lexer::Lexer()
 			s_operatorMap.emplace("\n", 0);
 		}
 	}
+#if _DEBUG_LEXER
 	SGE_DUMP_VAR(Lexer::s_keywordMap.size());
+#endif
 }
-
 
 Vector<Lexer::Token> Lexer::parse(StrView filename_)
 {
@@ -85,13 +83,15 @@ Vector<Lexer::Token> Lexer::parse(StrView filename_)
 
 	loadFile(filename_);
 
+#if _DEBUG_LEXER
 	SGE_LOG("==============================================parse end");
 
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
 		auto typeStr = s_printTokenType(tokens[i].type);
-		//SGE_DUMP_VAR(typeStr, tokens[i].value);
+		SGE_DUMP_VAR(typeStr, tokens[i].value);
 	}
+#endif // _DEBUG_LEXER
 
 	return tokens;
 }
@@ -197,8 +197,18 @@ bool Lexer::_try_emplaceToken()
 	if (type == TokenType::None)
 		return false;
 
-	//SGE_DUMP_VAR(_token);
-	_pTokens->emplace_back(type, _token);
+	if (type == TokenType::String)
+	{
+		auto pair = StringUtil::splitByChar(_token, "\"");
+		pair = StringUtil::splitByChar(pair.second, "\"");
+		_pTokens->emplace_back(type, pair.first);
+	}
+	else
+	{
+		//SGE_DUMP_VAR(_token);
+		_pTokens->emplace_back(type, _token);
+	}
+
 
 	_checkShouldEnd();
 	return true;

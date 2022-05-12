@@ -7,7 +7,7 @@ Shader "Test"//optional name, maybe a path to that shader
         float3       asd8={1.0,2.0f, 3.0}// asdsad asd
         float4       asd9={1.0, 2.0,3.0, 4.0f}// asdsad asd
         //"" asd
-        float       asd = 121.0
+        float       asd 
         float       asd1=122.0f///fgdfg
         float       asd2 =123.0f
         float       asd3= 124.0f//asdsad asd
@@ -41,8 +41,8 @@ Shader "Test"//optional name, maybe a path to that shader
         DepthTest   Always
         DepthWrite  false
 
-        VsFunc      vs0_main
-        PsFunc      ps0_main
+        VsFunc      vs_main
+        PsFunc      ps_main
     }
 
     Pass "Pass1"{//asdsad
@@ -114,6 +114,31 @@ v2f vs_main(appdata v)
 }
 
 float4 ps_main(v2f i) : SV_TARGET
+{
+    float4 texelColor = simpleTexture.Sample(simpleSampler, i.uv);
+
+    return float4(i.uv.x, i.uv.y, i.position.z * data.v0 * data.v1.x * data.v2.x * texelColor.a, 1.0f);
+    return float4(0.2f, 1.0, 1.0, 1.0);
+    //return position;
+    return float4( i.uv.x, i.normal.y, i.position.z, 1.0 );
+}
+
+v2f vs1_main(appdata v)
+{
+    v2f output;
+
+    output.position = v.position;
+    output.uv = v.uv;
+    output.normal = v.normal;
+    //output.normal = mul(v.normal, data.mvp);
+    //output.normal = mul(v.normal, data.vp);
+
+    output.position.z = data.v0 * data.v3[3] * data.v1.x * v1_0 * v1_1 * v1_2[3];
+    
+    return output;
+}
+
+float4 ps1_main(v2f i) : SV_TARGET
 {
     float4 texelColor = simpleTexture.Sample(simpleSampler, i.uv);
 

@@ -2,7 +2,10 @@
 
 #include <sge_render/backend/dx11/Render_Common_DX11.h>
 
-#define _DEBUG_SHADER_PARSER 1
+#include <nlohmann/json.hpp>
+
+
+#define _DEBUG_SHADER_PARSER 0
 
 namespace sge {
 
@@ -17,7 +20,7 @@ bool ShaderParser::parse(ShaderParsedInfo& outInfo_, StrView filepath_)
 #if _DEBUG_SHADER_PARSER
 	for (auto& e : _pInfo->passInfoSPtrs)
 	{
-		SGE_DUMP_VAR(e->name, e->vsFunc, e->psFunc, e->queue);
+		//SGE_DUMP_VAR(e->name, e->vsFunc, e->psFunc, e->queue);
 	}
 #endif // _DEBUG_SHADER_PARSER
 
@@ -26,6 +29,87 @@ bool ShaderParser::parse(ShaderParsedInfo& outInfo_, StrView filepath_)
 
 void ShaderParser::writeToJsonFile(StrView outputPath_)
 {
+	if (!_pInfo)
+		_error("not yet parsed");
+
+	using json = nlohmann::ordered_json;
+	json j;
+	
+	j["shaderName"] = _pInfo->shaderName.c_str();
+	j["passCount"] = _pInfo->passCount;
+
+	{
+		auto& elements = _pInfo->spPropertiesLayout->elements;
+		
+		const auto* fieldName = "properties";
+
+		j[fieldName] = {
+				{"dataSize", _pInfo->spPropertiesLayout->stride}, 
+				{"variables", {}}
+		};
+
+		for (int i = 0; i < elements.size(); ++i)
+		{
+			auto& e = j[fieldName]["variables"];
+			e.push_back({
+					{"name", elements[i].name.c_str()}, 
+					{"offset", elements[i].offset}, 
+					{"dataType", RenderDataTypeUtil::toString(elements[i].dataType)},
+					{"defaultValue", reinterpret_cast<char*>(_pInfo->propertiesDefaultData.data() + elements[i].offset)}
+			});
+		}
+	}
+
+	{
+		auto& elements = _pInfo->spPremutationLayout->elements;
+		const auto* fieldName = "premutation";
+
+		j[fieldName] = {
+				{"dataSize", _pInfo->spPremutationLayout->stride},
+				{"variables", {}
+			}};
+	}
+
+	{
+		const auto* fieldName = "pass"; 
+
+		j[fieldName] = {
+				{"infos", {}}
+		};
+
+		for (size_t i = 0; i < _pInfo->passInfoSPtrs.size(); i++)
+		{
+			auto& spInfo = _pInfo->passInfoSPtrs[i];
+			auto& e = j[fieldName]["infos"];
+
+			e.push_back({
+				  {"Queue", spInfo->queue.c_str()},
+				  {"Cull", spInfo->cull.c_str()},
+
+				  {"BlendRGB", spInfo->blendRGB.c_str()},
+				  {"BlendAlpha", spInfo->blendAlpha.c_str()},
+
+				  {"DepthTest", spInfo->depthTest.c_str()},
+				  {"DepthWrite", spInfo->depthWrite},
+
+				  {"VsFunc", spInfo->shaderFuncs[enumInt(ShaderType::Vertex)].c_str()},
+				  {"PsFunc", spInfo->shaderFuncs[enumInt(ShaderType::Pixel)].c_str()},
+			});
+		}
+	}
+
+	{
+		MemMapFile mm;
+
+		TempString tmp_outPath = outputPath_;
+		tmp_outPath.append("/shaderInfo.json");
+
+		mm.openWrite(tmp_outPath, false);
+
+		auto str = j.dump(4);
+		Span<const u8> data(reinterpret_cast<const u8*>(str.data()), str.size());
+		mm.writeBytes(data);
+	}
 
 }
 
@@ -137,7 +221,7 @@ void ShaderParser::_parse_properties()
 		if (!_checkTokenType(TokenType::Identifier))
 			_error("TokenType is not Identifier");
 		
-		element.data_type = dataType;
+		element.dataType = dataType;
 		element.name = _pToken->value;
 		element.hash = Math::hashStr(element.name);
 		element.offset = dataOffset;
@@ -159,8 +243,7 @@ void ShaderParser::_parse_properties()
 #endif // _DEBUG_SHADER_PARSER
 
 		_nextToken();
-		if (_checkToken(TokenType::Operator, "\n"))		// default value could be not set
-			continue;
+		
 		_start_parse_properties_value();
 	}
 
@@ -272,18 +355,21 @@ void ShaderParser::_start_parse_properties_value()
 	// do extrat stuff if is color / texture / float234...
 	// if is curlt type , count: 1, 2, 3, 4
 
-	if (!_checkToken(TokenType::Operator, "="))
-		_error("invalid syntax, no = is found");
-
 	auto& element = _pInfo->spPropertiesLayout->elements.back();
 	_pInfo->propertiesDefaultData.resize(element.size + _pInfo->propertiesDefaultData.size());
+
+	if (_checkToken(TokenType::Operator, "\n"))		// default value could be not set
+		return;
+
+	if (!_checkToken(TokenType::Operator, "="))
+		_error("invalid syntax, no = is found");
 
 	_nextToken();
 
 	u8* pData = _pInfo->propertiesDefaultData.data() + element.offset;
 
-	auto dataTypecount = RenderDataTypeUtil::getCount(element.data_type);
-	auto baseType = RenderDataTypeUtil::getBaseType(element.data_type);
+	auto dataTypecount = RenderDataTypeUtil::getCount(element.dataType);
+	auto baseType = RenderDataTypeUtil::getBaseType(element.dataType);
 
 	auto parse_ret = false;
 
@@ -393,14 +479,14 @@ void ShaderParser::_parse_each_pass()
 		_nextToken();
 		if (!_checkTokenType(TokenType::Identifier))
 			_error("VsFunc error type", _pToken->value);
-		spPassInfo->vsFunc = _pToken->value;
+		spPassInfo->shaderFuncs[enumInt(ShaderType::Vertex)] = _pToken->value;
 	}
 	else if (_checkTokenValue("PsFunc"))
 	{
 		_nextToken();
 		if (!_checkTokenType(TokenType::Identifier))
 			_error("PsFunc error type", _pToken->value);
-		spPassInfo->psFunc = _pToken->value;
+		spPassInfo->shaderFuncs[enumInt(ShaderType::Pixel)] = _pToken->value;
 	}
 }
 

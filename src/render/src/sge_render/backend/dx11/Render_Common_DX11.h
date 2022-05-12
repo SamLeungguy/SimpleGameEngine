@@ -136,15 +136,17 @@ inline Vertex_SemanticType getSemanticType(const char* name_)
 	using SRC = Vertex_SemanticType;
 
 	size_t hs = Math::hashStr(name_);
-	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
+	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("SV_POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
 										, Math::hashStr("NORMAL"), Math::hashStr("TANGENT"), Math::hashStr("BINORMAL") };
 
 	if (hs == compares[0]) return SRC::Pos;
-	if (hs == compares[1]) return SRC::Color;
-	if (hs == compares[2]) return SRC::TexCoord;
-	if (hs == compares[3]) return SRC::Normal;
-	if (hs == compares[4]) return SRC::Tangent;
-	if (hs == compares[5]) return SRC::Binormal;
+	if (hs == compares[1]) return SRC::Pos;
+
+	if (hs == compares[2]) return SRC::Color;
+	if (hs == compares[3]) return SRC::TexCoord;
+	if (hs == compares[4]) return SRC::Normal;
+	if (hs == compares[5]) return SRC::Tangent;
+	if (hs == compares[6]) return SRC::Binormal;
 
 	throw SGE_ERROR("{}", "invalid");
 
@@ -203,15 +205,17 @@ inline RenderDataType DX11Util::getRenderDataTypeBySemanticName(const char* name
 	using SRC = RenderDataType;
 
 	size_t hs = Math::hashStr(name_);
-	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
+	static const size_t compares[] = { Math::hashStr("POSITION"), Math::hashStr("SV_POSITION"), Math::hashStr("COLOR"), Math::hashStr("TEXCOORD")
 										, Math::hashStr("NORMAL"), Math::hashStr("TANGENT"), Math::hashStr("BINORMAL") };
 
 	if (hs == compares[0]) return SRC::Float32x4;
 	if (hs == compares[1]) return SRC::Float32x4;
-	if (hs == compares[2]) return SRC::Float32x2;
-	if (hs == compares[3]) return SRC::Float32x3;
+
+	if (hs == compares[2]) return SRC::Float32x4;
+	if (hs == compares[3]) return SRC::Float32x2;
 	if (hs == compares[4]) return SRC::Float32x3;
 	if (hs == compares[5]) return SRC::Float32x3;
+	if (hs == compares[6]) return SRC::Float32x3;
 
 	throw SGE_ERROR("{}", "invalid");
 

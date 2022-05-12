@@ -30,6 +30,18 @@ enum class BufferUsage
 	Default,
 };
 
+
+enum class ShaderType
+{
+	Vertex = 0,
+	Pixel,
+	Gemotry,
+	Tessellation,
+	Compute,
+
+	Count
+};
+
 namespace Utils
 {
 

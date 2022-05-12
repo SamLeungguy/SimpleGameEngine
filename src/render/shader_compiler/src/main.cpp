@@ -62,6 +62,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 		if (!ret)
 		{
 #if 0
+			using json = nlohmann::ordered_json;
 
 			json j;
 
@@ -173,7 +174,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 			mm.writeBytes(data);
 #else
 			
-			mm.openRead("LocalTemp/Imported/test.shader/hello.json");
+			/*mm.openRead("LocalTemp/Imported/test.shader/hello.json");
 
 			json jf = json::parse(mm.data());
 
@@ -185,7 +186,7 @@ void EditorApp::onCreate(CreateDesc& desc_)
 
 			SGE_DUMP_VAR(a.c_str());
 			SGE_DUMP_VAR(b.size());
-			SGE_DUMP_VAR(b[0], b[1], b[2]);
+			SGE_DUMP_VAR(b[0], b[1], b[2]);*/
 
 #endif // 1
 		}

@@ -2,7 +2,7 @@
 #if SGE_RENDER_HAS_DX11
 #include "HLSLCompiler.h"
 
-#define HLSL_COMPILER_DEBUG 1
+#define HLSL_COMPILER_DEBUG 0
 
 namespace sge {
 
@@ -15,7 +15,7 @@ void HLSLCompiler::compile(StrView filename_)
 	_filepath.append(filename_.begin(), filename_.end());
 	_outputFilepath = "LocalTemp/Imported/";
 	_outputFilepath.append(filename_.begin(), filename_.end());
-	_outputFilepath.append("/dx11/");
+	//_outputFilepath.append("/dx11/");
 
 	TempStringW filenameW;
 	UtfUtil::convert(filenameW, filename_);
@@ -29,47 +29,65 @@ void HLSLCompiler::compile(StrView filename_)
 	ret = FileStream::s_createDirectory(tempOutputFilepath);
 #endif // 1
 
-	//auto tokens = _lexer.parse(_filepath);
-	//_lexer.writeToJsonFile(_filepath, tokens);
+	_spParsedInfo.reset(new ShaderParsedInfo());
 
-	ShaderParser::parse(_parsedInfo, _filepath);
-
+	ShaderParser::parse(*_spParsedInfo.ptr(), _filepath);
+	ShaderParser::writeToJsonFile(_outputFilepath);
 	_shaderInfoSPtrs.reserve(2);
+
+	_outputFilepath.append("/dx11/");
 
 	_compile();
 }
 
 void HLSLCompiler::_compile()
 {
-	using Util = DX11Util;
-
-	// shd base on no. of passes
-
-	ComPtr<ID3D11ShaderReflection> cpReflection;
-
-	ComPtr<ID3DBlob>	bytecode;
-	ComPtr<ID3DBlob>	errorMsg;
-
 	auto srcCodeSize = _lexer._sourceRemain.size() * sizeof(char);
 	Span<const u8> srcCode(reinterpret_cast<const u8*>(_lexer._sourceRemain.data()), srcCodeSize);
 
-	auto hr = D3DCompile(srcCode.data(), srcCodeSize, nullptr, nullptr, nullptr, "vs_main", "vs_5_0", 0, 0, bytecode.ptrForInit(), errorMsg.ptrForInit());
+	int iPass = 0;
+	for (auto& sp : _spParsedInfo->passInfoSPtrs)
+	{
+		_compile_shaders(sp, ShaderType::Vertex, srcCode, iPass);
+		_compile_shaders(sp, ShaderType::Pixel, srcCode, iPass);
+		//_compile_shaders(sp, ShaderType::Gemotry, srcCode, iPass);
+		//_compile_shaders(sp, ShaderType::Tessellation, srcCode, iPass);
+		//_compile_shaders(sp, ShaderType::Compute, srcCode, iPass);
+
+		iPass++;
+	}
+}
+
+void HLSLCompiler::_compile_shaders(SPtr<PassInfo>& spPassInfo_, ShaderType type_, Span<const u8> srcCode_, int passIndex_)
+{
+	auto type = enumInt(type_);
+	const auto& targetStr = spPassInfo_->shaderFuncs[type];
+
+	if (targetStr.empty())
+		_error("no shader is found in pass", std::to_string(passIndex_).c_str());
+
+	TempString tmpStr(s_shaderTypeStrs[type]);
+	tmpStr.append(s_version);
+
+	// _compile_shader
+	auto hr = D3DCompile(srcCode_.data(), srcCode_.size(), nullptr, nullptr, nullptr, targetStr.c_str(), tmpStr.c_str(), 0, 0, _cpBytecode.ptrForInit(), _cpErrorMsg.ptrForInit());
 	Util::throwIfError(hr);
 
-	TempString tmpStr(_outputFilepath);
-	tmpStr.append("pass0_vs.bin");
+	_toOutputShaderPath(tmpStr, type_, passIndex_);
+
+	// writeBinToFile
 	MemMapFile mm;
 	mm.openWrite(tmpStr, false);
-	Span<const u8> data(reinterpret_cast<const u8*>(bytecode->GetBufferPointer()), bytecode->GetBufferSize());
+	Span<const u8> data(reinterpret_cast<const u8*>(_cpBytecode->GetBufferPointer()), _cpBytecode->GetBufferSize());
 	mm.writeBytes(data);
 
 	_shaderInfoSPtrs.emplace_back(new ShaderInfo());
-	_reflect(bytecode);
+	_reflect(_cpReflection, _cpBytecode);
 }
 
-void HLSLCompiler::_reflect(ComPtr<ID3DBlob>& cpBlob_)
+void HLSLCompiler::_reflect(ComPtr<ID3D11ShaderReflection>& cpReflection_, ComPtr<ID3DBlob>& cpBlob_)
 {
-	ComPtr<ID3D11ShaderReflection> cpReflection;
+	ComPtr<ID3D11ShaderReflection>& cpReflection = cpReflection_;
 
 	auto hr = D3DReflect(cpBlob_->GetBufferPointer(), cpBlob_->GetBufferSize(), IID_PPV_ARGS(cpReflection.ptrForInit()));
 	Util::throwIfError(hr);
@@ -202,10 +220,10 @@ void HLSLCompiler::_reflect_uniformBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3
 			
 			if (type_desc.Class != D3D_SVC_STRUCT)
 			{
-				element.data_type = Util::getRenderDataType(type_desc.Name);
+				element.dataType = Util::getRenderDataType(type_desc.Name);
 #if HLSL_COMPILER_DEBUG
 				//SGE_DUMP_VAR(type_desc.Name, var_desc.Name, var_desc.Size, var_desc.StartOffset);
-				const auto* dataTypeStr = RenderDataTypeUtil::toString(element.data_type);
+				const auto* dataTypeStr = RenderDataTypeUtil::toString(element.dataType);
 				SGE_DUMP_VAR(element.name, dataTypeStr, element.offset, element.size);
 #endif // _DEBUG
 			}
@@ -270,23 +288,35 @@ void HLSLCompiler::_appendCBufferLayout_if_is_strcut(ID3D11ShaderReflectionType*
 		tmpString.append(".");
 		tmpString.append(var_type->GetMemberTypeName(iMember));
 
-		mElement.data_type = Util::getRenderDataType(member_type_desc.Name);
+		mElement.dataType = Util::getRenderDataType(member_type_desc.Name);
 
 		mElement.hash = Math::hashStr(mElement.name.c_str());
 		mElement.name = tmpString;
 		mElement.offset = structStartOffset + Math::byteToBit(member_type_desc.Offset);
 
 		auto array_element_count = member_type_desc.Elements ? member_type_desc.Elements : 1;
-		mElement.size = array_element_count * RenderDataTypeUtil::getBitSize(mElement.data_type);
+		mElement.size = array_element_count * RenderDataTypeUtil::getBitSize(mElement.dataType);
 
 #if HLSL_COMPILER_DEBUG
 		//SGE_DUMP_VAR(mElement.name, member_type_desc.Name, structStartOffset + member_type_desc.Offset, member_type_desc.Elements);
-		const auto* dataTypeStr = RenderDataTypeUtil::toString(mElement.data_type);
+		const auto* dataTypeStr = RenderDataTypeUtil::toString(mElement.dataType);
 		SGE_DUMP_VAR(mElement.name, dataTypeStr, mElement.offset, mElement.size);
 #endif // HLSL_COMPILER_DEBUG
 
 		spCbufferLayout->elements.emplace_back();
 	}
+}
+
+void HLSLCompiler::_toOutputShaderPath(TempString& out_, ShaderType type_, int passIndex_)
+{
+	out_.clear();
+	out_.append(_outputFilepath.c_str());
+
+	out_.append("pass");
+	out_.append(std::to_string(passIndex_).c_str());
+	out_.append("_");
+	out_.append(s_shaderTypeStrs[enumInt(type_)]);
+	out_.append(".bin");
 }
 
 }
