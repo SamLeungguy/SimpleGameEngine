@@ -49,6 +49,8 @@ namespace sge {
 		ComPtr<DX11_ID3DDepthStencilState>	_cpTestDepthStencilState;
 		ComPtr<DX11_ID3DBlendState>			_cpTestBlendState;
 
+		MemMapFile _testVertexMemMap;
+
 		VectorMap<const VertexLayout*, ComPtr<DX11_ID3DInputLayout>> _testInputLayouts;
 	};
 

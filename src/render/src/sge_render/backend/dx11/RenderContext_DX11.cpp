@@ -158,22 +158,16 @@ void RenderContext_DX11::_setTestShaders()
 	if (!_cpTestVertexShader) {
 		ComPtr<ID3DBlob>	bytecode;
 		ComPtr<ID3DBlob>	errorMsg;
-		hr = D3DCompileFromFile(shaderFile, 0, 0, "vs_main", "vs_5_0", 0, 0, bytecode.ptrForInit(), errorMsg.ptrForInit());
-		Util::throwIfError(hr);
+		
 
-		_cpTestVertexShaderBytecode = bytecode;
-
-		hr = dev->CreateVertexShader(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), nullptr, _cpTestVertexShader.ptrForInit());
-		Util::throwIfError(hr);
-
-#if 0   // Test Load binary from file
+#if 1   // Test Load binary from file
 		{
-			MemMapFile mm2;
+			MemMapFile& mm2 = _testVertexMemMap;
 			mm2.openRead("LocalTemp/Imported/test.shader/dx11/pass0_vs.bin");
 
 			hr = dev->CreateVertexShader(mm2.data(), mm2.size(), nullptr, _cpTestVertexShader.ptrForInit());
 			Util::throwIfError(hr);
-
+			
 			ComPtr<ID3D11ShaderReflection> cpReflection;
 			hr = D3DReflect(mm2.data(), mm2.size(), IID_PPV_ARGS(cpReflection.ptrForInit()));
 			Util::throwIfError(hr);
@@ -184,9 +178,15 @@ void RenderContext_DX11::_setTestShaders()
 			SGE_DUMP_VAR(desc.ConstantBuffers);
 			SGE_DUMP_VAR(desc.InputParameters);
 		}
+#else
+		hr = D3DCompileFromFile(shaderFile, 0, 0, "vs_main", "vs_5_0", 0, 0, bytecode.ptrForInit(), errorMsg.ptrForInit());
+		Util::throwIfError(hr);
+
+		_cpTestVertexShaderBytecode = bytecode;
+
+		hr = dev->CreateVertexShader(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), nullptr, _cpTestVertexShader.ptrForInit());
+		Util::throwIfError(hr);
 #endif // 0
-
-
 	}
 
 	if (!_cpTestPixelShader) {
@@ -342,11 +342,20 @@ DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout
 	ComPtr<DX11_ID3DInputLayout>	outLayout;
 
 	auto* dev = _pRenderer->d3dDevice();
-	auto hr = dev->CreateInputLayout(inputDesc.data()
-		, static_cast<UINT>(inputDesc.size())
-		, _cpTestVertexShaderBytecode->GetBufferPointer()
-		, _cpTestVertexShaderBytecode->GetBufferSize()
-		, outLayout.ptrForInit());
+#if 1
+	auto hr = dev->CreateInputLayout(inputDesc.data(),
+		static_cast<UINT>(inputDesc.size()),
+		_testVertexMemMap.data(),
+		_testVertexMemMap.size(),
+		outLayout.ptrForInit());
+#else
+	auto hr = dev->CreateInputLayout(inputDesc.data(),
+		static_cast<UINT>(inputDesc.size()),
+		_cpTestVertexShaderBytecode->GetBufferPointer(),
+		_cpTestVertexShaderBytecode->GetBufferSize(),
+		outLayout.ptrForInit());
+#endif // 0
+
 	Util::throwIfError(hr);
 
 	_testInputLayouts[src] = outLayout;

@@ -107,6 +107,13 @@ struct Vertex_SemanticUtil
 	};
 	static constexpr Type getType(Semantic semantic_) { return static_cast<Type>(enumInt(semantic_) >> 8); }
 	static constexpr Index getIndex(Semantic semantic_) { return static_cast<Index>(enumInt(semantic_)); }
+
+	/*static constexpr const char* toCStr(Type type_) 
+	{
+
+	}
+
+	static String toString(Semantic semantic_) { String o; o.append() }*/
 };
 
 enum class Vertex_Semantic : u16

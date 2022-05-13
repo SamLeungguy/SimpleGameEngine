@@ -4,7 +4,6 @@
 
 #include <nlohmann/json.hpp>
 
-
 #define _DEBUG_SHADER_PARSER 0
 
 namespace sge {
@@ -38,6 +37,7 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 	j["shaderName"] = _pInfo->shaderName.c_str();
 	j["passCount"] = _pInfo->passCount;
 
+	// serialize properties
 	{
 		auto& elements = _pInfo->spPropertiesLayout->elements;
 		
@@ -60,6 +60,7 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 		}
 	}
 
+	// serialize premutation
 	{
 		auto& elements = _pInfo->spPremutationLayout->elements;
 		const auto* fieldName = "premutation";
@@ -69,7 +70,8 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 				{"variables", {}
 			}};
 	}
-
+	
+	// serialize pass
 	{
 		const auto* fieldName = "pass"; 
 
@@ -110,7 +112,6 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 		Span<const u8> data(reinterpret_cast<const u8*>(str.data()), str.size());
 		mm.writeBytes(data);
 	}
-
 }
 
 void ShaderParser::_parse()
@@ -244,7 +245,7 @@ void ShaderParser::_parse_properties()
 
 		_nextToken();
 		
-		_start_parse_properties_value();
+		_parse_properties_value();
 	}
 
 	_check_end_parsing_keyword();
@@ -349,7 +350,7 @@ void ShaderParser::_check_end_parsing_keyword()
 		_error("properties no { found");
 }
 
-void ShaderParser::_start_parse_properties_value()
+void ShaderParser::_parse_properties_value()
 {
 	// start parse value
 	// do extrat stuff if is color / texture / float234...

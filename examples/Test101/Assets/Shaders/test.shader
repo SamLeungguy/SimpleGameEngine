@@ -89,13 +89,19 @@ struct mydata
 Texture2D simpleTexture    ;//: register(t0);
 SamplerState simpleSampler ;//: register(s0);
 
-cbuffer hello : register(b0)
+cbuffer hello //: register(b0)
 {
     mydata data;
     float v1_0;
     float2 v1_1;
     float4 v1_2[4];
 
+};
+
+cbuffer hello2 //: register(b0)
+{
+    mydata data2;
+    float v1_0_2;
 };
 
 v2f vs_main(appdata v)
@@ -108,7 +114,7 @@ v2f vs_main(appdata v)
     //output.normal = mul(v.normal, data.mvp);
     //output.normal = mul(v.normal, data.vp);
 
-    output.position.z = data.v0 * data.v3[3] * data.v1.x * v1_0 * v1_1 * v1_2[3];
+    output.position.z = data.v0 * data.v3[3] * data.v1.x * v1_0 * v1_1 * v1_2[3] * data2.v2.x;
     
     return output;
 }

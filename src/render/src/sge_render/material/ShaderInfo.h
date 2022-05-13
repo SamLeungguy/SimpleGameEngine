@@ -8,8 +8,10 @@ namespace sge {
 struct InputAttribute
 {
 	//String name;
-	Vertex_Semantic semantic_type = Vertex_Semantic::None;
-	RenderDataType data_type	  = RenderDataType::None;
+	Vertex_Semantic semantic	= Vertex_Semantic::None;
+	RenderDataType dataType		= RenderDataType::None;
+
+	String semanticStr;
 };
 
 class CBufferLayout : public Object
@@ -27,6 +29,10 @@ public:
 	//VectorMap<size_t, Element> elements;
 	Vector<Element> elements;
 	u32 stride = 0;
+
+	// should seperate to CBuffer
+	u32 bindPoint = 0;
+	u32 bindCount = 0;
 
 private:
 };
@@ -88,6 +94,9 @@ class ShaderInfo : public Object		// one per vertex / pixel shader
 public:
 	ShaderInfo() = default;
 
+	u32 _passIndex = 0;
+	ShaderType _type;
+
 	String _version;
 	Tuple3u _csWorkGroupSize = {0, 0, 0};
 
@@ -98,7 +107,7 @@ public:
 	Vector<Vector<u8>>			_cBufferDatas;
 
 	Vector<SPtr<RenderGpuBuffer>> _cBufferSPtrs;
-	Vector<bool> isDirties;
+	Vector<bool> _isDirties;
 
 	// textures
 	// samplers

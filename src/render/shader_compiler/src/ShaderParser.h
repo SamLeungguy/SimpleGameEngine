@@ -11,10 +11,12 @@ class ShaderParser : public NonCopyable // Lexer
 
 public:
 	bool parse(ShaderParsedInfo& outInfo_, StrView filepath_);
-	void writeToJsonFile(StrView outputPath_);
 
 public:
 	bool _isSuccess = false;
+
+protected:
+	void writeToJsonFile(StrView outputPath_);
 
 private:
 	void _parse();
@@ -26,7 +28,7 @@ private:
 	void _parse_permutation();
 	void _parse_pass();
 
-	void _start_parse_properties_value();
+	void _parse_properties_value();
 
 	void _parse_each_pass();
 

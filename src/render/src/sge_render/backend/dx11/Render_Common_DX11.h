@@ -96,6 +96,8 @@ struct DX11Util
 	static RenderDataType getRenderDataType(const char* name_);
 	static RenderDataType getRenderDataTypeBySemanticName(const char* name_);
 
+	static const char* getShaderVersion(UINT version_);
+
 	static Renderer_DX11*			renderer();
 	static DX11_ID3DDevice*			d3dDevice();
 	static DX11_ID3DDeviceContext*	d3dDeviceContext();
@@ -298,6 +300,52 @@ inline DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
 			//---
 		default: throw SGE_ERROR("unsupported RenderDataType");
 	}
+}
+
+inline  const char* getShaderVersion(UINT version_)
+{
+#define MY_CASE_SHADER_VERSION_PS(ver)	case 0x000 ## ver ## 0: return  "ps_" #ver "_0"; break
+#define MY_CASE_SHADER_VERSION_VS(ver)	case 0x100 ## ver ## 0: return  "vs_" #ver "_0"; break
+#define MY_CASE_SHADER_VERSION_GS(ver)	case 0x200 ## ver ## 0: return  "gs_" #ver "_0"; break
+#define MY_CASE_SHADER_VERSION_DS(ver)	case 0x300 ## ver ## 0: return  "hs_" #ver "_0"; break
+#define MY_CASE_SHADER_VERSION_HS(ver)	case 0x400 ## ver ## 0: return  "ds_" #ver "_0"; break
+#define MY_CASE_SHADER_VERSION_CS(ver)	case 0x500 ## ver ## 0: return  "cs_" #ver "_0"; break
+
+#define MY_CASE_SHADER_VERSION(ver)	\
+	MY_CASE_SHADER_VERSION_PS(ver); \
+	MY_CASE_SHADER_VERSION_VS(ver); \
+	MY_CASE_SHADER_VERSION_GS(ver); \
+	MY_CASE_SHADER_VERSION_DS(ver); \
+	MY_CASE_SHADER_VERSION_HS(ver); \
+	MY_CASE_SHADER_VERSION_CS(ver) \
+//--------------
+
+#define MY_CASE_SHADER_VERSION_4()	\
+	MY_CASE_SHADER_VERSION_PS(4); \
+	MY_CASE_SHADER_VERSION_VS(4); \
+	MY_CASE_SHADER_VERSION_GS(4); \
+	MY_CASE_SHADER_VERSION_CS(4) \
+//--------------
+
+	using SRC = ShaderType;
+	switch (version_)
+	{
+		MY_CASE_SHADER_VERSION_4();
+		MY_CASE_SHADER_VERSION(5);
+		MY_CASE_SHADER_VERSION(6);
+
+		default: throw SGE_ERROR("unknown Shader Version");
+	}
+	return "";
+
+#undef MY_CASE_SHADER_VERSION_PS
+#undef MY_CASE_SHADER_VERSION_VS
+#undef MY_CASE_SHADER_VERSION_GS
+#undef MY_CASE_SHADER_VERSION_DS
+#undef MY_CASE_SHADER_VERSION_HS
+#undef MY_CASE_SHADER_VERSION_CS
+#undef MY_CASE_SHADER_VERSION
+#undef MY_CASE_SHADER_VERSION_4
 }
 
 inline String DX11Util::getStrFromHRESULT(HRESULT hr) {
