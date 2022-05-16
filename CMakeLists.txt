@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_TOOLCHAIN_FILE "./externals/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 #set(CMAKE_BUILD_TYPE Debug)
 
@@ -43,8 +43,8 @@ function(sge_add_library target_name src_path)
 	)	
 	sge_source_group(${src_path} "${src_files}")
 	
-	add_library(${target_name} ${src_files})
-	target_precompile_headers(${target_name} PUBLIC src/${target_name}/${target_name}-pch.h)
+	add_library(${target_name} ${src_files})	
+	target_precompile_headers(${target_name} PUBLIC src/${target_name}-pch.h)
 	target_include_directories(${target_name} PUBLIC src)
 	sge_set_target_warning_level(${target_name})
 endfunction()
@@ -55,7 +55,7 @@ function(sge_add_executable target_name src_path)
 	)	
 	sge_source_group(${src_path} "${src_files}")
 	
-	add_executable(${target_name} ${src_files})
+	add_executable(${target_name} ${src_files})	
 	target_precompile_headers(${target_name} PUBLIC src/${target_name}-pch.h)
 	sge_set_target_warning_level(${target_name})
 endfunction()

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(PROJECT_NAME sge_render_shader_compiler)
+set(PROJECT_NAME sge_shader_compiler)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
 

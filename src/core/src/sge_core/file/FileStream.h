@@ -23,7 +23,7 @@ public:
 
 		switch (err)
 		{
-			case ERROR_PATH_NOT_FOUND: { throw SGE_ERROR("ERROR_PATH_NOT_FOUND"); return false; } break;
+			case ERROR_PATH_NOT_FOUND: { throw SGE_ERROR("ERROR_PATH_NOT_FOUND"); } break;
 			case ERROR_ALREADY_EXISTS: { return false; } break;
 		}
 		return false;;
