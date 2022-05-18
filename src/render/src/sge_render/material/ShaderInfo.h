@@ -23,12 +23,12 @@ public:
 		size_t			hash;
 
 		RenderDataType	dataType;
-		u16				offset = 0;
-		u16				size = 0;
+		u32				offset = 0;
+		u32				size = 0;
 	};
 	//VectorMap<size_t, Element> elements;
 	Vector<Element> elements;
-	u32 stride = 0;
+	u32 dataSize = 0;
 
 	// should seperate to CBuffer
 	u32 bindPoint = 0;
@@ -70,7 +70,7 @@ struct ShaderParsedInfo : public Object			// one per whole shader
 		String depthTest;					// shd be depthTest enum
 		bool depthWrite = false;			// shd be depthWrite enum
 		
-		String shaderFuncs[enumInt(ShaderType::Count)]/* = {"vs_main",  "ps_main", "", "", ""}*/;
+		String shaderFuncs[enumInt(RenderShaderType::Count)]/* = {"vs_main",  "ps_main", "", "", ""}*/;
 
 		//String vsFunc	= "vs_main";
 		//String psFunc	= "ps_main";
@@ -95,7 +95,7 @@ public:
 	ShaderInfo() = default;
 
 	u32 _passIndex = 0;
-	ShaderType _type;
+	RenderShaderType _type;
 
 	String _version;
 	Tuple3u _csWorkGroupSize = {0, 0, 0};
@@ -103,8 +103,9 @@ public:
 	SPtr<ShaderParsedInfo>		_spShaderParsedInfo;
 
 	Vector<InputAttribute>		_inputs;
+
 	Vector<SPtr<CBufferLayout>> _cBufferLayoutSPtrs;		// cBuffer count
-	Vector<Vector<u8>>			_cBufferDatas;
+	Vector<Vector<u8>>			_cBufferData;
 
 	Vector<SPtr<RenderGpuBuffer>> _cBufferSPtrs;
 	Vector<bool> _isDirties;

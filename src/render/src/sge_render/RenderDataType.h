@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sge_core/base/Error.h>
+
 namespace sge {
 
 enum class RenderDataType : u8 {
@@ -22,8 +24,6 @@ enum class RenderDataType : u8 {
 	Float32, Float32x2, Float32x3, Float32x4,
 	Float64, Float64x2, Float64x3, Float64x4,
 
-	Float32x4x2, Float32x4x3, Float32x4x4,
-
 	SNorm8, SNorm8x2, SNorm8x3, SNorm8x4,
 	SNorm16, SNorm16x2, SNorm16x3, SNorm16x4,
 	SNorm32, SNorm32x2, SNorm32x3, SNorm32x4,
@@ -33,6 +33,9 @@ enum class RenderDataType : u8 {
 	UNorm16, UNorm16x2, UNorm16x3, UNorm16x4,
 	UNorm32, UNorm32x2, UNorm32x3, UNorm32x4,
 	UNorm64, UNorm64x2, UNorm64x3, UNorm64x4,
+
+	Float32x4x2, Float32x4x3, Float32x4x4,
+
 };
 
 struct RenderDataTypeUtil {
@@ -128,7 +131,8 @@ struct RenderDataTypeUtil {
 			default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
-		return 0;
+		//return 0;
+
 #undef MY_TYPE_CASE
 #undef MY_TYPE_CASE_TYPE
 #undef MY_TYPE_CASE_NOT_0
@@ -159,10 +163,11 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-		default:	throw SGE_ERROR("{}", "invalid type");
+			default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
-		return 0;
+		//return 0;
+
 #undef MY_TYPE_CASE
 #undef MY_TYPE_CASE_TYPE
 #undef MY_TYPE_CASE_NOT_0
@@ -193,10 +198,10 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-		default:	throw SGE_ERROR("{}", "invalid type");
+			default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
-		return Type::None;
+		//return Type::None;
 #undef MY_TYPE_CASE
 #undef MY_TYPE_CASE_TYPE
 #undef MY_TYPE_CASE_NOT_0
@@ -229,9 +234,71 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(UNorm);
 			default:	throw SGE_ERROR("{}", "invalid type");
 		}
-		return nullptr;
+		//return nullptr;
 	}
 
+	static RenderDataType getRenderDataType(const char* name_)
+	{
+		size_t hs = Math::hashStr(name_);
+
+#define MY_ARRAY_ELEMENTS_BY_TYPE(hash, type, biteSize) hash(#type #biteSize), hash(#type #biteSize "x" "2"), hash(#type  #biteSize "x" "3"), hash(#type  #biteSize "x" "4")
+
+#define MY_ARRAY_ELEMENTS_TYPE_8_TO_64(hash, type) \
+		MY_ARRAY_ELEMENTS_BY_TYPE(hash, type, 8),	\
+		MY_ARRAY_ELEMENTS_BY_TYPE(hash, type, 16),	\
+		MY_ARRAY_ELEMENTS_BY_TYPE(hash, type, 32),	\
+		MY_ARRAY_ELEMENTS_BY_TYPE(hash, type, 64)	\
+//-----------
+
+#define MY_IF_TYPE_NOT_0(type, biteSize, count, i)	\
+	if(hs == compares[(i)]) return Type::type ## biteSize ## x ## count	\
+//---------------
+
+#define MY_TYPE_IF(type, biteSize, col, offset)								\
+	if(hs == compares[(col * 4 + 0 + offset)]) return Type::type ## biteSize;	\
+	MY_IF_TYPE_NOT_0(type, biteSize, 2, ((col) * 4 + 1 + (offset)));					\
+	MY_IF_TYPE_NOT_0(type, biteSize, 3, ((col) * 4 + 2 + (offset)));					\
+	MY_IF_TYPE_NOT_0(type, biteSize, 4, ((col) * 4 + 3 + (offset)))					\
+//---------------
+
+#define MY_TYPE_IF_8_TO_64(type, row, offset)			\
+	MY_TYPE_IF(type, 8,  (4 * (row) + 0), (offset));		\
+	MY_TYPE_IF(type, 16, (4 * (row) + 1), (offset));		\
+	MY_TYPE_IF(type, 32, (4 * (row) + 2), (offset));		\
+	MY_TYPE_IF(type, 64, (4 * (row) + 3), (offset))		\
+//-------------
+
+		// Int, UInt, Float, SNorm, UNorm,
+		static const size_t compares[] = {
+			Math::hashStr(""),
+			Math::hashStr("Int"), Math::hashStr("UInt"), Math::hashStr("Float"), Math::hashStr("SNorm"), Math::hashStr("UNorm"),
+			MY_ARRAY_ELEMENTS_TYPE_8_TO_64(Math::hashStr, Int),
+			MY_ARRAY_ELEMENTS_TYPE_8_TO_64(Math::hashStr, UInt),
+			MY_ARRAY_ELEMENTS_TYPE_8_TO_64(Math::hashStr, Float),
+			MY_ARRAY_ELEMENTS_TYPE_8_TO_64(Math::hashStr, SNorm),
+			MY_ARRAY_ELEMENTS_TYPE_8_TO_64(Math::hashStr, UNorm),
+		};
+
+		if (hs == compares[enumInt(Type::Int)])		return Type::Int;
+		if (hs == compares[enumInt(Type::UInt)])	return Type::UInt;
+		if (hs == compares[enumInt(Type::Float)])	return Type::Float;
+		if (hs == compares[enumInt(Type::SNorm)])	return Type::SNorm;
+		if (hs == compares[enumInt(Type::UNorm)])	return Type::UNorm;
+
+		MY_TYPE_IF_8_TO_64(Int,		0, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(UInt,	1, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(Float,	2, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(SNorm,	3, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(UNorm,	4, enumInt(Type::Int8));
+
+		throw SGE_ERROR("{}", "invalid");
+
+#undef MY_ARRAY_ELEMENTS_BY_TYPE
+#undef MY_ARRAY_ELEMENTS_TYPE_8_TO_64
+#undef MY_IF_TYPE_NOT_0
+#undef MY_TYPE_IF
+#undef MY_TYPE_IF_8_TO_64
+	}
 };
 
 }

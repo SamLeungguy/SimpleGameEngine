@@ -23,8 +23,8 @@ struct mydata
 
 };
 
-Texture2D simpleTexture    ;//: register(t0);
-SamplerState simpleSampler ;//: register(s0);
+//Texture2D simpleTexture    ;//: register(t0);
+//SamplerState simpleSampler ;//: register(s0);
 
 cbuffer hello : register(b0)
 {
@@ -49,9 +49,9 @@ v2f vs_main(appdata v)
 
 float4 ps_main(v2f i) : SV_TARGET
 {
-    float4 texelColor = simpleTexture.Sample(simpleSampler, i.uv);
+    //float4 texelColor = simpleTexture.Sample(simpleSampler, i.uv);
 
-    return float4(i.uv.x, i.uv.y, i.position.z * data.v0 * data.v1.x * data.v2.x * texelColor.a, 1.0f);
+    return float4(i.uv.x, i.uv.y, i.position.z * data.v0 * data.v1.x * data.v2.x, 1.0f);
     return float4(0.2f, 1.0, 1.0, 1.0);
     //return position;
     return float4( i.uv.x, i.normal.y, i.position.z, 1.0 );

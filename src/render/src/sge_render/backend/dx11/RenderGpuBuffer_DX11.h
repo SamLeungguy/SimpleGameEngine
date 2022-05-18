@@ -1,5 +1,7 @@
 #pragma once
 
+#if SGE_RENDER_HAS_DX11
+
 #include "Render_Common_DX11.h"
 #include <sge_render/buffer/RenderGpuBuffer.h>
 
@@ -20,3 +22,5 @@ private:
 };
 
 }
+
+#endif

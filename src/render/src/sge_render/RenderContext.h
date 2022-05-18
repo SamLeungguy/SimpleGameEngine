@@ -30,7 +30,7 @@ protected:
 	virtual void onSetFrameBufferSize(Vec2f newSize_) {};
 	virtual void onCommit(RenderCommandBuffer& cmdBuf_) {}
 
-	Vec2f	_frameBufferSize{ 0,0 };
+	Vec2f	_frameBufferSize = { 0,0 };
 
 	template<class Impl>
 	void _dispatch(Impl* pImpl_, RenderCommandBuffer& cmdBuf_)

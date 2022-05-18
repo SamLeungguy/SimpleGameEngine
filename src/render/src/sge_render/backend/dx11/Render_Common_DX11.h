@@ -133,7 +133,7 @@ inline const char* DX11Util::getDxSemanticName(Vertex_SemanticType t) {
 	}
 }
 
-inline Vertex_SemanticType getSemanticType(const char* name_)
+inline Vertex_SemanticType DX11Util::getSemanticType(const char* name_)
 {
 	using SRC = Vertex_SemanticType;
 
@@ -152,7 +152,7 @@ inline Vertex_SemanticType getSemanticType(const char* name_)
 
 	throw SGE_ERROR("{}", "invalid");
 
-	return SRC::None;
+	//return SRC::None;
 }
 
 inline RenderDataType DX11Util::getRenderDataType(const char* name_)
@@ -189,13 +189,12 @@ inline RenderDataType DX11Util::getRenderDataType(const char* name_)
 	MY_TYPE_IF(Float, 32,	1);
 	MY_TYPE_IF(Int, 32,		2);
 
-
 	//if (hs == compares[12]) return SRC::Float32x4x4;
 	//if (hs == compares[13]) return SRC::Float32x4x4;
 
 	throw SGE_ERROR("{}", "invalid");
 
-	return SRC::None;
+	//return SRC::None;
 
 #undef MY_ARRAY_ELEMENTS
 #undef MY_TYPE_IF
@@ -221,7 +220,7 @@ inline RenderDataType DX11Util::getRenderDataTypeBySemanticName(const char* name
 
 	throw SGE_ERROR("{}", "invalid");
 
-	return SRC::None;
+	//return SRC::None;
 }
 
 inline DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
@@ -302,7 +301,7 @@ inline DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
 	}
 }
 
-inline  const char* getShaderVersion(UINT version_)
+inline const char* DX11Util::getShaderVersion(UINT version_)
 {
 #define MY_CASE_SHADER_VERSION_PS(ver)	case 0x000 ## ver ## 0: return  "ps_" #ver "_0"; break
 #define MY_CASE_SHADER_VERSION_VS(ver)	case 0x100 ## ver ## 0: return  "vs_" #ver "_0"; break
@@ -327,7 +326,7 @@ inline  const char* getShaderVersion(UINT version_)
 	MY_CASE_SHADER_VERSION_CS(4) \
 //--------------
 
-	using SRC = ShaderType;
+	using SRC = RenderShaderType;
 	switch (version_)
 	{
 		MY_CASE_SHADER_VERSION_4();
@@ -336,7 +335,7 @@ inline  const char* getShaderVersion(UINT version_)
 
 		default: throw SGE_ERROR("unknown Shader Version");
 	}
-	return "";
+	//return nullptr;
 
 #undef MY_CASE_SHADER_VERSION_PS
 #undef MY_CASE_SHADER_VERSION_VS

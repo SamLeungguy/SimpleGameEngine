@@ -1,3 +1,5 @@
+//#if SGE_RENDER_HAS_DX11
+//
 //#include "RenderCommandBuffer_DX11.h"
 //#include "Renderer_DX11.h"
 //
@@ -90,3 +92,5 @@
 //}
 //
 //}
+//
+//#endif

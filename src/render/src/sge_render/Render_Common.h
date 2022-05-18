@@ -31,7 +31,7 @@ enum class BufferUsage
 };
 
 
-enum class ShaderType
+enum class RenderShaderType
 {
 	Vertex = 0,
 	Pixel,
