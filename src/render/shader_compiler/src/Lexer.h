@@ -129,8 +129,6 @@ inline bool Lexer::_isNumber(StrView token_)
 { 
 	auto pBeg = token_.begin();
 	auto pEnd = token_.end();
-	bool isFloat = false;
-	bool hasPoint = false;
 
 	for (;pBeg != pEnd && (std::isdigit(*pBeg) || *pBeg == '.' || *pBeg == 'f'); ++pBeg)
 	{

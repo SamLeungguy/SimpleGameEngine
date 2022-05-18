@@ -22,7 +22,6 @@ void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMe
 	cmd->debugLoc = debugLoc_;
 #endif // _DEBUG
 
-
 	cmd->primitive		= subMesh_.getPrimitive();
 	cmd->pVertexLayout	= subMesh_.getVertexLayout();
 	cmd->spVertexBuffer	= subMesh_.getVertexBuffer();
@@ -30,6 +29,40 @@ void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMe
 	cmd->spIndexBuffer	= subMesh_.getIndexBuffer();
 	cmd->indexType		= subMesh_.getIndexType();
 	cmd->indexCount		= subMesh_.getIndexCount();
+}
+
+void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_)
+{
+	auto* cmd = newCommand<RenderCommand_DrawCall>();
+
+#if _DEBUG
+	cmd->debugLoc = debugLoc_;
+#endif // _DEBUG
+
+	/*for (auto& pass : spMaterial_->getShaderPasses())
+	{
+		for (auto& sm : mesh_.subMeshes()) {
+			cmd->primitive = sm.getPrimitive();
+			cmd->pVertexLayout = sm.getVertexLayout();
+			cmd->spVertexBuffer = sm.getVertexBuffer();
+			cmd->vertexCount = sm.getVertexCount();
+			cmd->spIndexBuffer = sm.getIndexBuffer();
+			cmd->indexType = sm.getIndexType();
+			cmd->indexCount = sm.getIndexCount();
+			cmd->spRenderShader.reset(pass._spRenderShader);
+		}
+	}*/
+
+	for (auto& sm : mesh_.subMeshes()) {
+		cmd->primitive = sm.getPrimitive();
+		cmd->pVertexLayout = sm.getVertexLayout();
+		cmd->spVertexBuffer = sm.getVertexBuffer();
+		cmd->vertexCount = sm.getVertexCount();
+		cmd->spIndexBuffer = sm.getIndexBuffer();
+		cmd->indexType = sm.getIndexType();
+		cmd->indexCount = sm.getIndexCount();
+		cmd->spRenderShader.reset(spMaterial_->getShaderPasses()[0]._spRenderShader);
+	}
 }
 
 void RenderCommandBuffer::reset()

@@ -25,6 +25,11 @@ RenderShader* Renderer_gl::onCreateShader(RenderShader_CreateDesc& desc_)
 	return nullptr;
 }
 
+Material* Renderer_gl::onCreateMaterial(Material_CreateDesc& desc_)
+{
+	return nullptr;
+}
+
 }
 
 #endif

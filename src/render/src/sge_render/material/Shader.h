@@ -10,7 +10,7 @@ public:
 	static Material* s_find(StrView filename_);
 
 private:
-	VectorMap<size_t, Material> materialMap;
+	VectorMap<size_t, Material*> materialMap;
 };
 
 }

@@ -2,6 +2,7 @@
 
 #include "../vertex/Vertex.h"
 #include "../buffer/RenderGpuBuffer.h"
+#include "../material/Material.h"
 
 #include <sge_core/allocator/LinearAllocator.h>
 
@@ -73,6 +74,8 @@ public:
 
 	size_t vertexCount = 0;
 	size_t indexCount = 0;
+
+	SPtr<RenderShader>			spRenderShader;
 };
 
 class RenderCommandBuffer : public NonCopyable {
@@ -85,6 +88,8 @@ public:
 
 	void drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_);
 	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_);
+
+	void test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_);
 
 	void reset();
 

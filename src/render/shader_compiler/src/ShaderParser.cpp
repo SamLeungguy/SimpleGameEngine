@@ -44,7 +44,8 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 		const auto* fieldName = "properties";
 
 		j[fieldName] = {
-				{"dataSize", _pInfo->spPropertiesLayout->stride}, 
+				{"dataSize", _pInfo->spPropertiesLayout->dataSize}, 
+				{"variableCount", _pInfo->spPropertiesLayout->elements.size()},
 				{"variables", {}}
 		};
 
@@ -52,10 +53,11 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 		{
 			auto& e = j[fieldName]["variables"];
 			e.push_back({
-					{"name", elements[i].name.c_str()}, 
-					{"offset", elements[i].offset}, 
-					{"dataType", RenderDataTypeUtil::toString(elements[i].dataType)},
-					{"defaultValue", reinterpret_cast<char*>(_pInfo->propertiesDefaultData.data() + elements[i].offset)}
+					{"name",			elements[i].name.c_str()}, 
+					{"offset",			elements[i].offset}, 
+					{"dataType",		RenderDataTypeUtil::toString(elements[i].dataType)},
+					{"size",			elements[i].size},
+					{"defaultValue",	reinterpret_cast<char*>(_pInfo->propertiesDefaultData.data() + elements[i].offset)},
 			});
 		}
 	}
@@ -63,12 +65,14 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 	// serialize premutation
 	{
 		auto& elements = _pInfo->spPremutationLayout->elements;
+		elements.reserve(0);
 		const auto* fieldName = "premutation";
 
 		j[fieldName] = {
-				{"dataSize", _pInfo->spPremutationLayout->stride},
-				{"variables", {}
-			}};
+				{"dataSize", _pInfo->spPremutationLayout->dataSize},
+				{"variableCount", _pInfo->spPremutationLayout->elements.size()},
+				{"variables", {}},
+		};
 	}
 	
 	// serialize pass
@@ -76,13 +80,13 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 		const auto* fieldName = "pass"; 
 
 		j[fieldName] = {
-				{"infos", {}}
+				{"info", {}}
 		};
 
 		for (size_t i = 0; i < _pInfo->passInfoSPtrs.size(); i++)
 		{
 			auto& spInfo = _pInfo->passInfoSPtrs[i];
-			auto& e = j[fieldName]["infos"];
+			auto& e = j[fieldName]["info"];
 
 			e.push_back({
 				  {"Queue", spInfo->queue.c_str()},
@@ -94,8 +98,8 @@ void ShaderParser::writeToJsonFile(StrView outputPath_)
 				  {"DepthTest", spInfo->depthTest.c_str()},
 				  {"DepthWrite", spInfo->depthWrite},
 
-				  {"VsFunc", spInfo->shaderFuncs[enumInt(ShaderType::Vertex)].c_str()},
-				  {"PsFunc", spInfo->shaderFuncs[enumInt(ShaderType::Pixel)].c_str()},
+				  {"VsFunc", spInfo->shaderFuncs[enumInt(RenderShaderType::Vertex)].c_str()},
+				  {"PsFunc", spInfo->shaderFuncs[enumInt(RenderShaderType::Pixel)].c_str()},
 			});
 		}
 	}
@@ -228,7 +232,7 @@ void ShaderParser::_parse_properties()
 		element.offset = dataOffset;
 		element.size = RenderDataTypeUtil::getBitSize(dataType);
 
-		spPropertiesLayout->stride += element.size;
+		spPropertiesLayout->dataSize += element.size;
 		dataOffset += element.size;
 
 		// check is name exist, if then error
@@ -262,7 +266,7 @@ void ShaderParser::_parse_permutation()
 
 	u32 _leftCBracketCount = 1;
 
-	u32 dataOffset = 0;
+	//u32 dataOffset = 0;
 
 	while (_leftCBracketCount > 0)
 	{
@@ -277,14 +281,10 @@ void ShaderParser::_parse_permutation()
 			_leftCBracketCount--;
 			break;
 		}
-
-
 	}
 
 	_pInfo->spPremutationLayout.reset(new CBufferLayout());
-	auto& spPremutationLayout = _pInfo->spPremutationLayout;
-
-
+	//auto& spPremutationLayout = _pInfo->spPremutationLayout;
 
 	_check_end_parsing_keyword();
 }
@@ -480,14 +480,14 @@ void ShaderParser::_parse_each_pass()
 		_nextToken();
 		if (!_checkTokenType(TokenType::Identifier))
 			_error("VsFunc error type", _pToken->value);
-		spPassInfo->shaderFuncs[enumInt(ShaderType::Vertex)] = _pToken->value;
+		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Vertex)] = _pToken->value;
 	}
 	else if (_checkTokenValue("PsFunc"))
 	{
 		_nextToken();
 		if (!_checkTokenType(TokenType::Identifier))
 			_error("PsFunc error type", _pToken->value);
-		spPassInfo->shaderFuncs[enumInt(ShaderType::Pixel)] = _pToken->value;
+		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Pixel)] = _pToken->value;
 	}
 }
 

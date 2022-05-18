@@ -1,8 +1,10 @@
+#if SGE_RENDER_HAS_DX11
+
 #include "RenderContext_DX11.h"
 #include "Renderer_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
+#include "RenderShader_DX11.h"
 
-#if SGE_OS_WINDOWS
 #include <d3d11shader.h>
 
 namespace sge {
@@ -73,13 +75,24 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 		if (!indexBuffer) { SGE_ASSERT(false); return; }
 	}
 
-	_setTestShaders();
+	//_setTestShaders();
+	auto* pRenderShader = static_cast<RenderShader_DX11*>(cmd_.spRenderShader.ptr());
+	if (!pRenderShader)	{ SGE_ASSERT(false); return; }
+
+	pRenderShader->bind();
+
+	pRenderShader->uploadCBuffers(RenderShaderType::Vertex);
+	pRenderShader->uploadCBuffers(RenderShaderType::Pixel);
+
+	_setTestRenderState();
 
 	auto* ctx = _pRenderer->d3dDeviceContext();
+
 	auto primitive = Util::getDxPrimitiveTopology(cmd_.primitive);
 	ctx->IASetPrimitiveTopology(primitive);
 
-	auto* inputLayout = _getTestInputLayout(cmd_.pVertexLayout);
+	//auto* inputLayout = _getTestInputLayout(cmd_.pVertexLayout);
+	auto* inputLayout = pRenderShader->getInputLayout(cmd_.pVertexLayout);
 	if (!inputLayout) { SGE_ASSERT(false); return; }
 
 	ctx->IASetInputLayout(inputLayout);
@@ -272,6 +285,85 @@ void RenderContext_DX11::_setTestShaders()
 
 	ctx->VSSetShader(_cpTestVertexShader, 0, 0);
 	ctx->PSSetShader(_cpTestPixelShader, 0, 0);
+}
+
+void RenderContext_DX11::_setTestRenderState()
+{
+	HRESULT hr;
+
+	auto* dev = _pRenderer->d3dDevice();
+	auto* ctx = _pRenderer->d3dDeviceContext();
+
+	if (!_cpTestRasterizerState) {
+		D3D11_RASTERIZER_DESC rasterDesc = {};
+		rasterDesc.AntialiasedLineEnable = true;
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+		rasterDesc.DepthBias = 0;
+		rasterDesc.DepthBiasClamp = 0.0f;
+		rasterDesc.DepthClipEnable = true;
+
+		bool wireframe = true;
+		rasterDesc.FillMode = wireframe ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID;
+
+		rasterDesc.FrontCounterClockwise = true;
+		rasterDesc.MultisampleEnable = false;
+		rasterDesc.ScissorEnable = false;
+		rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+		hr = dev->CreateRasterizerState(&rasterDesc, _cpTestRasterizerState.ptrForInit());
+		Util::throwIfError(hr);
+	}
+
+	if (!_cpTestDepthStencilState) {
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+		bool depthTest = false;
+		if (depthTest) {
+			depthStencilDesc.DepthEnable = true;
+			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		}
+		else {
+			depthStencilDesc.DepthEnable = false;
+		}
+
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.StencilEnable = false;
+		depthStencilDesc.StencilReadMask = 0xFF;
+		depthStencilDesc.StencilWriteMask = 0xFF;
+
+		hr = dev->CreateDepthStencilState(&depthStencilDesc, _cpTestDepthStencilState.ptrForInit());
+		Util::throwIfError(hr);
+	}
+
+	if (!_cpTestBlendState) {
+		D3D11_BLEND_DESC blendStateDesc = {};
+		blendStateDesc.AlphaToCoverageEnable = false;
+		blendStateDesc.IndependentBlendEnable = false;
+		auto& rtDesc = blendStateDesc.RenderTarget[0];
+
+		rtDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		bool blendEnable = true;
+		if (blendEnable) {
+			rtDesc.BlendEnable = true;
+			rtDesc.BlendOp = D3D11_BLEND_OP_ADD;
+			rtDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			rtDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			rtDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			rtDesc.SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+			rtDesc.DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		}
+		else {
+			rtDesc.BlendEnable = false;
+		}
+
+		hr = dev->CreateBlendState(&blendStateDesc, _cpTestBlendState.ptrForInit());
+		Util::throwIfError(hr);
+	}
+
+	ctx->RSSetState(_cpTestRasterizerState);
+	ctx->OMSetDepthStencilState(_cpTestDepthStencilState, 1);
+
+	Color4f blendColor(1, 1, 1, 1);
+	ctx->OMSetBlendState(_cpTestBlendState, blendColor.data, 0xffffffff);
 }
 
 void RenderContext_DX11::onBeginRender()

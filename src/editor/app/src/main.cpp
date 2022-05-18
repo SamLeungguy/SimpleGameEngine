@@ -21,6 +21,7 @@ public:
 	RenderCommandBuffer _cmdBuf;
 	RenderMesh	_renderMesh;
 	RenderMesh	_renderMesh2;
+	SPtr<Material>		_spMaterial;
 
 private:
 };
@@ -86,6 +87,10 @@ void MainWin::onCreate(CreateDesc& desc_)
 
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
 	}
+
+	Material_CreateDesc mat_desc;
+	mat_desc.filename = "test.shader";
+	_spMaterial = Renderer::current()->createMaterial(mat_desc);
 }
 void MainWin::onCloseButton()
 {
@@ -105,24 +110,30 @@ void MainWin::onDraw()
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
 
-#if 1
+#if 0
 	if (_renderMesh.subMeshes().size() > 0)
 	{
-		_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
+		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
+		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
 	}
 	else if (_renderMesh2.subMeshes().size() > 0)
 	{
-		_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
+		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
+		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh2, _spMaterial);
 	}
 #else
 	static u64 frame = 0;
 	if (frame % 40 > 20)
 	{
-		_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
+		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
+		_spMaterial->setFloat("data.v0", 0.0f);
+		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
 	}
 	else
 	{
-		_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
+		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
+		_spMaterial->setFloat("data.v0", 1.0f);
+		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
 	}
 	frame++;
 #endif // 0

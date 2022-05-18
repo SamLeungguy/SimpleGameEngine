@@ -1,11 +1,11 @@
 #pragma once
 
+#if SGE_RENDER_HAS_DX11
+
 #include "Render_Common_DX11.h"
 #include "../../RenderContext.h"
 
 #include <sge_render/command/RenderCommand.h>
-
-#if SGE_OS_WINDOWS
 
 namespace sge {
 
@@ -31,6 +31,7 @@ namespace sge {
 
 		void _createRenderTarget();
 		void _setTestShaders();
+		void _setTestRenderState();
 
 	protected:
 		Renderer_DX11* _pRenderer = nullptr;

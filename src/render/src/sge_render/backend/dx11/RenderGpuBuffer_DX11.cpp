@@ -1,3 +1,5 @@
+#if SGE_RENDER_HAS_DX11
+
 #include "RenderGpuBuffer_DX11.h"
 #include "Renderer_DX11.h"
 
@@ -59,3 +61,5 @@ void RenderGpuBuffer_DX11::onUploadToGpu(Span<const u8> data_, size_t offset_)
 }
 
 }
+
+#endif

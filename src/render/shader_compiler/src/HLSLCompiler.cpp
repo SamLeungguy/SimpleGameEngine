@@ -51,8 +51,8 @@ void HLSLCompiler::_compile()
 	for (auto& sp : _spParsedInfo->passInfoSPtrs)
 	{
 
-		_compile_shaders(sp, ShaderType::Vertex, srcCode, iPass);
-		_compile_shaders(sp, ShaderType::Pixel, srcCode, iPass);
+		_compile_shaders(sp, RenderShaderType::Vertex, srcCode, iPass);
+		_compile_shaders(sp, RenderShaderType::Pixel, srcCode, iPass);
 		//_compile_shaders(sp, ShaderType::Gemotry, srcCode, iPass);
 		//_compile_shaders(sp, ShaderType::Tessellation, srcCode, iPass);
 		//_compile_shaders(sp, ShaderType::Compute, srcCode, iPass);
@@ -61,7 +61,7 @@ void HLSLCompiler::_compile()
 	}
 }
 
-void HLSLCompiler::_compile_shaders(SPtr<PassInfo>& spPassInfo_, ShaderType type_, Span<const u8> srcCode_, int passIndex_)
+void HLSLCompiler::_compile_shaders(SPtr<PassInfo>& spPassInfo_, RenderShaderType type_, Span<const u8> srcCode_, int passIndex_)
 {
 	auto type = enumInt(type_);
 	const auto& targetStr = spPassInfo_->shaderFuncs[type];
@@ -93,7 +93,7 @@ void HLSLCompiler::_compile_shaders(SPtr<PassInfo>& spPassInfo_, ShaderType type
 
 }
 
-void HLSLCompiler::_reflect(ShaderType type_, ComPtr<ID3D11ShaderReflection>& cpReflection_, ComPtr<ID3DBlob>& cpBlob_)
+void HLSLCompiler::_reflect(RenderShaderType type_, ComPtr<ID3D11ShaderReflection>& cpReflection_, ComPtr<ID3DBlob>& cpBlob_)
 {
 	ComPtr<ID3D11ShaderReflection>& cpReflection = cpReflection_;
 
@@ -109,11 +109,11 @@ void HLSLCompiler::_reflect(ShaderType type_, ComPtr<ID3D11ShaderReflection>& cp
 	auto& threadSize = spShaderInfo->_csWorkGroupSize;
 	cpReflection->GetThreadGroupSize(&threadSize.x, &threadSize.y, &threadSize.z);
 
-	spShaderInfo->_version = getShaderVersion(desc.Version);
+	spShaderInfo->_version = Util::getShaderVersion(desc.Version);
 
 	{
 		_reflect_inputs				(cpBlob_, cpReflection, desc);
-		_reflect_uniformBuffers		(cpBlob_, cpReflection, desc);	
+		_reflect_cBuffers		(cpBlob_, cpReflection, desc);	
 		_reflect_textures			(cpBlob_, cpReflection, desc);
 		_reflect_samplers			(cpBlob_, cpReflection, desc);
 		_reflect_storageBuffers		(cpBlob_, cpReflection, desc);	
@@ -144,9 +144,9 @@ void HLSLCompiler::_reflect_inputs(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11Shade
 		auto& input = spShaderInfo->_inputs.back();
 
 		//input.name = input_desc.SemanticName;
-		Vertex_Semantic semantic;
-		auto semanticType = getSemanticType(input_desc.SemanticName);
-		UINT semanticIndex = input_desc.SemanticIndex;
+		//Vertex_Semantic semantic;
+		auto semanticType = Util::getSemanticType(input_desc.SemanticName);
+		auto semanticIndex = static_cast<u8>(input_desc.SemanticIndex);
 		input.semantic = Vertex_SemanticUtil::make(semanticType, semanticIndex);
 		input.dataType = Util::getRenderDataTypeBySemanticName(input_desc.SemanticName);
 
@@ -160,7 +160,7 @@ void HLSLCompiler::_reflect_inputs(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11Shade
 #endif
 }
 
-void HLSLCompiler::_reflect_uniformBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11ShaderReflection>& cpReflection_, D3D11_SHADER_DESC& desc_)
+void HLSLCompiler::_reflect_cBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11ShaderReflection>& cpReflection_, D3D11_SHADER_DESC& desc_)
 {
 	auto& desc = desc_;
 
@@ -190,7 +190,7 @@ void HLSLCompiler::_reflect_uniformBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3
 		auto& spCbufferLayout = spShaderInfo->_cBufferLayoutSPtrs.back();
 
 		//SGE_DUMP_VAR(cb_desc.Size);
-		spCbufferLayout->stride = Math::byteToBit(cb_desc.Size);
+		spCbufferLayout->dataSize = Math::byteToBit(cb_desc.Size);
 		spCbufferLayout->bindPoint = res_bind_desc.BindPoint;
 		spCbufferLayout->bindCount = res_bind_desc.BindCount;
 
@@ -219,8 +219,8 @@ void HLSLCompiler::_reflect_uniformBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3
 
 			element.hash	= Math::hashStr(var_desc.Name);
 			element.name	= var_desc.Name;
-			element.offset	= Math::byteToBit(var_desc.StartOffset);
-			element.size	= Math::byteToBit(var_desc.Size);
+			element.offset	= Math::byteToBit(static_cast<u16>(var_desc.StartOffset));
+			element.size	= Math::byteToBit(static_cast<u16>(var_desc.Size));
 
 			if (type_desc.Class != D3D_SVC_STRUCT)
 			{
@@ -297,9 +297,9 @@ void HLSLCompiler::_reflect_appendCBufferLayout_if_is_strcut(ID3D11ShaderReflect
 
 		mElement.hash = Math::hashStr(mElement.name.c_str());
 		mElement.name = tmpString;
-		mElement.offset = structStartOffset + Math::byteToBit(member_type_desc.Offset);
+		mElement.offset = static_cast<u16>(structStartOffset + Math::byteToBit(member_type_desc.Offset));
 
-		auto array_element_count = member_type_desc.Elements ? member_type_desc.Elements : 1;
+		u32 array_element_count = member_type_desc.Elements ? member_type_desc.Elements : 1;
 		mElement.size = array_element_count * RenderDataTypeUtil::getBitSize(mElement.dataType);
 
 #if HLSL_COMPILER_DEBUG
@@ -334,8 +334,9 @@ void HLSLCompiler::_writeToJsonFile(StrView outputPath_)
 
 		_writeToJsonFile_inputs(j, spInfo);
 		_writeToJsonFile_params(j, spInfo);
-		_writeToJsonFile_uniformBuffers(j, spInfo);
+		_writeToJsonFile_cBuffers(j, spInfo);
 		_writeToJsonFile_textures(j, spInfo);
+		_writeToJsonFile_samplers(j, spInfo);
 		_writeToJsonFile_storageBuffers(j, spInfo);
 
 		MemMapFile mm;
@@ -401,33 +402,35 @@ void HLSLCompiler::_writeToJsonFile_params(json& out_, SPtr<ShaderInfo>& spInfo_
 	j["params"] = {};
 }
 
-void HLSLCompiler::_writeToJsonFile_uniformBuffers(json& out_, SPtr<ShaderInfo>& spInfo_)
+void HLSLCompiler::_writeToJsonFile_cBuffers(json& out_, SPtr<ShaderInfo>& spInfo_)
 {
 	auto& spInfo = spInfo_;
 	auto& j = out_;
 
 	// write cbuffer layout
-	j["uniformBuffers"] = { {} };
-	auto& j_uniform = j["uniformBuffers"];
+	j["cBuffers"] = { {} };
+	auto& j_uniform = j["cBuffers"];
 
 	int i = 0;
 	for (auto& spCBufferLayout : spInfo->_cBufferLayoutSPtrs)
 	{
 		j_uniform[i] = {
-				{"name", "$Globals"},
-				{"bindPoint",	spCBufferLayout->bindPoint},
-				{"bindCount",	spCBufferLayout->bindCount},
-				{"dataSize",	spCBufferLayout->stride},
-				{"variables", {}}
+			{"name",			"$Globals"},
+			{"bindPoint",		spCBufferLayout->bindPoint},
+			{"bindCount",		spCBufferLayout->bindCount},
+			{"dataSize",		spCBufferLayout->dataSize},
+			{"variableCount",	spCBufferLayout->elements.size()},
+			{"variables", {}}
 		};
 
 		for (auto& element : spCBufferLayout->elements)
 		{
 			auto& value = j_uniform.back()["variables"];
 			value.push_back({
-					{"name",	element.name.c_str()},
-					{"offset",	element.offset},
-					{"dataType", RenderDataTypeUtil::toString(element.dataType)}
+				{"name",		element.name.c_str()},
+				{"offset",		element.offset},
+				{"dataType",	RenderDataTypeUtil::toString(element.dataType)},
+				{"size",		element.size},
 			});
 		}
 		i++;
@@ -436,39 +439,43 @@ void HLSLCompiler::_writeToJsonFile_uniformBuffers(json& out_, SPtr<ShaderInfo>&
 
 void HLSLCompiler::_writeToJsonFile_textures(json& out_, SPtr<ShaderInfo>& spInfo_)
 {
-	auto& spInfo = spInfo_;
+	//auto& spInfo = spInfo_;
 	auto& j = out_;
 
 	j["textures"] = {
-		{"name", ""},
+		/*{"name", ""},
 		{"bindPoint", 0},
-		{"bindCount", 1},
-		{"dataSize", 176}
+		{"bindCount", 0},
+		{"dataSize", 0}*/
+	};
+}
+
+void HLSLCompiler::_writeToJsonFile_samplers(json& out_, SPtr<ShaderInfo>& spInfo_)
+{
+	//auto& spInfo = spInfo_;
+	auto& j = out_;
+
+	j["samplers"] = {
+		/*{"name", ""},
+		{"bindPoint", 0},
+		{"bindCount", 0},
+		{"dataSize", 0}*/
 	};
 }
 
 void HLSLCompiler::_writeToJsonFile_storageBuffers(json& out_, SPtr<ShaderInfo>& spInfo_)
 {
-	auto& spInfo = spInfo_;
 	auto& j = out_;
-	//	j["storageBuffers"] = {
-	//	{"name", "$Globals"}
-	//	, {"bindPoint", 0}
-	//	, {"bindCount", 1}
-	//	, {"dataSize", 176}
-	//	};
-	//	//for (size_t i = 0; i < 3; i++)
-	//	//{
-	//	//	j["storageBuffers"]["variables"] = {
-	//	//	{"name", "matMvp"}
-	//	//	, {"offset", 0}
-	//	//	, {"dataType", /*enum to string*/ "Float32_4x4"}
-	//	//	};
-	//	//}
 
+	j["storageBuffers"] = {
+		/*{"name", ""},
+		{"bindPoint", 0},
+		{"bindCount", 0},
+		{"dataSize", 0}*/
+	};
 }
 
-void HLSLCompiler::_toOutputShaderPath(TempString& out_, ShaderType type_, int passIndex_)
+void HLSLCompiler::_toOutputShaderPath(TempString& out_, RenderShaderType type_, int passIndex_)
 {
 	out_.clear();
 	out_.append(_outputFilepath.c_str());

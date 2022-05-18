@@ -25,9 +25,10 @@ public:
 	DX11_ID3DDebug*					d3dDebug()					{ return _cpD3dDebug; }
 
 protected:
-	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc_) override;
-	virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_) override;
-	virtual RenderShader* onCreateShader(RenderShader_CreateDesc& desc_) override;
+	virtual RenderContext*		onCreateContext(RenderContext_CreateDesc& desc_) override;
+	virtual RenderGpuBuffer*	onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_) override;
+	virtual RenderShader*		onCreateShader(RenderShader_CreateDesc& desc_) override;
+	virtual Material*			onCreateMaterial(Material_CreateDesc& desc_) override;
 
 	ComPtr<DX11_IDXGIFactory>		_cpDxgiFactory;
 	ComPtr<DX11_IDXGIDevice>		_cpDxgiDevice;
