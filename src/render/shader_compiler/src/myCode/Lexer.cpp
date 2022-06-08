@@ -1,3 +1,4 @@
+#if 0
 #include "Lexer.h"
 #include "sge_core/file/MemMapFile.h"
 
@@ -107,7 +108,7 @@ void Lexer::loadMem(Span<const u8> src_)
 	_source = StrView(reinterpret_cast<const char*>(src_.data()), src_.size() * sizeof(char));
 	_sourceRemain = _source;
 
-	while (_sourceRemain.size() > 0  && (!_isEnded || !_isStartParsing))
+	while (_sourceRemain.size() > 0 && (!_isEnded || !_isStartParsing))
 	{
 		_nextLine();
 		if (_currentLine.size() > 0)
@@ -134,15 +135,15 @@ void Lexer::_nextToken()
 {
 	_lineRemain = StringUtil::trimChar(_lineRemain, " \t\r");
 	//auto pair = StringUtil::splitByChar_Inclusive(_lineRemain, " {}\t\r");
-	auto pair	= StringUtil::splitByChar(_lineRemain,	" \t\r");
-	_token		= StringUtil::trimChar(pair.first,		" \t\r");
-	_lineRemain = StringUtil::trimChar(pair.second,		" \t\r");
+	auto pair = StringUtil::splitByChar(_lineRemain, " \t\r");
+	_token = StringUtil::trimChar(pair.first, " \t\r");
+	_lineRemain = StringUtil::trimChar(pair.second, " \t\r");
 
 }
 
 void Lexer::_parseLine()
 {
-	
+
 }
 
 void Lexer::_parseToken()
@@ -239,3 +240,4 @@ void Lexer::_checkShouldEnd()
 }
 
 }
+#endif // 0

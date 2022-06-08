@@ -1,5 +1,6 @@
+#if 0
 #include "Shader.h"
-#include "../Renderer.h"
+#include "../../../Renderer.h"
 
 namespace sge {
 
@@ -10,4 +11,6 @@ Material* Shader::s_find(StrView filename_)
 	return Renderer::current()->createMaterial(desc);
 }
 
+
 }
+#endif // 0

@@ -1,15 +1,16 @@
+#if 0
 #pragma once
 
-#include "../vertex/Vertex.h"
-#include "../buffer/RenderGpuBuffer.h"
+#include "../../../vertex/Vertex.h"
+#include "../../../buffer/RenderGpuBuffer.h"
 
 namespace sge {
 
 struct InputAttribute
 {
 	//String name;
-	Vertex_Semantic semantic	= Vertex_Semantic::None;
-	RenderDataType dataType		= RenderDataType::None;
+	Vertex_Semantic semantic = Vertex_Semantic::None;
+	RenderDataType dataType = RenderDataType::None;
 
 	String semanticStr;
 };
@@ -61,15 +62,15 @@ struct ShaderParsedInfo : public Object			// one per whole shader
 	struct PassInfo : public Object
 	{
 		String name;
-		String queue	= "Transparent";	// shd be qeue enum
-		String cull		= "None";			// shd be cull enum
+		String queue = "Transparent";	// shd be qeue enum
+		String cull = "None";			// shd be cull enum
 
 		String blendRGB;					// shd be blend enum
 		String blendAlpha;					// shd be blend enum
-		
+
 		String depthTest;					// shd be depthTest enum
 		bool depthWrite = false;			// shd be depthWrite enum
-		
+
 		String shaderFuncs[enumInt(RenderShaderType::Count)]/* = {"vs_main",  "ps_main", "", "", ""}*/;
 
 		//String vsFunc	= "vs_main";
@@ -98,7 +99,7 @@ public:
 	RenderShaderType _type;
 
 	String _version;
-	Tuple3u _csWorkGroupSize = {0, 0, 0};
+	Tuple3u _csWorkGroupSize = { 0, 0, 0 };
 
 	SPtr<ShaderParsedInfo>		_spShaderParsedInfo;
 
@@ -122,3 +123,4 @@ private:
 
 
 }
+#endif // 0

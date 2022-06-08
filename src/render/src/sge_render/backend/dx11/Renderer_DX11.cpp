@@ -3,7 +3,7 @@
 #include "Renderer_DX11.h"
 #include "RenderContext_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
-#include "RenderShader_DX11.h"
+#include "Shader_DX11.h"
 #include "Material_DX11.h"
 
 namespace sge{
@@ -109,9 +109,9 @@ RenderGpuBuffer* Renderer_DX11::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& de
 	return new RenderGpuBuffer_DX11(desc_);
 }
 
-RenderShader* Renderer_DX11::onCreateShader(RenderShader_CreateDesc& desc_)
+Shader* Renderer_DX11::onCreateShader(Shader_CreateDesc& desc_)
 {
-	return new RenderShader_DX11(desc_);
+	return new Shader_DX11(desc_);
 }
 
 Material* Renderer_DX11::onCreateMaterial(Material_CreateDesc& desc_)

@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #if SGE_RENDER_HAS_DX11
@@ -19,7 +20,7 @@ public:
 	~RenderShader_DX11() = default;
 
 	void destroy();
-	
+
 	void reload();
 	void bind();
 
@@ -39,3 +40,4 @@ protected:
 }
 
 #endif
+#endif // 0

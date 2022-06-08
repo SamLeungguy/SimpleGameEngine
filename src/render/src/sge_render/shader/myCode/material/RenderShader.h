@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include "ShaderInfo.h"
@@ -26,7 +27,8 @@ protected:
 	Vector<SPtr<ShaderInfo>> _shaderInfoSPtrs;		// vs, ps, / gs/ ts / cs
 };
 
-inline Vector<SPtr<ShaderInfo>>& RenderShader::getShaderInfoSPtrs()				{ return _shaderInfoSPtrs; }
-inline const Vector<SPtr<ShaderInfo>>& RenderShader::getShaderInfoSPtrs() const	{ return _shaderInfoSPtrs; }
+inline Vector<SPtr<ShaderInfo>>& RenderShader::getShaderInfoSPtrs() { return _shaderInfoSPtrs; }
+inline const Vector<SPtr<ShaderInfo>>& RenderShader::getShaderInfoSPtrs() const { return _shaderInfoSPtrs; }
 
 }
+#endif // 0

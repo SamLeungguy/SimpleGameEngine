@@ -9,4 +9,4 @@
 
 #include "sge_render/mesh/WavefrontObjLoader.h"
 
-#include "sge_render/material/Material.h"
+#include "sge_render/shader/Material.h"

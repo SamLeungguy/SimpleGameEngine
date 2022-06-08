@@ -1,3 +1,4 @@
+#if 0
 #if SGE_RENDER_HAS_DX11
 
 #include "RenderShader_DX11.h"
@@ -136,7 +137,7 @@ void RenderShader_DX11_Helper::deserialize_inputs(SPtr<ShaderInfo>& spShaderInfo
 		{
 			auto pair = StringUtil::splitByChar_Inclusive(tmpStdStr.c_str(), "0123456789");
 			tmpStr.append(pair.first.begin(), pair.first.end());
-			
+
 			_addInputAttrCount(inputAttrBucket, tmpStr.c_str());
 
 			semanticType = Util::getSemanticType(tmpStr.c_str());
@@ -283,10 +284,10 @@ const VertexLayout* RenderShader_DX11_Helper::_makeVertexLayout(Map<size_t, u8>&
 
 	it = bucket_.find(compares[3]);
 	u8 colorCount = it != bucket_.end() ? it->second : 0;
-	
+
 	it = bucket_.find(compares[4]);
 	u8 normalCount = it != bucket_.end() ? it->second : 0;
-	
+
 	it = bucket_.find(compares[5]);
 	u8 tangentCount = it != bucket_.end() ? it->second : 0;
 
@@ -350,11 +351,11 @@ void RenderShader_DX11::uploadCBuffers(RenderShaderType type_)
 {
 	auto* ctx = Renderer_DX11::current()->d3dDeviceContext();
 
-	auto& shaderInfoSPtrs	= _shaderInfoSPtrs;
-	auto& cBufferLayoutPtrs	= shaderInfoSPtrs[enumInt(type_)]->_cBufferLayoutSPtrs;
-	auto& cBufferPtrs		= shaderInfoSPtrs[enumInt(type_)]->_cBufferSPtrs;
-	auto& cBufferData		= shaderInfoSPtrs[enumInt(type_)]->_cBufferData;
-	auto& isDirties			= shaderInfoSPtrs[enumInt(type_)]->_isDirties;
+	auto& shaderInfoSPtrs = _shaderInfoSPtrs;
+	auto& cBufferLayoutPtrs = shaderInfoSPtrs[enumInt(type_)]->_cBufferLayoutSPtrs;
+	auto& cBufferPtrs = shaderInfoSPtrs[enumInt(type_)]->_cBufferSPtrs;
+	auto& cBufferData = shaderInfoSPtrs[enumInt(type_)]->_cBufferData;
+	auto& isDirties = shaderInfoSPtrs[enumInt(type_)]->_isDirties;
 
 	Vector_<DX11_ID3DBuffer*, 15> cBufferPtrs_dx;
 
@@ -380,12 +381,12 @@ void RenderShader_DX11::uploadCBuffers(RenderShaderType type_)
 		switch (type_)
 		{
 			using Type = RenderShaderType;
-			case Type::Vertex:			ctx->VSSetConstantBuffers(bindPoint, 1, ppCBuffers);	break;
-			case Type::Pixel:			ctx->PSSetConstantBuffers(bindPoint, 1, ppCBuffers);	break;
+		case Type::Vertex:			ctx->VSSetConstantBuffers(bindPoint, 1, ppCBuffers);	break;
+		case Type::Pixel:			ctx->PSSetConstantBuffers(bindPoint, 1, ppCBuffers);	break;
 			//case Type::Gemotry:			ctx->GSSetConstantBuffers(bindPoint,  count, cBufferPtrs_dx.data());	break;
 			//case Type::Tessellation:		ctx->TSSetConstantBuffers(bindPoint, count, cBufferPtrs_dx.data());		break;
 			//case Type::Compute:			ctx->CSSetConstantBuffers(bindPoint, count, cBufferPtrs_dx.data());		break;
-			default:	throw SGE_ERROR("invalid type");	break;
+		default:	throw SGE_ERROR("invalid type");	break;
 		}
 
 		//SGE_DUMP_VAR(*reinterpret_cast<float*>(cBufferData[i].data()), cBufferData[i].size());
@@ -444,3 +445,4 @@ DX11_ID3DInputLayout* RenderShader_DX11::getInputLayout(const VertexLayout* src)
 }
 
 #endif
+#endif // 0

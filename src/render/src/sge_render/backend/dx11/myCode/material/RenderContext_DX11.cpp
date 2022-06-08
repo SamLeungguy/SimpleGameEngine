@@ -1,9 +1,10 @@
+#if 0
 #if SGE_RENDER_HAS_DX11
 
 #include "RenderContext_DX11.h"
 #include "Renderer_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
-#include "Shader_DX11.h"
+#include "RenderShader_DX11.h"
 
 #include <d3d11shader.h>
 
@@ -76,13 +77,13 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	}
 
 	//_setTestShaders();
-	//auto* pRenderShader = static_cast<RenderShader_DX11*>(cmd_.spRenderShader.ptr());
-	//if (!pRenderShader)	{ SGE_ASSERT(false); return; }
+	auto* pRenderShader = static_cast<RenderShader_DX11*>(cmd_.spRenderShader.ptr());
+	if (!pRenderShader) { SGE_ASSERT(false); return; }
 
-	//pRenderShader->bind();
+	pRenderShader->bind();
 
-	//pRenderShader->uploadCBuffers(RenderShaderType::Vertex);
-	//pRenderShader->uploadCBuffers(RenderShaderType::Pixel);
+	pRenderShader->uploadCBuffers(RenderShaderType::Vertex);
+	pRenderShader->uploadCBuffers(RenderShaderType::Pixel);
 
 	_setTestRenderState();
 
@@ -92,10 +93,10 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	ctx->IASetPrimitiveTopology(primitive);
 
 	//auto* inputLayout = _getTestInputLayout(cmd_.pVertexLayout);
-	//auto* inputLayout = pRenderShader->getInputLayout(cmd_.pVertexLayout);
-	//if (!inputLayout) { SGE_ASSERT(false); return; }
+	auto* inputLayout = pRenderShader->getInputLayout(cmd_.pVertexLayout);
+	if (!inputLayout) { SGE_ASSERT(false); return; }
 
-	//ctx->IASetInputLayout(inputLayout);
+	ctx->IASetInputLayout(inputLayout);
 
 	UINT stride = static_cast<UINT>(cmd_.pVertexLayout->stride);
 	UINT offset = 0;
@@ -171,7 +172,7 @@ void RenderContext_DX11::_setTestShaders()
 	if (!_cpTestVertexShader) {
 		ComPtr<ID3DBlob>	bytecode;
 		ComPtr<ID3DBlob>	errorMsg;
-		
+
 
 #if 1   // Test Load binary from file
 		{
@@ -180,7 +181,7 @@ void RenderContext_DX11::_setTestShaders()
 
 			hr = dev->CreateVertexShader(mm2.data(), mm2.size(), nullptr, _cpTestVertexShader.ptrForInit());
 			Util::throwIfError(hr);
-			
+
 			ComPtr<ID3D11ShaderReflection> cpReflection;
 			hr = D3DReflect(mm2.data(), mm2.size(), IID_PPV_ARGS(cpReflection.ptrForInit()));
 			Util::throwIfError(hr);
@@ -409,7 +410,7 @@ void RenderContext_DX11::onCommit(RenderCommandBuffer& cmdBuf_)
 
 DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout* src)
 {
-	if (!src) 
+	if (!src)
 		return nullptr;
 
 	auto it = _testInputLayouts.find(src);
@@ -458,3 +459,5 @@ DX11_ID3DInputLayout* RenderContext_DX11::_getTestInputLayout(const VertexLayout
 
 
 #endif // sge_os_windows
+
+#endif // 0

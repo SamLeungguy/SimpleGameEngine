@@ -88,9 +88,9 @@ void MainWin::onCreate(CreateDesc& desc_)
 		VertexLayoutManager::current()->getLayout(Vertex_Pos::s_type);
 	}
 
-	Material_CreateDesc mat_desc;
-	mat_desc.filename = "test.shader";
-	_spMaterial = Renderer::current()->createMaterial(mat_desc);
+	//Material_CreateDesc mat_desc;
+	//mat_desc.filename = "test.shader";
+	//_spMaterial = Renderer::current()->createMaterial(mat_desc);
 }
 void MainWin::onCloseButton()
 {
@@ -126,14 +126,14 @@ void MainWin::onDraw()
 	if (frame % 40 > 20)
 	{
 		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh);
-		_spMaterial->setFloat("data.v0", 0.0f);
-		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
+		//_spMaterial->setFloat("data.v0", 0.0f);
+		//_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
 	}
 	else
 	{
 		//_cmdBuf.drawMesh(SGE_LOC, _renderMesh2);
-		_spMaterial->setFloat("data.v0", 1.0f);
-		_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
+		//_spMaterial->setFloat("data.v0", 1.0f);
+		//_cmdBuf.test_drawMesh(SGE_LOC, _renderMesh, _spMaterial);
 	}
 	frame++;
 #endif // 0

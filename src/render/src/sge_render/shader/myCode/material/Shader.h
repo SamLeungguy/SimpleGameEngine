@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include "Material.h"
@@ -14,3 +15,4 @@ private:
 };
 
 }
+#endif // 0

@@ -53,7 +53,7 @@ void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMes
 		}
 	}*/
 
-	for (auto& sm : mesh_.subMeshes()) {
+	/*for (auto& sm : mesh_.subMeshes()) {
 		cmd->primitive = sm.getPrimitive();
 		cmd->pVertexLayout = sm.getVertexLayout();
 		cmd->spVertexBuffer = sm.getVertexBuffer();
@@ -62,7 +62,7 @@ void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMes
 		cmd->indexType = sm.getIndexType();
 		cmd->indexCount = sm.getIndexCount();
 		cmd->spRenderShader.reset(spMaterial_->getShaderPasses()[0]._spRenderShader);
-	}
+	}*/
 }
 
 void RenderCommandBuffer::reset()

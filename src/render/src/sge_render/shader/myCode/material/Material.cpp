@@ -1,7 +1,9 @@
+#if 0
 #include "Material.h"
 #include "../Renderer.h"
 
 #include <nlohmann/json.hpp>
+#include "..\..\Material.h"
 
 namespace sge {
 
@@ -29,7 +31,7 @@ private:
 };
 
 std::string Material_Helper::getJsonStr(json& j_, const char* name_)
-{ 
+{
 	return j_.at(name_).get<std::string>();
 }
 
@@ -117,15 +119,15 @@ void Material_Helper::deserializeParsedInfo_passes()
 
 	for (auto& j : jp)
 	{
-		auto& spPassInfo		= spInfo->passInfoSPtrs.emplace_back(new ShaderParsedInfo::PassInfo());
-		spPassInfo->queue		= getJsonStr(j, "Queue").c_str();
-		spPassInfo->cull		= getJsonStr(j, "Cull").c_str();
-		spPassInfo->blendRGB	= getJsonStr(j, "BlendRGB").c_str();
-		spPassInfo->blendAlpha	= getJsonStr(j, "BlendAlpha").c_str();
-		spPassInfo->depthTest	= getJsonStr(j, "DepthTest").c_str();
-		spPassInfo->depthWrite	= j.at("DepthWrite").get<bool>();
-		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Vertex)]	= getJsonStr(j, "VsFunc").c_str();
-		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Pixel)]	= getJsonStr(j, "PsFunc").c_str();
+		auto& spPassInfo = spInfo->passInfoSPtrs.emplace_back(new ShaderParsedInfo::PassInfo());
+		spPassInfo->queue = getJsonStr(j, "Queue").c_str();
+		spPassInfo->cull = getJsonStr(j, "Cull").c_str();
+		spPassInfo->blendRGB = getJsonStr(j, "BlendRGB").c_str();
+		spPassInfo->blendAlpha = getJsonStr(j, "BlendAlpha").c_str();
+		spPassInfo->depthTest = getJsonStr(j, "DepthTest").c_str();
+		spPassInfo->depthWrite = j.at("DepthWrite").get<bool>();
+		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Vertex)] = getJsonStr(j, "VsFunc").c_str();
+		spPassInfo->shaderFuncs[enumInt(RenderShaderType::Pixel)] = getJsonStr(j, "PsFunc").c_str();
 	}
 }
 
@@ -184,4 +186,9 @@ void Material::setFloat(StrView name_, float value)
 	}
 }
 
+Material::Material(Material_CreateDesc& desc_)
+{
 }
+
+}
+#endif // 0

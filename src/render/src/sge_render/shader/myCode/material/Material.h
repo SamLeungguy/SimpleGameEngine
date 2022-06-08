@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include "RenderShader.h"
@@ -35,7 +36,8 @@ protected:
 	SPtr<ShaderParsedInfo>	_spShaderParsedInfo;
 };
 
-inline const Vector<ShaderPass>& Material::getShaderPasses() const	{ return _shaderPasses; }
-inline Vector<ShaderPass>& Material::getShaderPasses()				{ return _shaderPasses; }
+inline const Vector<ShaderPass>& Material::getShaderPasses() const { return _shaderPasses; }
+inline Vector<ShaderPass>& Material::getShaderPasses() { return _shaderPasses; }
 
 }
+#endif // 0

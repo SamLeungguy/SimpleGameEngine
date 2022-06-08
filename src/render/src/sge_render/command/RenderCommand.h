@@ -2,7 +2,7 @@
 
 #include "../vertex/Vertex.h"
 #include "../buffer/RenderGpuBuffer.h"
-#include "../material/Material.h"
+#include "../shader/Material.h"
 
 #include <sge_core/allocator/LinearAllocator.h>
 
@@ -75,7 +75,7 @@ public:
 	size_t vertexCount = 0;
 	size_t indexCount = 0;
 
-	SPtr<RenderShader>			spRenderShader;
+	SPtr<Shader>			spShader;
 };
 
 class RenderCommandBuffer : public NonCopyable {

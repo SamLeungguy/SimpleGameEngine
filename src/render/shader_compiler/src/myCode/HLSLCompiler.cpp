@@ -1,3 +1,4 @@
+#if 0
 
 #if SGE_RENDER_HAS_DX11
 #include "HLSLCompiler.h"
@@ -102,7 +103,7 @@ void HLSLCompiler::_reflect(RenderShaderType type_, ComPtr<ID3D11ShaderReflectio
 
 	auto& spShaderInfo = _shaderInfoSPtrs.back();
 	spShaderInfo->_type = type_;
-	
+
 	D3D11_SHADER_DESC desc;
 	cpReflection->GetDesc(&desc);
 
@@ -112,11 +113,11 @@ void HLSLCompiler::_reflect(RenderShaderType type_, ComPtr<ID3D11ShaderReflectio
 	spShaderInfo->_version = Util::getShaderVersion(desc.Version);
 
 	{
-		_reflect_inputs				(cpBlob_, cpReflection, desc);
-		_reflect_cBuffers		(cpBlob_, cpReflection, desc);	
-		_reflect_textures			(cpBlob_, cpReflection, desc);
-		_reflect_samplers			(cpBlob_, cpReflection, desc);
-		_reflect_storageBuffers		(cpBlob_, cpReflection, desc);	
+		_reflect_inputs(cpBlob_, cpReflection, desc);
+		_reflect_cBuffers(cpBlob_, cpReflection, desc);
+		_reflect_textures(cpBlob_, cpReflection, desc);
+		_reflect_samplers(cpBlob_, cpReflection, desc);
+		_reflect_storageBuffers(cpBlob_, cpReflection, desc);
 	}
 }
 
@@ -155,8 +156,8 @@ void HLSLCompiler::_reflect_inputs(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11Shade
 	}
 
 #if HLSL_COMPILER_DEBUG 
-		const auto* data_type = RenderDataTypeUtil::toString(input.dataType);
-		SGE_LOG("{}: {}", "input data", dataType);
+	const auto* data_type = RenderDataTypeUtil::toString(input.dataType);
+	SGE_LOG("{}: {}", "input data", dataType);
 #endif
 }
 
@@ -217,10 +218,10 @@ void HLSLCompiler::_reflect_cBuffers(ComPtr<ID3DBlob>& cpBlob_, ComPtr<ID3D11Sha
 			spCbufferLayout->elements.push_back();
 			auto& element = spCbufferLayout->elements.back();
 
-			element.hash	= Math::hashStr(var_desc.Name);
-			element.name	= var_desc.Name;
-			element.offset	= Math::byteToBit(static_cast<u16>(var_desc.StartOffset));
-			element.size	= Math::byteToBit(static_cast<u16>(var_desc.Size));
+			element.hash = Math::hashStr(var_desc.Name);
+			element.name = var_desc.Name;
+			element.offset = Math::byteToBit(static_cast<u16>(var_desc.StartOffset));
+			element.size = Math::byteToBit(static_cast<u16>(var_desc.Size));
 
 			if (type_desc.Class != D3D_SVC_STRUCT)
 			{
@@ -324,7 +325,7 @@ void HLSLCompiler::_writeToJsonFile(StrView outputPath_)
 		// this vs / ps info to json
 		json j;
 		auto type = enumInt(spInfo->_type);
-		
+
 		tmpString.clear();
 		tmpString.append(s_shaderTypeStrs[type]);
 		tmpString.append(s_version);
@@ -431,7 +432,7 @@ void HLSLCompiler::_writeToJsonFile_cBuffers(json& out_, SPtr<ShaderInfo>& spInf
 				{"offset",		element.offset},
 				{"dataType",	RenderDataTypeUtil::toString(element.dataType)},
 				{"size",		element.size},
-			});
+				});
 		}
 		i++;
 	}
@@ -490,3 +491,5 @@ void HLSLCompiler::_toOutputShaderPath(TempString& out_, RenderShaderType type_,
 }
 
 #endif
+
+#endif // 0

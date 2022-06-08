@@ -20,7 +20,7 @@ RenderGpuBuffer* Renderer_gl::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc
 	return new RenderGpuBuffer_gl(desc_);
 }
 
-RenderShader* Renderer_gl::onCreateShader(RenderShader_CreateDesc& desc_)
+Shader* Renderer_gl::onCreateShader(Shader_CreateDesc& desc_)
 {
 	return nullptr;
 }

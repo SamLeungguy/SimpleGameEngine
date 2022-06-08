@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 namespace sge {
@@ -44,7 +45,7 @@ public:
 	}
 
 	Lexer();
-	
+
 	Vector<Token> parse(StrView filename_);
 
 private:
@@ -95,17 +96,18 @@ private:
 inline void Lexer::_error(StrView msg_) { throw SGE_ERROR("{}: {}", _lineNumber, msg_); }
 
 inline Lexer::TokenType Lexer::_try_getTokenType(StrView token_)
-{ 
+{
 	using Type = Lexer::TokenType;
 	if (token_.size() <= 0)
 		return Type::None;
 
-	if (_isOperator(token_))	{ return Type::Operator; }
-	if (_isString(token_))		{ 
-		return Type::String; }
-	if (_isKeyword(token_))		{ return Type::Keyword; }
-	if (_isNumber(token_))		{ return Type::Number; }
-	if (_isIdentifier(token_))	{ return Type::Identifier; }
+	if (_isOperator(token_)) { return Type::Operator; }
+	if (_isString(token_)) {
+		return Type::String;
+	}
+	if (_isKeyword(token_)) { return Type::Keyword; }
+	if (_isNumber(token_)) { return Type::Number; }
+	if (_isIdentifier(token_)) { return Type::Identifier; }
 
 	return Type::None;
 }
@@ -117,38 +119,39 @@ inline bool Lexer::_isKeyword(StrView token_)
 	auto it = s_keywordMap.find(tmp.c_str());
 	return it != s_keywordMap.end();
 }
-inline bool Lexer::_isIdentifier(StrView token_)	{ return !_isNumber(token_) && !_isKeyword(token_); }
-inline bool Lexer::_isOperator(StrView token_)		
+inline bool Lexer::_isIdentifier(StrView token_) { return !_isNumber(token_) && !_isKeyword(token_); }
+inline bool Lexer::_isOperator(StrView token_)
 {
 	String_<20> tmp;
 	tmp.append(token_.data(), token_.size());
 	auto it = s_operatorMap.find(tmp.c_str());
 	return it != s_operatorMap.end();
 }
-inline bool Lexer::_isNumber(StrView token_)		
-{ 
+inline bool Lexer::_isNumber(StrView token_)
+{
 	auto pBeg = token_.begin();
 	auto pEnd = token_.end();
 
-	for (;pBeg != pEnd && (std::isdigit(*pBeg) || *pBeg == '.' || *pBeg == 'f'); ++pBeg)
+	for (; pBeg != pEnd && (std::isdigit(*pBeg) || *pBeg == '.' || *pBeg == 'f'); ++pBeg)
 	{
 	}
 	return pBeg == pEnd;
 }
-inline bool Lexer::_isString(StrView token_)		
-{ 
+inline bool Lexer::_isString(StrView token_)
+{
 	if (token_.size() < 4)
 		return false;
-	auto last = token_.size() - 1; 
+	auto last = token_.size() - 1;
 #if 0
 	for (size_t i = 0; i < token_.size(); i++)
 	{
 		SGE_LOG("{} : {}", i, token_[i]);
 	}
 #endif // 0
-	return token_[0] == '\"' && token_[last] == '\"'; 
+	return token_[0] == '\"' && token_[last] == '\"';
 }
 #endif // 1
 
 
 }
+#endif // 0
