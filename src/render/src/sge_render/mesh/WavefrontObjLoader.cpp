@@ -10,13 +10,13 @@ void WavefrontObjLoader::loadFile(EditMesh& mesh_, StrView filename_)
 	loadMem(mesh_, mm);
 }
 
-void WavefrontObjLoader::loadMem(EditMesh& mesh_, Span<const u8> src_)
+void WavefrontObjLoader::loadMem(EditMesh& mesh_, ByteSpan src_)
 {
 	WavefrontObjLoader loader;
 	loader._loadMem(mesh_, src_);
 }
 
-void WavefrontObjLoader::_loadMem(EditMesh& mesh_, Span<const u8> src_)
+void WavefrontObjLoader::_loadMem(EditMesh& mesh_, ByteSpan src_)
 {
 	mesh_.clear();
 	_pOutMesh = &mesh_;

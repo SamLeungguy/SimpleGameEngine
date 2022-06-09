@@ -4,9 +4,8 @@ namespace sge {
 
 void ShaderParser::readFile(ShaderInfo& outInfo_, StrView filename_)
 {
-	MemMapFile mm;
-	mm.open(filename_);
-	readMem(outInfo_, mm, filename_);
+	_memMapFile.open(filename_);
+	readMem(outInfo_, _memMapFile, filename_);
 }
 
 void ShaderParser::readMem(ShaderInfo& outInfo_, ByteSpan data_, StrView filename_)

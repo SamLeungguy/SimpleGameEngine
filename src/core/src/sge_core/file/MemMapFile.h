@@ -18,13 +18,13 @@ public:
 	void openWrite(StrView filename_, bool truncate_);
 
 	void open(StrView filename_, FileMode mode_, FileAccess access_, FileSharerMode shareMode_);
-	void writeBytes(Span<const u8>	data_);
+	void writeBytes(ByteSpan data_);
 
 	const u8* data()	const;
 	size_t size()		const;
 
 	Span<const u8> span() const;
-	operator Span<const u8>() { return _span; }
+	operator ByteSpan() { return _span; }
 
 	const String& getFilename() const;
 
@@ -33,7 +33,7 @@ private:
 #if SGE_OS_WINDOWS
 	::HANDLE _mapping = nullptr; // !! it's null, not INVALID_HANDLE_VALUE for memory mapping 
 #endif
-	Span<const u8> _span;
+	ByteSpan _span;
 };
 
 inline const u8* MemMapFile::data()	const { return _span.data(); }

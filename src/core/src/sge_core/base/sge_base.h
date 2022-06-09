@@ -7,17 +7,17 @@
 #include "../detect_platform/sge_detect_platform.h"
 
 #if SGE_OS_WINDOWS
-	#define NOMINMAX 1
-	#include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
-	#include <ws2tcpip.h> // struct sockaddr_in6
-	#pragma comment(lib, "Ws2_32.lib")
-	#include <Windows.h>
-	#include <intsafe.h>
+#define NOMINMAX 1
+#include <WinSock2.h> // WinSock2.h must include before windows.h to avoid winsock1 define
+#include <ws2tcpip.h> // struct sockaddr_in6
+#pragma comment(lib, "Ws2_32.lib")
+#include <Windows.h>
+#include <intsafe.h>
 #else
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <netdb.h>
-	#include <netinet/in.h> // struct sockaddr_in
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h> // struct sockaddr_in
 #endif
 
 #include <cassert>
@@ -33,11 +33,10 @@
 #include <EASTL/fixed_string.h>
 #include <EASTL/string_view.h>
 #include <EASTL/span.h>
+
 #include <EASTL/list.h>
 
 #include <EASTL/optional.h>
-
-#include <EASTL/set.h>
 
 #include <EASTL/map.h>
 #include <EASTL/hash_map.h>
@@ -48,10 +47,11 @@
 #include <EASTL/shared_ptr.h>
 #include <EASTL/weak_ptr.h>
 
-#include <EASTL/functional.h>
-#include <EASTL/sort.h>
+#include <nlohmann/json.hpp>
 
 #include "sge_macro.h"
+
+using Json = nlohmann::json;
 
 //==== EASTL ====
 
@@ -73,8 +73,8 @@ inline void* operator new[](size_t size, size_t alignment, size_t alignmentOffse
 
 namespace sge {
 
-template<class T> inline constexpr typename std::underlying_type<T>::type  enumInt(T  value)				{ return static_cast<typename std::underlying_type<T>::type>(value); }
-template<class T> inline constexpr typename std::underlying_type<T>::type& enumIntRef(T& value)				{ return *reinterpret_cast<typename std::underlying_type<T>::type*>(&value); }
+template<class T> inline constexpr typename std::underlying_type<T>::type			enumInt(T  value)		{ return       static_cast<typename std::underlying_type<T>::type>(value); }
+template<class T> inline constexpr typename std::underlying_type<T>::type&		 enumIntRef(T& value)		{ return *reinterpret_cast<typename std::underlying_type<T>::type*>(&value); }
 template<class T> inline constexpr typename std::underlying_type<T>::type const& enumIntRef(const T& value) { return *reinterpret_cast<const typename std::underlying_type<T>::type*>(&value); }
 
 template<class T> inline bool constexpr enumHas(const T& a, const T& b) { return static_cast<T>(enumInt(a) & enumInt(b)) != static_cast<T>(0); }
@@ -97,28 +97,18 @@ using f32 = float;
 using f64 = double;
 using f128 = long double;
 
-template<class Obj, class Member> constexpr
-intptr_t memberOffset(Member Obj::*ptrToMember_, size_t index_ = 0)
-{
-	Obj* p = nullptr;
-	Member* pM = &(p->*ptrToMember_) + index_;
-	return reinterpret_cast<intptr_t>(pM);
+template< class Obj, class Member > constexpr
+intptr_t memberOffset(Member Obj::* ptrToMember) {
+	Obj* c = nullptr;
+	Member* m = &(c->*ptrToMember);
+	return reinterpret_cast<intptr_t>(m);
 }
 
 template<class T> using UPtr = eastl::unique_ptr<T>;
-//template<class T> using SPtr = eastl::shared_ptr<T>;
-template<class T> using WPtr = eastl::weak_ptr<T>;
-
-template<class T, typename ... Args>
-UPtr<T> createUPtr(Args&& ... args_)
-{
-	return eastl::unique_ptr<T>(eastl::forward<Args>(args_)...);
-};
 
 template<class T> using Span = eastl::span<T>;
 using ByteSpan = Span<const u8>;
 
-template<class T> using Span = eastl::span<T>;
 template<class DST, class SRC> inline
 Span<DST> spanCast(Span<SRC> src) {
 	size_t sizeInBytes = src.size() * sizeof(SRC);
@@ -130,15 +120,11 @@ template<class T> using Vector = eastl::vector<T>;
 
 template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
 template<class KEY, class VALUE> using VectorMap = eastl::vector_map<KEY, VALUE>;
-
-template<class VALUE, typename Predicate = eastl::str_less<const char*>> using StringMap = eastl::string_map<VALUE, Predicate>;
-
-template<class KEY> using Set = eastl::set<KEY>;
+template<class VALUE> using StringMap = eastl::string_map<VALUE>;
 
 template<class T> using Opt = eastl::optional<T>;
 
 template<class T> using List = eastl::list<T>;
-
 
 template<class T> using StrViewT = eastl::basic_string_view<T>;
 using StrViewA = StrViewT<char>;
@@ -214,44 +200,40 @@ struct WCharUtil {
 	wchar_t toWChar(Char    c) { return static_cast<wchar_t>(c); }
 };
 
+
 //! Source Location
 class SrcLoc {
 public:
 	SrcLoc() = default;
 	SrcLoc(const char* file_, int line_, const char* func_)
 		: file(file_)
+		, func(func_)
 		, line(line_)
-		, func(func_) {
-	}
+	{}
 
 	const char* file = "";
-	const char* func;
+	const char* func = "";
 	int line = 0;
 };
 
 class NonCopyable {
 public:
 	NonCopyable() = default;
-
 private:
 	NonCopyable(const NonCopyable&) = delete;
 	void operator=(const NonCopyable&) = delete;
-
-	NonCopyable(NonCopyable&&) = delete;
-	void operator=(NonCopyable&&) = delete;
 };
 
-template<class T> inline void sge_delete(T* p) { delete p; }
-
-class RefCountBase : public NonCopyable
-{
+class RefCountBase : public NonCopyable {
 public:
-	std::atomic_int _refCount = 0;
+	std::atomic_int	_refCount = 0;
 };
 
 class Object : public RefCountBase {
 public:
 	virtual ~Object() = default;
 };
+
+template<class T> inline void sge_delete(T* p) noexcept { delete p; }
 
 } // namespace

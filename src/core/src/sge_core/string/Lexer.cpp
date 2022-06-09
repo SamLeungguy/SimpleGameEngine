@@ -1,5 +1,4 @@
 #include "Lexer.h"
-#include <sge_core/base/Error.h>
 #include <sge_core/log/Log.h>
 #include <sge_core/file/MemMapFile.h>
 
@@ -21,7 +20,7 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 #endif // 0
 #if 1    // Lexer_Impl
 
- void Lexer::reset(Span<const u8> source_, StrView filename_)
+ void Lexer::reset(ByteSpan source_, StrView filename_)
 {
 	 reset(StrView_make(source_), filename_);
 }
@@ -176,6 +175,11 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 	 {
 		 trimSpaces();
 		 if (!_ch) return false;
+
+		 if (_ch == '#') {
+			 _parseCommentSingleLine();
+			 continue;
+		 }
 
 		 if (_ch == '_' || isAlpha(_ch))
 		 {

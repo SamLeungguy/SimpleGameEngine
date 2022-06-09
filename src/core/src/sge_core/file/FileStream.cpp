@@ -174,7 +174,7 @@ void FileStream::readBytes(Span<u8> data_)
 	}
 }
 
-void FileStream::writeBytes(Span<const u8> data_)
+void FileStream::writeBytes(ByteSpan data_)
 {
 	_ensure_fd();
 	if (data_.size() <= 0)
@@ -283,7 +283,7 @@ void FileStream::readBytes(Span<u8> data_)
 {
 }
 
-void FileStream::writeBytes(Span<const u8> data_)
+void FileStream::writeBytes(ByteSpan data_)
 {
 }
 #endif // SGE_OS_WINDOWS

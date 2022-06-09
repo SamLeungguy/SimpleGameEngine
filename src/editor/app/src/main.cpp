@@ -153,9 +153,9 @@ void EditorApp::onCreate(CreateDesc& desc_)
 		String file = getExecutableFilename();
 		String path = FilePath::getDir(file);
 		path.append("/../../../../../../examples/Test101");
-		setCurrentDir(path);
+		Directory::setCurrentDir(path);
 
-		auto dir = getCurrentDir();
+		auto dir = Directory::getCurrentDir();
 		SGE_LOG("dir = {}", dir);
 	}
 

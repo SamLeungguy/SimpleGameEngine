@@ -113,10 +113,10 @@ void MemMapFile::open(StrView filename_, FileMode mode_, FileAccess access_, Fil
 		throw SGE_ERROR("memmap");
 	}
 
-	_span = Span<const u8>(data, size);
+	_span = ByteSpan(data, size);
 }
 
-void MemMapFile::writeBytes(Span<const u8> data_)
+void MemMapFile::writeBytes(ByteSpan data_)
 {
 	_fs.writeBytes(data_);
 }

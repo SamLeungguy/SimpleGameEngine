@@ -7,10 +7,7 @@ namespace sge {
 class AppBase : public NonCopyable
 {
 public:
-
-	void	setCurrentDir(StrView dir_);
-	String	getCurrentDir();
-	String	getExecutableFilename();
+	String getExecutableFilename();
 
 protected:
 

@@ -1,9 +1,9 @@
-#include "String.h"
+#include "StringUtil.h"
 #include "UtfUtil.h"
 
 namespace sge {
 
-void StringUtil::appendBinToHex(String& result, Span<const u8> data) {
+void StringUtil::appendBinToHex(String& result, ByteSpan data) {
 	const char* hex = "0123456789ABCDEF";
 	size_t lineCount = (data.size() + 15) / 16;
 
@@ -47,6 +47,60 @@ void StringUtil::appendBinToHex(String& result, Span<const u8> data) {
 	}
 }
 
+const char* StringUtil::findChar(StrView view, StrView charList, bool ignoreCase) {
+	auto* start = view.data();
+	auto* end = start + view.size();
+	auto* p = start;
+
+	if (ignoreCase) {
+		for (; p < end; p++) {
+			for (auto& ch : charList) {
+				if (ignoreCaseCompare(*p, ch) == 0) {
+					return p;
+				}
+			}
+		}
+	}
+	else {
+		for (; p < end; p++) {
+			for (auto& ch : charList) {
+				if (*p == ch) {
+					return p;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
+const char* StringUtil::findCharFromEnd(StrView view, StrView charList, bool ignoreCase) {
+	if (view.size() <= 0) return nullptr;
+
+	auto* start = view.data();
+	auto* end = start + view.size();
+	auto* p = end - 1;
+
+	if (ignoreCase) {
+		for (; p >= start; p--) {
+			for (auto& ch : charList) {
+				if (ignoreCaseCompare(*p, ch)) {
+					return p;
+				}
+			}
+		}
+	}
+	else {
+		for (; p >= start; p--) {
+			for (auto& ch : charList) {
+				if (*p == ch) {
+					return p;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
 struct StringUtil_ParseHelper {
 	template<class T> SGE_INLINE
 		static bool tryParseInt(StrView view, T& outValue) {
@@ -88,6 +142,7 @@ struct StringUtil_ParseHelper {
 		return true;
 	}
 };
+
 
 bool StringUtil::tryParse(StrView view, i8& outValue) { return StringUtil_ParseHelper::tryParseInt(view, outValue); }
 bool StringUtil::tryParse(StrView view, i16& outValue) { return StringUtil_ParseHelper::tryParseInt(view, outValue); }

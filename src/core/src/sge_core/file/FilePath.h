@@ -4,7 +4,10 @@ namespace sge {
 
 struct FilePath
 {
-	static String getDir(StrView path_);
+	static StrView	getDir(StrView path_);
+
+	static bool		isRealpath(const StrView& path_);
+	static String	getRealPath(StrView path_);
 };
 
 }

@@ -11,10 +11,10 @@ public:
 	~WavefrontObjLoader() = default;
 
 	static void loadFile(EditMesh& mesh_, StrView filename_);
-	static void loadMem(EditMesh& mesh_, Span<const u8> src_);
+	static void loadMem(EditMesh& mesh_, ByteSpan src_);
 
 private:
-	void _loadMem(EditMesh& mesh_, Span<const u8> src_);
+	void _loadMem(EditMesh& mesh_, ByteSpan src_);
 
 	void _nextLine();
 	void _nextToken();

@@ -42,29 +42,10 @@ enum class RenderShaderType
 	Count
 };
 
-namespace Utils
-{
-
-//inline static StrView getVertexSematicName(VertexSematic sematic_)
-//{
-//	switch (sematic_)
-//	{
-//		case VertexSematic::Pos:			return "POSITION";
-//		case VertexSematic::Uv0:			return "TEXCOORD0";
-//		case VertexSematic::Uv1:			return "TEXCOORD1;";
-//		case VertexSematic::Uv2:			return "TEXCOORD2;";
-//		case VertexSematic::Uv3:			return "TEXCOORD3;";
-//		case VertexSematic::Uv4:			return "TEXCOORD4;";
-//		case VertexSematic::Uv5:			return "TEXCOORD5;";
-//		case VertexSematic::Uv6:			return "TEXCOORD6;";
-//		case VertexSematic::Uv7:			return "TEXCOORD7;";
-//		case VertexSematic::Color:			return "COLOR;";
-//		default: break;
-//	}
-//	SGE_ASSERT(0, "Invalid render data type!");
-//	return 0;
-//}
-
-}
+enum class ShaderStage {
+	None,
+	Vertex,
+	Pixel,
+};
 
 }

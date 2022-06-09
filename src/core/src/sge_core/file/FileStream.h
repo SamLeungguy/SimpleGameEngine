@@ -56,8 +56,8 @@ public:
 	void setPos(FileSize pos_);
 	void setPosFromEnd(FileSize pos_);
 
-	void readBytes(Span<u8>			data_);
-	void writeBytes(Span<const u8>	data_);
+	void readBytes(Span<u8>		data_);
+	void writeBytes(ByteSpan	data_);
 
 	const String& getFilename() const;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sge_core/base/Error.h>
+#include <sge_core/string/StringUtil.h>
 
 namespace sge {
 
@@ -44,7 +45,7 @@ public:
 		void onFormat(fmt::format_context& ctx_) const;
 	};
 
-	void reset(Span<const u8> source_, StrView filename_);
+	void reset(ByteSpan source_, StrView filename_);
 	void reset(StrView source_, StrView filename_);
 
 	bool nextChar();
@@ -73,6 +74,11 @@ public:
 
 	StrView getLastFewLines(size_t lineCount_);
 	StrView getRemainSource() const;
+
+	const char* getCur()	const;
+	StrView		getSource()	const;
+	size_t		getLine()	const;
+	size_t		getCol()	const;
 
 protected:
 	void _error(StrView msg_);
@@ -134,6 +140,11 @@ inline bool Lexer::isDigit		(char c_) { return c_ >= '0' && c_ <= '9'; }
 
 inline const Lexer::Token& Lexer::getToken() const { return _token; }
 
+inline const char*	Lexer::getCur()		const { return _cur; }
+inline StrView		Lexer::getSource()	const { return _source; }
+inline size_t		Lexer::getLine()	const { return _line; }
+inline size_t		Lexer::getCol()		const { return _col; }
+
 template<class... Args> inline 
 void Lexer::error(const Args &... args_)
 {
@@ -160,8 +171,8 @@ const char* enumStr(Lexer::TokenType v) {
 	}
 }
 
-}
+SGE_FORMATTER_ENUM(Lexer::TokenType)
+SGE_FORMATTER(Lexer::Token);
 
-SGE_FORMATTER_ENUM(sge::Lexer::TokenType)
-SGE_FORMATTER(sge::Lexer::Token);
+}
 

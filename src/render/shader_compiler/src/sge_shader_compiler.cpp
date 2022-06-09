@@ -7,24 +7,59 @@ class ShaderCompiler : public ConsoleApp {
 public:
 
 protected:
-	virtual void onRun() {
+	virtual void onRun() override {
 		{
 			String file = getExecutableFilename();
 			String path = FilePath::getDir(file);
 			path.append("/../../../../../../examples/Test101");
-			setCurrentDir(path);
+			Directory::setCurrentDir(path);
 
-			auto dir = getCurrentDir();
+			auto dir = Directory::getCurrentDir();
 			SGE_LOG("dir = {}", dir);
 		}
 
 		ShaderInfo info;
 
-		ShaderParser parser;
-		parser.readFile(info, "Assets/Shaders/test.shader");
+		StrView shaderFilename = "Assets/Shaders/test.shader";
 
-		//ShaderCompiler_DX11 c;
-		//c.compile(RenderShaderType::VertexShader, "");
+		String outputPath = Fmt("LocalTemp/Imported/{}", shaderFilename);
+		Directory::create(outputPath);
+
+		TempString code;
+		auto codeFilename = Fmt("{}/code.hlsl", outputPath);
+
+#if 1
+		{
+			ShaderParser parser;
+			parser.readFile(info, shaderFilename);
+
+			/*for (size_t i = 2; i < parser.getLine(); i++) {
+				code += "//\n";
+			}*/
+			code += parser.getSource();
+
+			File::writeFileIfChanged(codeFilename, code, true);
+		}
+#endif // 1
+
+		{ // DX11
+			size_t passIndex = 0;
+			for (auto& pass : info.passes) {
+				auto passOutPath = Fmt("{}/dx11/pass{}", outputPath, passIndex);
+
+				if (pass.vsFunc.size()) {
+					ShaderCompiler_DX11 c;
+					c.compile(passOutPath, ShaderStage::Vertex, codeFilename, pass.vsFunc);
+				}
+
+				if (pass.psFunc.size()) {
+					ShaderCompiler_DX11 c;
+					c.compile(passOutPath, ShaderStage::Pixel, codeFilename, pass.psFunc);
+				}
+
+				passIndex++;
+			}
+		}
 
 		SGE_LOG("---- end ----");
 	}

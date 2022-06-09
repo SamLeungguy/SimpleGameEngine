@@ -44,7 +44,7 @@ RenderGpuBuffer_DX11::RenderGpuBuffer_DX11(CreateDesc& desc_)
 	Util::throwIfError(hr);
 }
 
-void RenderGpuBuffer_DX11::onUploadToGpu(Span<const u8> data_, size_t offset_)
+void RenderGpuBuffer_DX11::onUploadToGpu(ByteSpan data_, size_t offset_)
 {
 	auto* renderer = Renderer_DX11::current();
 	auto* ctx = renderer->d3dDeviceContext();

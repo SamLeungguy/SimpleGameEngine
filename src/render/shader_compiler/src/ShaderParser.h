@@ -4,7 +4,7 @@
 
 namespace sge {
 
-class ShaderParser : protected Lexer
+class ShaderParser : public Lexer
 {
 public:
 	void readFile(ShaderInfo& outInfo_, StrView filename_);
@@ -18,6 +18,7 @@ private:
 
 	template<class E> void _readEnum(E& v_);
 
+	MemMapFile _memMapFile;
 	ShaderInfo* _pOutInfo = nullptr;
 };
 
