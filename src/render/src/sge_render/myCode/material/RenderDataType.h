@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 #include <sge_core/base/Error.h>
@@ -94,7 +95,7 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-			default:	throw SGE_ERROR("{}", "invalid type");
+		default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
 		return 0;
@@ -128,7 +129,7 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-			default:	throw SGE_ERROR("{}", "invalid type");
+		default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
 		//return 0;
@@ -163,7 +164,7 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-			default:	throw SGE_ERROR("{}", "invalid type");
+		default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
 		//return 0;
@@ -198,7 +199,7 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-			default:	throw SGE_ERROR("{}", "invalid type");
+		default:	throw SGE_ERROR("{}", "invalid type");
 		}
 
 		//return Type::None;
@@ -232,7 +233,7 @@ struct RenderDataTypeUtil {
 			MY_TYPE_CASE(Float);
 			MY_TYPE_CASE(SNorm);
 			MY_TYPE_CASE(UNorm);
-			default:	throw SGE_ERROR("{}", "invalid type");
+		default:	throw SGE_ERROR("{}", "invalid type");
 		}
 		//return nullptr;
 	}
@@ -285,11 +286,11 @@ struct RenderDataTypeUtil {
 		if (hs == compares[enumInt(Type::SNorm)])	return Type::SNorm;
 		if (hs == compares[enumInt(Type::UNorm)])	return Type::UNorm;
 
-		MY_TYPE_IF_8_TO_64(Int,		0, enumInt(Type::Int8));
-		MY_TYPE_IF_8_TO_64(UInt,	1, enumInt(Type::Int8));
-		MY_TYPE_IF_8_TO_64(Float,	2, enumInt(Type::Int8));
-		MY_TYPE_IF_8_TO_64(SNorm,	3, enumInt(Type::Int8));
-		MY_TYPE_IF_8_TO_64(UNorm,	4, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(Int, 0, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(UInt, 1, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(Float, 2, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(SNorm, 3, enumInt(Type::Int8));
+		MY_TYPE_IF_8_TO_64(UNorm, 4, enumInt(Type::Int8));
 
 		throw SGE_ERROR("{}", "invalid");
 
@@ -302,3 +303,4 @@ struct RenderDataTypeUtil {
 };
 
 }
+#endif // 0

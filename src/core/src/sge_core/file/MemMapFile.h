@@ -10,7 +10,7 @@ public:
 	MemMapFile() = default;
 	~MemMapFile();
 
-	//void open(StrView filename_);
+	void open(StrView filename_);
 	void close();
 	
 	void openRead(StrView filename_);

@@ -22,7 +22,7 @@ void WavefrontObjLoader::_loadMem(EditMesh& mesh_, Span<const u8> src_)
 	_pOutMesh = &mesh_;
 	_pOutMesh->primitive = RenderPrimitiveType::Triangles;
 
-	_source = StrView(reinterpret_cast<const char*>(src_.data()), src_.size() / sizeof(char));
+	_source = StrView_make(src_);
 	_souceRemain = _source;
 	_lineNumber = 0;
 

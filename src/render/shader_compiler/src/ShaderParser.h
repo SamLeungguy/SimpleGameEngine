@@ -1,0 +1,46 @@
+#pragma once
+#include <sge_core/string/Lexer.h>
+#include <sge_render/shader/ShaderInfo.h>
+
+namespace sge {
+
+class ShaderParser : protected Lexer
+{
+public:
+	void readFile(ShaderInfo& outInfo_, StrView filename_);
+	void readMem(ShaderInfo& outInfo_, ByteSpan data_, StrView filename_);
+
+private:
+	void _readShader();
+	void _readProperties();
+	void _readProperty();
+	void _readPass();
+
+	template<class E> void _readEnum(E& v_);
+
+	ShaderInfo* _pOutInfo = nullptr;
+};
+
+#if 0
+#pragma mark TokenType_Impl
+#endif // 0
+#if 1    // ShaderParser_Impl
+
+template<class E> 
+void ShaderParser::_readEnum(E& v_)
+{
+	if (!_token.isIdentifier()) {
+		errorUnexpectedToken();
+		return;
+	}
+
+	if (!enumTryParse(v_, _token.str)) {
+		error("read enum [{}]", _token.str);
+		return;
+	}
+	nextToken();
+}
+
+
+#endif
+}

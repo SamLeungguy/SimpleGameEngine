@@ -116,6 +116,9 @@ UPtr<T> createUPtr(Args&& ... args_)
 };
 
 template<class T> using Span = eastl::span<T>;
+using ByteSpan = Span<const u8>;
+
+template<class T> using Span = eastl::span<T>;
 template<class DST, class SRC> inline
 Span<DST> spanCast(Span<SRC> src) {
 	size_t sizeInBytes = src.size() * sizeof(SRC);
@@ -136,23 +139,42 @@ template<class T> using Opt = eastl::optional<T>;
 
 template<class T> using List = eastl::list<T>;
 
+
 template<class T> using StrViewT = eastl::basic_string_view<T>;
 using StrViewA = StrViewT<char>;
 using StrViewW = StrViewT<wchar_t>;
 
-template<class T, size_t N, bool bEnableOverflow = true> // using FixedStringT = eastl::fixed_string<T, N, bEnableOverflow>;
-class StringT : public eastl::fixed_string<T, N, bEnableOverflow> {
-	using Base = eastl::fixed_string<T, N, bEnableOverflow>;
-public:
-	StringT() = default;
-	StringT(StrViewT<T> view) : Base(view.data(), view.size()) {}
-	StringT(StringT&& str) : Base(std::move(str)) {}
-
-	template<class R> void operator=(R&& r) { Base::operator=(SGE_FORWARD(r)); }
+template<class T, size_t N, bool bEnableOverflow = true>
+struct StringT_Base {
+	using type = typename eastl::fixed_string<T, N, bEnableOverflow>;
 };
 
-using StringA = eastl::basic_string<char>;
-using StringW = eastl::basic_string<wchar_t>;
+template<class T>
+struct StringT_Base<T, 0, true> {
+	using type = typename eastl::basic_string<T>;
+};
+
+template<class T, size_t N, bool bEnableOverflow = true> // using FixedStringT = eastl::fixed_string<T, N, bEnableOverflow>;
+class StringT : public StringT_Base<T, N, bEnableOverflow>::type {
+	using Base = typename StringT_Base<T, N, bEnableOverflow>::type;
+public:
+	StringT() = default;
+	StringT(const T* begin, const T* end) : Base(begin, end) {}
+	StringT(StrViewT<T> view) : Base(view.data(), view.size()) {}
+	StringT(StringT&& str) : Base(std::move(str)) {}
+	StringT(const T* sz) : Base(sz) {}
+
+	template<class R> void operator=(R&& r) { Base::operator=(SGE_FORWARD(r)); }
+
+	void operator+=(StrViewT<T> v) { Base::append(v.begin(), v.end()); }
+
+	template<size_t N>
+	void operator+=(const StringT<T, N>& v) { Base::append(v.begin(), v.end()); }
+
+	template<class R> void operator+=(const R& r) { Base::operator+=(r); }
+
+	StrViewT<T>	view() const { return StrViewT<T>(data(), size()); }
+};
 
 template<size_t N, bool bEnableOverflow = true> using StringA_ = StringT<char, N, bEnableOverflow>;
 template<size_t N, bool bEnableOverflow = true> using StringW_ = StringT<wchar_t, N, bEnableOverflow>;
@@ -160,8 +182,23 @@ template<size_t N, bool bEnableOverflow = true> using StringW_ = StringT<wchar_t
 using TempStringA = StringA_<220>;
 using TempStringW = StringW_<220>;
 
+using StringA = StringA_<0>;
+using StringW = StringW_<0>;
+
 using StrView = StrViewA;
 using String = StringA;
+
+inline StrView StrView_c_str(const char* s) {
+	return s ? StrView(s, strlen(s)) : StrView();
+}
+
+inline StrView StrView_make(ByteSpan s) {
+	return StrView(reinterpret_cast<const char*>(s.data()), s.size());
+}
+
+inline ByteSpan ByteSpan_make(StrView v) {
+	return ByteSpan(reinterpret_cast<const u8*>(v.data()), v.size());
+}
 
 template<size_t N> using String_ = StringA_<N>;
 using TempString = TempStringA;
@@ -176,7 +213,6 @@ struct WCharUtil {
 	Char    toChar(wchar_t c) { return static_cast<Char>(c); }
 	wchar_t toWChar(Char    c) { return static_cast<wchar_t>(c); }
 };
-
 
 //! Source Location
 class SrcLoc {

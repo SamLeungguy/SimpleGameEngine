@@ -41,6 +41,30 @@ void MemMapFile::openWrite(StrView filename_, bool truncate_)
 	open(filename_, FileMode::OpenOrCreate, FileAccess::ReadWrite, FileSharerMode::Read);
 }
 
+void MemMapFile::open(StrView filename) {
+	close();
+	_fs.openRead(filename);
+
+	if (_fs.getFileSize() >= SIZE_T_MAX)
+		throw SGE_ERROR("memmap file size too larget");
+
+	auto size = static_cast<size_t>(_fs.getFileSize());
+	if (size <= 0) return;
+
+	_mapping = ::CreateFileMapping(_fs.getNativeFd(), nullptr, PAGE_READONLY, 0, 0, nullptr);
+	if (!_mapping) {
+		throw SGE_ERROR("memmap");
+	}
+
+	auto* data = reinterpret_cast<u8*>(::MapViewOfFile(_mapping, FILE_MAP_READ, 0, 0, 0));
+	if (!data) {
+		throw SGE_ERROR("memmap");
+	}
+
+	_span = ByteSpan(data, size);
+}
+
+
 void MemMapFile::open(StrView filename_, FileMode mode_, FileAccess access_, FileSharerMode shareMode_)
 {
 	close();

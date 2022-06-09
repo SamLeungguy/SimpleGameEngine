@@ -1,3 +1,4 @@
+
 #if 0
 #include "Lexer.h"
 #include "sge_core/file/MemMapFile.h"
@@ -138,11 +139,6 @@ void Lexer::_nextToken()
 	auto pair = StringUtil::splitByChar(_lineRemain, " \t\r");
 	_token = StringUtil::trimChar(pair.first, " \t\r");
 	_lineRemain = StringUtil::trimChar(pair.second, " \t\r");
-
-}
-
-void Lexer::_parseLine()
-{
 
 }
 

@@ -4,6 +4,7 @@
 #include <sge_render/backend/dx11/Render_Common_DX11.h>
 
 #include <nlohmann/json.hpp>
+#include "..\ShaderParser.h"
 
 #define _DEBUG_SHADER_PARSER 0
 

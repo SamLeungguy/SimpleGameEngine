@@ -7,6 +7,9 @@
 
 #include "sge_core/base/UnitTest.h"
 
+#include "sge_core/app/ConsoleApp.h"
+#include "sge_core/app/ProjectSettings.h"
+
 //#include "sge_core/base/BinDeserializer.h"
 //#include "sge_core/base/BinSerializer.h"
 
