@@ -1,8 +1,7 @@
-#include "File.h"
-
 #include <sge_core/log/Log.h>
 
 #include "Directory.h"
+#include "File.h"
 #include "FilePath.h"
 #include "FileStream.h"
 #include "MemMapFile.h"
@@ -55,11 +54,6 @@ char File::writeFile(StrView filename_, ByteSpan data_, bool createDir_, bool lo
 	writeBytes(realPath, data_);
 
 	return op;
-}
-
-void File::readFile(StrView filename_, Vector<u8> data_)
-{
-	assert(0);
 }
 
 char File::writeFileIfChanged(StrView filename_, StrView data_, bool createDir_, bool logResult_, bool logNoChange_)
