@@ -2,15 +2,17 @@
 
 #include "sge_core/base/sge_base.h"
 #include "sge_core/base/sge_macro.h"
+#include "sge_core/base/BitUtil.h"
 
 #include "sge_core/base/UnitTest.h"
 
-//#include "sge_core/base/BinDeserializer.h"
-//#include "sge_core/base/BinSerializer.h"
+//#include "sge_core/serializer/binary/BinDeserializer.h"
+//#include "sge_core/serializer/binary/BinSerializer.h"
 
 #include "sge_core/allocator/LinearAllocator.h"
 
-#include "sge_core/app/ConsoleApp.h"
+#include <sge_core/app/ConsoleApp.h>
+#include <sge_core/app/ProjectSettings.h>
 
 #include "sge_core/math/Math.h"
 #include "sge_core/math/Tuple2.h"

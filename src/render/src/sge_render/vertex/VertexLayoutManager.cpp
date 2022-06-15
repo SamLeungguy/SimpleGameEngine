@@ -1,12 +1,12 @@
 #include "VertexLayoutManager.h"
 
 namespace sge {
-VertexLayoutManager* VertexLayoutManager::s_pCurrent = nullptr;
+VertexLayoutManager* VertexLayoutManager::s_pInstance = nullptr;
 
 
 VertexLayoutManager::VertexLayoutManager()
 {
-	s_pCurrent = this;
+	s_pInstance = this;
 
 	registerLayout<Vertex_Pos>();
 	registerLayout<Vertex_PosColor>();
@@ -36,10 +36,10 @@ VertexLayoutManager::VertexLayoutManager()
 
 VertexLayoutManager::~VertexLayoutManager()
 {
-	s_pCurrent = nullptr;
+	s_pInstance = nullptr;
 }
 
-VertexLayoutManager* VertexLayoutManager::current()
+VertexLayoutManager* VertexLayoutManager::instance()
 {
 	static VertexLayoutManager s;
 	return &s;

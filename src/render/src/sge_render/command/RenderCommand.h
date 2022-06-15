@@ -72,10 +72,10 @@ public:
 	SPtr<RenderGpuBuffer>	spVertexBuffer;
 	SPtr<RenderGpuBuffer>	spIndexBuffer;
 
+	SPtr<MaterialPass>		spMaterialPass;
+
 	size_t vertexCount = 0;
 	size_t indexCount = 0;
-
-	SPtr<Shader>			spShader;
 };
 
 class RenderCommandBuffer : public NonCopyable {
@@ -86,8 +86,8 @@ public:
 	RenderCommand_ClearFrameBuffers* clearFrameBuffers() { return newCommand<RenderCommand_ClearFrameBuffers>(); }
 	RenderCommand_SwapBuffers* swapBuffers() { return newCommand<RenderCommand_SwapBuffers>(); }
 
-	void drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_);
-	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_);
+	void drawMesh	(const SrcLoc& debugLoc_, const RenderMesh& mesh_,		 Material* pMaterial_);
+	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_, Material* pMaterial_);
 
 	void test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_);
 

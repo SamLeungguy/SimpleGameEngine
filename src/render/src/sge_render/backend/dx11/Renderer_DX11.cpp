@@ -99,24 +99,24 @@ Renderer_DX11::Renderer_DX11(CreateDesc& desc_)
 	}
 }
 
-RenderContext* Renderer_DX11::onCreateContext(RenderContext_CreateDesc& desc_)
+SPtr<RenderContext> Renderer_DX11::onCreateContext(RenderContext_CreateDesc& desc_)
 {
 	return new RenderContext_DX11(desc_);
 }
 
-RenderGpuBuffer* Renderer_DX11::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)
+SPtr<RenderGpuBuffer> Renderer_DX11::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)
 {
 	return new RenderGpuBuffer_DX11(desc_);
 }
 
-Shader* Renderer_DX11::onCreateShader(Shader_CreateDesc& desc_)
+SPtr<Shader> Renderer_DX11::onCreateShader(StrView filename_)
 {
-	return new Shader_DX11(desc_);
+	return new Shader_DX11(filename_);
 }
 
-Material* Renderer_DX11::onCreateMaterial(Material_CreateDesc& desc_)
+SPtr<Material> Renderer_DX11::onCreateMaterial()
 {
-	return new Material_DX11(desc_);
+	return new Material_DX11();
 }
 
 }

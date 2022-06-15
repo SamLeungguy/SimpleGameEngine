@@ -10,7 +10,7 @@ public:
 	VertexLayoutManager();
 	~VertexLayoutManager();
 
-	static VertexLayoutManager* current();
+	static VertexLayoutManager* instance();
 
 	const VertexLayout* getLayout(VertexType type_);
 	VertexLayout* _createLayout(VertexType type_);
@@ -18,14 +18,14 @@ public:
 	template<class Vertex>
 	void registerLayout()
 	{
-		VertexLayout* pVertexLayout = _createLayout(Vertex::s_type);
+		VertexLayout* pVertexLayout = _createLayout(Vertex::kType);
 		pVertexLayout->stride = sizeof(Vertex);
-		pVertexLayout->type = Vertex::s_type;
+		pVertexLayout->type = Vertex::kType;
 		Vertex::onRegister(pVertexLayout);
 	}
 
 private:
-	static VertexLayoutManager* s_pCurrent;
+	static VertexLayoutManager* s_pInstance;
 	Map<VertexType, VertexLayout> _table;
 };
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Render_Common.h"
+#include "RenderContext.h"
+#include "Shader/Material.h"
 
 namespace sge {
 
@@ -11,8 +13,8 @@ class Material;
 
 struct RenderContext_CreateDesc;
 struct RenderGpuBuffer_CreateDesc;
-struct Shader_CreateDesc;
-struct Material_CreateDesc;
+//struct Shader_CreateDesc;
+//struct Material_CreateDesc;
 
 struct VertexLayout;
 
@@ -34,7 +36,7 @@ public:
 	};
 
 	static Renderer* create(CreateDesc& desc_);
-	static Renderer* current();
+	static Renderer* instance();
 
 	Renderer();
 	virtual ~Renderer();
@@ -45,29 +47,36 @@ public:
 
 	bool isVsync() const;
 	
-	RenderContext* createContext(RenderContext_CreateDesc& desc_)		{ return onCreateContext(desc_); }
-	RenderGpuBuffer* createGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)	{ return onCreateGpuBuffer(desc_); }
-	Shader* createShader(Shader_CreateDesc& desc_)			{ return onCreateShader(desc_); }
-	Material* createMaterial(Material_CreateDesc& desc_)				{ return onCreateMaterial(desc_); }
+	SPtr<RenderContext>		createContext	(RenderContext_CreateDesc& desc_);
+	SPtr<RenderGpuBuffer>	createGpuBuffer	(RenderGpuBuffer_CreateDesc& desc_);
+	SPtr<Shader>			createShader	(StrView filename_);
+	SPtr<Material>			createMaterial	();
+
+	void onShaderDestory(Shader* pShader_);
 
 protected:
-	virtual RenderContext* onCreateContext(RenderContext_CreateDesc& desc) = 0;
-	virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc) = 0;
-	virtual Shader* onCreateShader(Shader_CreateDesc& desc_) = 0;
-	virtual Material* onCreateMaterial(Material_CreateDesc& desc_) = 0;
+	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc& desc_)	= 0;
+	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc& desc_)	= 0;
+	virtual SPtr<Shader>			onCreateShader		(StrView filename_)					= 0;
+	virtual SPtr<Material>			onCreateMaterial	()									= 0;
 
 protected:
-	static Renderer* _pCurrent;
+	static Renderer* s_pInstance;
 	RenderAdapterInfo _adapterInfo;
 	bool _isVsync : 1;
 
+	StringMap<Shader*>	_shaders;
 };
 
-inline Renderer* Renderer::current() { return _pCurrent; }
+inline Renderer* Renderer::instance() { return s_pInstance; }
 
 inline const RenderAdapterInfo& Renderer::adapterInfo() const { return _adapterInfo; }
 
 inline bool Renderer::isVsync() const { return _isVsync; }
+
+inline SPtr<RenderContext>		Renderer::createContext(RenderContext_CreateDesc& desc_)		{ return onCreateContext(desc_); }
+inline SPtr<RenderGpuBuffer>	Renderer::createGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)	{ return onCreateGpuBuffer(desc_); }
+inline SPtr<Material>			Renderer::createMaterial()										{ return onCreateMaterial(); }
 
 
 }

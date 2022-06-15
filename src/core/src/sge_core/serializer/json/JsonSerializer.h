@@ -27,9 +27,8 @@ public:
 	template<class V> void io(V& data_);
 	template<class V> void named_io(const char* name_, V& data_);
 
-protected:
 	template<class SE, class T, class ENABLE> friend struct JsonIO;
-
+protected:
 	template<class V> void toValue(V& value_);
 	template<class V> void toEnum(const V& value_);
 	void toStrView(StrView v_);
@@ -66,7 +65,7 @@ struct JsonIO
 };
 
 template<class SE, class T>
-struct JsonIO<SE, T, std::enable_if_t<std::is_enum_v<T>>>
+struct JsonIO<SE, T, std::enable_if_t<std::is_enum_v<T>> >
 {
 	static void io(SE& se_, T& data_)
 	{

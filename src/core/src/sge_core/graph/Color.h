@@ -1,10 +1,25 @@
 #pragma once
 
+#include <sge_core/math/Tuple4.h>
+
 namespace sge {
 
 template<class T>
-class Color2 {
-public:
+struct ColorR {
+	using ElementType = T;
+	static const size_t kElementCount = 1;
+
+	union {
+		struct { T r; };
+		T data[kElementCount];
+	};
+
+	ColorR(const T& r_)
+		: r(r_) {}
+};
+
+template<class T>
+struct ColorRG {
 	using ElementType = T;
 	static const size_t kElementCount = 2;
 
@@ -13,26 +28,28 @@ public:
 		T data[kElementCount];
 	};
 
-	Color2() = default;
-	Color2(const T& r_, const T& g_) : r(r_), g(g_) {}
+	ColorRG(const T& r_, const T& g_)
+		: r(r_), g(g_) {}
 
-	Color2 operator+(const Color2& r) const { return Color2(r + r.r, g + r.g); }
-	Color2 operator-(const Color2& r) const { return Color2(r - r.r, g - r.g); }
-	Color2 operator*(const Color2& r) const { return Color2(r * r.r, g * r.g); }
-	Color2 operator/(const Color2& r) const { return Color2(r / r.r, g / r.g); }
-
-	Color2 operator+(const T& s) const { return Color2(r + s, g + s); }
-	Color2 operator-(const T& s) const { return Color2(r - s, g - s); }
-	Color2 operator*(const T& s) const { return Color2(r * s, g * s); }
-	Color2 operator/(const T& s) const { return Color2(r / s, g / s); }
 };
 
-using Color2b = Color2<char>;
-using Color2f = Color2<float>;
+template<class T>
+struct ColorRGB {
+	using ElementType = T;
+	static const size_t kElementCount = 3;
+
+	union {
+		struct { T r, g, b; };
+		T data[kElementCount];
+	};
+
+	ColorRGB(const T& r_, const T& g_, const T& b_)
+		: r(r_), g(g_), b(b_) {}
+
+};
 
 template<class T>
-class Color4 {
-public:
+struct ColorRGBA {
 	using ElementType = T;
 	static const size_t kElementCount = 4;
 
@@ -41,20 +58,20 @@ public:
 		T data[kElementCount];
 	};
 
-	Color4() = default;
-	Color4(const T& r_, const T& g_,const T& b_, const T& a_) : r(r_), g(g_), b(b_), a(a_) {}
+	ColorRGBA(const T& r_, const T& g_, const T& b_, const T& a_)
+		: r(r_), g(g_), b(b_), a(a_) {}
 
-	Color4 operator+(const Color4& r) const { return Color4(r + r.r, g + r.g); }
-	Color4 operator-(const Color4& r) const { return Color4(r - r.r, g - r.g); }
-	Color4 operator*(const Color4& r) const { return Color4(r * r.r, g * r.g); }
-	Color4 operator/(const Color4& r) const { return Color4(r / r.r, g / r.g); }
+	ColorRGB<T> rgb() const { return ColorRGB(r,g,b); }
 
-	Color4 operator+(const T& s) const { return Color4(r + s, g + s); }
-	Color4 operator-(const T& s) const { return Color4(r - s, g - s); }
-	Color4 operator*(const T& s) const { return Color4(r * s, g * s); }
-	Color4 operator/(const T& s) const { return Color4(r / s, g / s); }
+	Tuple4<T>	toTuple() const { return Tuple4<T>(r,g,b,a); }
+	operator Tuple4<T>() const { return toTuple(); }
+
 };
 
-using Color4b = Color4<char>;
-using Color4f = Color4<float>;
+using ColorRGBAf = ColorRGBA<float>;
+using ColorRGBAb = ColorRGBA<u8>;
+
+using Color4f = ColorRGBAf;
+using Color4b = ColorRGBAb;
+
 }

@@ -26,13 +26,12 @@ public:
 	template<class V> void io(V& data_);
 	template<class V> void named_io(const char* name_, V& data_);
 
-protected:
 	template<class SE, class T, class ENABLE> friend struct JsonIO;
-
+protected:
 	template<class V> void toValue(V& value_);
 	template<class V> void toEnum(V& value_);
-	StrView toStrView();
 	template<class V> void toString(V& value_);
+	StrView toStrView();
 
 	void beginObject();
 	void endObject();
@@ -116,13 +115,19 @@ void JsonDeserializer::toValue(V& value_)
 }
 
 template<class V> inline
-void toEnum(V& value_)
+void JsonDeserializer::toEnum(V& value_)
 {
 	auto s = toStrView();
 	if (!enumTryParse(value_, s))
 	{
 		throw SGE_ERROR("error parse enum {}", s);
 	}
+}
+
+template<class V> inline
+void JsonDeserializer::toString(V& value_)
+{
+	value_ = toStrView();
 }
 
 inline StrView JsonDeserializer::toStrView()
@@ -135,11 +140,6 @@ inline StrView JsonDeserializer::toStrView()
 	return StrView(str->data(), str->size());
 }
 
-template<class V> inline
-void toString(V& value_)
-{
-	value_ = toStrView();
-}
 
 inline void JsonDeserializer::beginObject()
 {

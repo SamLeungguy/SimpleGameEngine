@@ -7,28 +7,33 @@ RenderCommandBuffer::RenderCommandBuffer()
 	_allocator.init();
 }
 
-void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_)
+void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, Material* pMaterial_)
 {
 	for (auto& sm : mesh_.subMeshes()) {
-		drawSubMesh(debugLoc_, sm);
+		drawSubMesh(debugLoc_, sm, pMaterial_);
 	}
 }
 
-void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_)
+void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_, Material* pMaterial_)
 {
-	auto* cmd = newCommand<RenderCommand_DrawCall>();
+	if (!pMaterial_) { SGE_ASSERT(false); return; }
+
+	for (auto& pass : pMaterial_->passes())
+	{
+		auto* cmd = newCommand<RenderCommand_DrawCall>();
 
 #if _DEBUG
-	cmd->debugLoc = debugLoc_;
+		cmd->debugLoc = debugLoc_;
 #endif // _DEBUG
-
-	cmd->primitive		= subMesh_.getPrimitive();
-	cmd->pVertexLayout	= subMesh_.getVertexLayout();
-	cmd->spVertexBuffer	= subMesh_.getVertexBuffer();
-	cmd->vertexCount	= subMesh_.getVertexCount();
-	cmd->spIndexBuffer	= subMesh_.getIndexBuffer();
-	cmd->indexType		= subMesh_.getIndexType();
-	cmd->indexCount		= subMesh_.getIndexCount();
+		cmd->spMaterialPass	= pass.ptr();
+		cmd->primitive		= subMesh_.getPrimitive();
+		cmd->pVertexLayout	= subMesh_.getVertexLayout();
+		cmd->spVertexBuffer	= subMesh_.getVertexBuffer();
+		cmd->vertexCount	= subMesh_.getVertexCount();
+		cmd->spIndexBuffer	= subMesh_.getIndexBuffer();
+		cmd->indexType		= subMesh_.getIndexType();
+		cmd->indexCount		= subMesh_.getIndexCount();
+	}
 }
 
 void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_)

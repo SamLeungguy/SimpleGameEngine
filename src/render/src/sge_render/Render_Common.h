@@ -23,29 +23,4 @@ enum class RenderPrimitiveType
 	Triangles,
 };
 
-enum class BufferUsage
-{
-	Static = 0,
-	Dynamic,
-	Default,
-};
-
-
-enum class RenderShaderType
-{
-	Vertex = 0,
-	Pixel,
-	Gemotry,
-	Tessellation,
-	Compute,
-
-	Count
-};
-
-enum class ShaderStage {
-	None,
-	Vertex,
-	Pixel,
-};
-
 }

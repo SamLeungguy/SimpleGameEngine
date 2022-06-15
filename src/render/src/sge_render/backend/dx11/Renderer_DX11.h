@@ -12,7 +12,7 @@ class Renderer_DX11 : public Renderer
 	using Base = Renderer;
 	using Util = DX11Util;
 public:
-	static Renderer_DX11* current();
+	static Renderer_DX11* instance();
 
 	Renderer_DX11(CreateDesc& desc_);
 	virtual ~Renderer_DX11() = default;
@@ -25,10 +25,10 @@ public:
 	DX11_ID3DDebug*					d3dDebug()					{ return _cpD3dDebug; }
 
 protected:
-	virtual RenderContext*		onCreateContext(RenderContext_CreateDesc& desc_) override;
-	virtual RenderGpuBuffer*	onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_) override;
-	virtual Shader*				onCreateShader(Shader_CreateDesc& desc_) override;
-	virtual Material*			onCreateMaterial(Material_CreateDesc& desc_) override;
+	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc& desc)	override;
+	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc& desc)	override;
+	virtual SPtr<Shader>			onCreateShader		(StrView filename_)					override;
+	virtual SPtr<Material>			onCreateMaterial	()									override;
 
 	ComPtr<DX11_IDXGIFactory>		_cpDxgiFactory;
 	ComPtr<DX11_IDXGIDevice>		_cpDxgiDevice;
@@ -38,7 +38,7 @@ protected:
 	ComPtr<DX11_ID3DDebug>			_cpD3dDebug;
 };
 
-inline Renderer_DX11* Renderer_DX11::current() { return static_cast<Renderer_DX11*>(_pCurrent); }
+inline Renderer_DX11* Renderer_DX11::instance() { return static_cast<Renderer_DX11*>(s_pInstance); }
 
 }
 

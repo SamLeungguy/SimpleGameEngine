@@ -13,10 +13,12 @@
 
 #include <sge_render/Render_Common.h>
 #include <sge_render/vertex/Vertex.h>
+#include <sge_render/shader/Shader.h>
 
 namespace sge {
 
 class Renderer_DX11;
+class RenderContext_DX11;
 
 using DX11_IDXGIFactory = IDXGIFactory1;
 using DX11_IDXGIDevice = IDXGIDevice;
@@ -61,11 +63,13 @@ struct DX11Util {
 
 	static D3D11_PRIMITIVE_TOPOLOGY	getDxPrimitiveTopology(RenderPrimitiveType t);
 	static DXGI_FORMAT				getDxFormat(RenderDataType v);
-	static const char* getDxSemanticName(Vertex_SemanticType t);
+
+	static const char* getDxSemanticName(VertexSemanticType t);
+	static VertexSemanticType		parseDxSemanticName(StrView s);
 
 	static String getStrFromHRESULT(HRESULT hr);
 
-	static const char* getDxStageProfile(ShaderStage s);
+	static const char* getDxStageProfile(ShaderStageMask s);
 
 	static ByteSpan toSpan(ID3DBlob* blob);
 	static StrView  toStrView(ID3DBlob* blob) { return StrView_make(toSpan(blob)); }
@@ -97,10 +101,10 @@ String DX11Util::getStrFromHRESULT(HRESULT hr) {
 }
 
 inline
-const char* DX11Util::getDxStageProfile(ShaderStage s) {
+const char* DX11Util::getDxStageProfile(ShaderStageMask s) {
 	switch (s) {
-	case ShaderStage::Vertex:	return "vs_5_0";
-	case ShaderStage::Pixel:	return "ps_5_0";
+	case ShaderStageMask::Vertex:	return "vs_5_0";
+	case ShaderStageMask::Pixel:	return "ps_5_0";
 	default: return "";
 	}
 }
@@ -128,20 +132,6 @@ D3D11_PRIMITIVE_TOPOLOGY DX11Util::getDxPrimitiveTopology(RenderPrimitiveType t)
 	case SRC::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 	case SRC::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	default: throw SGE_ERROR("unknown RenderPrimitiveType");
-	}
-}
-
-inline
-const char* DX11Util::getDxSemanticName(Vertex_SemanticType t) {
-	using SRC = Vertex_SemanticType;
-	switch (t) {
-	case SRC::Pos:			return "POSITION";
-	case SRC::Color:		return "COLOR";
-	case SRC::TexCoord:		return "TEXCOORD";
-	case SRC::Normal:		return "NORMAL";
-	case SRC::Tangent:		return "TANGENT";
-	case SRC::Binormal:		return "BINORMAL";
-	default: throw SGE_ERROR("unknown VertexLayout_SemanticType");
 	}
 }
 

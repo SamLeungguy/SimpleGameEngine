@@ -21,6 +21,8 @@ namespace sge {
 		void onCmd_SwapBuffers(RenderCommand_SwapBuffers& cmd_);
 		void onCmd_DrawCall(RenderCommand_DrawCall& cmd_);
 
+		Renderer_DX11*	renderer() { return _pRenderer; }
+
 	protected:
 		virtual void onBeginRender() override;
 		virtual void onEndRender() override;
@@ -30,8 +32,8 @@ namespace sge {
 		DX11_ID3DInputLayout* _getTestInputLayout(const VertexLayout* src);
 
 		void _createRenderTarget();
-		void _setTestShaders();
-		void _setTestRenderState();
+		void _setTestShaders(const VertexLayout* vertexLayout);
+		void _setTestDefaultRenderState();
 
 	protected:
 		Renderer_DX11* _pRenderer = nullptr;

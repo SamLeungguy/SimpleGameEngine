@@ -20,9 +20,6 @@ public:
 	//virtual void willQuit() {}
 
 protected:
-	virtual String	onGetExecutableFilename() override;
-	virtual String	onGetCurrentDir() override;
-	virtual void	onSetCurrentDir(StrView dir_) override;
 
 	virtual void onCreate(CreateDesc& desc_) override;
 	virtual void onRun() override;

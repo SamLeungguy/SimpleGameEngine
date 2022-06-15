@@ -104,7 +104,7 @@ RenderContext_gl::RenderContext_gl(CreateDesc desc_)
 	:
 	Base(desc_)
 {
-	_pRenderer = Renderer_gl::current();
+	_pRenderer = Renderer_gl::instance();
 
 	OpenGLWindow_FalseContext_Impl falseContext;
 	falseContext.create();

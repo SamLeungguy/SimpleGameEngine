@@ -10,22 +10,22 @@ Renderer_gl::Renderer_gl(CreateDesc& desc_)
 {
 }
 
-RenderContext* Renderer_gl::onCreateContext(RenderContext_CreateDesc& desc_)
+SPtr<RenderContext>	Renderer_gl::onCreateContext(RenderContext_CreateDesc& desc_)
 {
 	return new RenderContext_gl(desc_);
 }
 
-RenderGpuBuffer* Renderer_gl::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)
+SPtr<RenderGpuBuffer> Renderer_gl::onCreateGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)
 {
 	return new RenderGpuBuffer_gl(desc_);
 }
 
-Shader* Renderer_gl::onCreateShader(Shader_CreateDesc& desc_)
+SPtr<Shader> Renderer_gl::onCreateShader(StrView filename_)
 {
 	return nullptr;
 }
 
-Material* Renderer_gl::onCreateMaterial(Material_CreateDesc& desc_)
+SPtr<Material> Renderer_gl::onCreateMaterial()
 {
 	return nullptr;
 }

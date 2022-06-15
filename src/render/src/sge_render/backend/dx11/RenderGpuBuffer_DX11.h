@@ -16,7 +16,7 @@ public:
 
 	virtual void onUploadToGpu(ByteSpan data_, size_t offset_) override;
 
-	DX11_ID3DBuffer* getBuffer() { return _cpBuffer; }
+	DX11_ID3DBuffer* d3dBuf() { return _cpBuffer; }
 private:
 	ComPtr<DX11_ID3DBuffer> _cpBuffer;
 };

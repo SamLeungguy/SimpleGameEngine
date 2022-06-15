@@ -8,7 +8,7 @@
 
 namespace sge {
 
-Renderer* Renderer::_pCurrent = nullptr;
+Renderer* Renderer::s_pInstance = nullptr;
 
 Renderer::CreateDesc::CreateDesc()
 {
@@ -23,15 +23,15 @@ Renderer::CreateDesc::CreateDesc()
 
 Renderer::Renderer()
 {
-	SGE_ASSERT(!_pCurrent);
-	_pCurrent = this;
+	SGE_ASSERT(!s_pInstance);
+	s_pInstance = this;
 	_isVsync = true;
 }
 
 Renderer::~Renderer()
 {
-	SGE_ASSERT(_pCurrent);
-	_pCurrent = nullptr;
+	SGE_ASSERT(s_pInstance);
+	s_pInstance = nullptr;
 }
 
 VertexLayout* Renderer::createVertexLayout()
@@ -52,6 +52,25 @@ Renderer* Renderer::create(CreateDesc& desc_)
 	}
 
 	return p;
+}
+
+SPtr<Shader> Renderer::createShader(StrView filename_)
+{
+	TempString tmpName = filename_;
+
+	auto it = _shaders.find(tmpName.c_str());
+	if (it != _shaders.end()) {
+		return it->second;
+	}
+
+	auto s = onCreateShader(tmpName);
+	_shaders[tmpName.c_str()] = s.ptr();
+	return s;
+}
+
+void Renderer::onShaderDestory(Shader* pShader_)
+{
+	_shaders.erase(pShader_->filename().c_str());
 }
 
 }

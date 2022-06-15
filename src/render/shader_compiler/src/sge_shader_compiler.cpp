@@ -25,22 +25,13 @@ protected:
 		String outputPath = Fmt("LocalTemp/Imported/{}", shaderFilename);
 		Directory::create(outputPath);
 
-		TempString code;
-		auto codeFilename = Fmt("{}/code.hlsl", outputPath);
-
-#if 1
 		{
 			ShaderParser parser;
 			parser.readFile(info, shaderFilename);
 
-			/*for (size_t i = 2; i < parser.getLine(); i++) {
-				code += "//\n";
-			}*/
-			code += parser.getSource();
-
-			File::writeFileIfChanged(codeFilename, code, true);
+			auto jsonFilename = Fmt("{}/info.json", outputPath);
+			JsonUtil::writeFile(jsonFilename, info, false);
 		}
-#endif // 1
 
 		{ // DX11
 			size_t passIndex = 0;
@@ -49,12 +40,12 @@ protected:
 
 				if (pass.vsFunc.size()) {
 					ShaderCompiler_DX11 c;
-					c.compile(passOutPath, ShaderStage::Vertex, codeFilename, pass.vsFunc);
+					c.compile(passOutPath, ShaderStageMask::Vertex, shaderFilename, pass.vsFunc);
 				}
 
 				if (pass.psFunc.size()) {
 					ShaderCompiler_DX11 c;
-					c.compile(passOutPath, ShaderStage::Pixel, codeFilename, pass.psFunc);
+					c.compile(passOutPath, ShaderStageMask::Pixel, shaderFilename, pass.psFunc);
 				}
 
 				passIndex++;
