@@ -12,16 +12,24 @@
 namespace sge {
 
 void run_temp_test() {
-	RUN_TEST(test_MemMapFile);
+	//RUN_TEST(test_Vec2);
+	RUN_TEST(test_Vec3);
+	//RUN_TEST(test_Vec4);
+	//RUN_TEST(test_Mat4);
 }
 
-#if 0
 void run_all_test() {
 	// base
 	RUN_TEST(test_BinSerializer);
 
 	// file
 	RUN_TEST(test_MemMapFile);
+
+	// math
+	RUN_TEST(test_Vec2);
+	RUN_TEST(test_Vec3);
+	RUN_TEST(test_Vec4);
+	RUN_TEST(test_Mat4);
 
 	// string
 	RUN_TEST(test_Fmt);
@@ -30,9 +38,6 @@ void run_all_test() {
 	// net
 	RUN_TEST(test_Socket);
 }
-
-#endif // 0
-
 
 int test_main() {
 #if 1

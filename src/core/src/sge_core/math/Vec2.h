@@ -1,35 +1,20 @@
 #pragma once
 
+#include "Vec2.h"
+#include "Vec2_Basic.h"
+#include "Vec2_SSE.h"
+
 namespace sge {
 
-	template<class T>
-	class Vec2 {
-	public:
-		using ElementType = T;
-		static const size_t kElementCount = 2;
+#ifndef SGE_MATH_USE_SSE
+#error
+#elif SGE_MATH_USE_SSE
+template<class T> using Vec2 = Vec2_SSE<T>;
+#else
+template<class T> using Vec2 = Vec2_Basic<T>;
+#endif
 
-		union {
-			struct { T x, y; };
-			T data[kElementCount];
-		};
-
-		Vec2() = default;
-		Vec2(const T& x_, const T& y_) : x(x_), y(y_) {}
-
-		Vec2 operator+(const Vec2& r) const { return Vec2(x + r.x, y + r.y); }
-		Vec2 operator-(const Vec2& r) const { return Vec2(x - r.x, y - r.y); }
-		Vec2 operator*(const Vec2& r) const { return Vec2(x * r.x, y * r.y); }
-		Vec2 operator/(const Vec2& r) const { return Vec2(x / r.x, y / r.y); }
-
-		Vec2 operator+(const T& s) const { return Vec2(x + s, y + s); }
-		Vec2 operator-(const T& s) const { return Vec2(x - s, y - s); }
-		Vec2 operator*(const T& s) const { return Vec2(x * s, y * s); }
-		Vec2 operator/(const T& s) const { return Vec2(x / s, y / s); }
-
-		bool operator==(const Vec2& r) const { return x == r.x && y == r.y; }
-		bool operator!=(const Vec2& r) const { return x != r.x || y != r.y; }
-	};
-
-	using Vec2f = Vec2<float>;
+using Vec2f = Vec2<float>;
+using Vec2d = Vec2<double>;
 
 }
