@@ -22,6 +22,7 @@ namespace sge {
 class NativeUIWindow : public NativeUIWindow_Impl
 {
 public:
+	NativeUIWindow() = default;
 	virtual ~NativeUIWindow() = default;
 private:
 };
@@ -32,12 +33,12 @@ public:
 	NativeUIApp();
 	virtual ~NativeUIApp() = default;
 
-	static NativeUIApp* current();
+	static NativeUIApp* instance();
 
 private:
-	static NativeUIApp* _current;
+	static NativeUIApp* _instance;
 };
 
-SGE_INLINE NativeUIApp* NativeUIApp::current() { return NativeUIApp::_current; }
+SGE_INLINE NativeUIApp* NativeUIApp::instance() { return NativeUIApp::_instance; }
 
 }

@@ -9,7 +9,10 @@ VertexLayoutManager::VertexLayoutManager()
 	s_pInstance = this;
 
 	registerLayout<Vertex_Pos>();
+	registerLayout<Vertex_PosNormal>();
+
 	registerLayout<Vertex_PosColor>();
+	registerLayout<Vertex_PosColorNormal>();
 
 #define MY_REGISTER_VERTEX_UV(T)	\
 	registerLayout<T<1>>();			\

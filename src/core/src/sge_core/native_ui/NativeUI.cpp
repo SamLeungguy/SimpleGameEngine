@@ -2,10 +2,10 @@
 
 namespace sge {
 
-	NativeUIApp* NativeUIApp::_current = nullptr;
+	NativeUIApp* NativeUIApp::_instance = nullptr;
 
 	NativeUIApp::NativeUIApp()
 	{
-		_current = this;
+		_instance = this;
 	}
 }

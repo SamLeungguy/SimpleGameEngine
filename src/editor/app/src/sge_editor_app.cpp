@@ -14,15 +14,41 @@ class MainWin : public NativeUIWindow
 {
 	using Base = NativeUIWindow;
 public:
+	MainWin() = default;
 	virtual void onCreate(CreateDesc& desc_) override;
 	virtual void onCloseButton() override;
 
+	virtual void onUIMouseEvent(UIMouseEvent& ev) override {
+		if (ev.isDragging()) {
+			using Button = UIMouseEventButton;
+			switch (ev.pressedButtons) {
+			case Button::Left: {
+				auto d = ev.deltaPos * 0.01f;
+				_camera.orbit(d.x, d.y);
+			}break;
+
+			case Button::Middle: {
+				auto d = ev.deltaPos * 0.005f;
+				_camera.move(d.x, d.y, 0);
+			}break;
+
+			case Button::Right: {
+				auto d = ev.deltaPos * -0.005f;
+				_camera.dolly(d.x + d.y);
+			}break;
+			}
+		}
+	}
+
+
 	virtual void onDraw() override;
 
-	SPtr<RenderContext> _spRenderContext;
+	SPtr<RenderContext> _renderContext;
 	RenderCommandBuffer _cmdBuf;
 	RenderMesh	_renderMesh;
 	SPtr<Material> _material;
+
+	Math::Camera3f	_camera;
 
 private:
 };
@@ -31,8 +57,8 @@ class EditorApp : public NativeUIApp
 {
 	using Base = NativeUIApp;
 public:
+	EditorApp() = default;
 	virtual void onCreate(CreateDesc& desc_) override;
-
 
 private:
 	MainWin _mainWin;
@@ -50,8 +76,11 @@ void MainWin::onCreate(CreateDesc& desc) {
 	{
 		RenderContext::CreateDesc renderContextDesc;
 		renderContextDesc.pWindow = this;
-		_spRenderContext = renderer->createContext(renderContextDesc);
+		_renderContext = renderer->createContext(renderContextDesc);
 	}
+
+	_camera.setPos(0,5,5);
+	_camera.setAim(0,0,0);
 
 	auto shader = renderer->createShader("Assets/Shaders/test.shader");
 	_material = renderer->createMaterial();
@@ -66,9 +95,10 @@ void MainWin::onCreate(CreateDesc& desc) {
 		editMesh.colors.emplace_back(255, 255, 255, 255);
 	}
 
-	// the current shader has no uv or normal
+	//		editMesh.normal.clear();
+	// 
+	// the current shader has no uv
 	editMesh.uvs[0].clear();
-	editMesh.normals.clear();
 
 #else
 	editMesh.pos.emplace_back( 0.0f,  0.5f, 0.0f);
@@ -82,36 +112,61 @@ void MainWin::onCreate(CreateDesc& desc) {
 
 	_renderMesh.create(editMesh);
 
-	VertexLayoutManager::instance()->getLayout(Vertex_Pos::kType);
+	// VertexLayoutManager::instance()->getLayout(Vertex_Pos::kType);
 }
+
 void MainWin::onCloseButton()
 {
-	NativeUIApp::current()->quit(0);
+	NativeUIApp::instance()->quit(0);
 }
 
 void MainWin::onDraw()
 {
 	Base::onDraw();
-	if (!_spRenderContext) return;
+	if (!_renderContext) return;
 
-	auto time = GetTickCount() * 0.001f;
-	auto s = abs(sin(time * 2));
+	_camera.setViewport(clientRect());
+
+	{
+		auto model	= Mat4f::s_identity();
+		auto view	= _camera.viewMatrix();
+		auto proj	= _camera.projMatrix();
+		auto mvp	= proj * view * model;
+
+		_material->setParam("sge_matrix_model", model);
+		_material->setParam("sge_matrix_view",  view);
+		_material->setParam("sge_matrix_proj",  proj);
+		_material->setParam("sge_matrix_mvp",   mvp);
+
+		_material->setParam("sge_camera_pos", _camera.pos());
+
+		_material->setParam("sge_light_pos",	Vec3f(10, 10,   0));
+		_material->setParam("sge_light_dir",	Vec3f(-5, -10, -2));
+		_material->setParam("sge_light_power",	4.0f);
+		_material->setParam("sge_light_color",	Vec3f(1,1,1));
+	}
+
+	//-----
+	//		auto time = GetTickCount() * 0.001f;
+	//		auto s = abs(sin(time * 2));
+	auto s = 1.0f;
 
 	_material->setParam("test_float", s * 0.5f);
-	_material->setParam("test_color", Color4f(s, 0, 0, 1));
+	_material->setParam("test_color", Color4f(s, s, s, 1));
+	//------
 
-	_spRenderContext->setFrameBufferSize(clientRect().size);
+	_renderContext->setFrameBufferSize(clientRect().size);
 
-	_spRenderContext->beginRender();
+	_renderContext->beginRender();
 
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({0, 0, 0.2f, 1});
 	_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
 	_cmdBuf.swapBuffers();
 
-	_spRenderContext->commit(_cmdBuf);
+	_renderContext->commit(_cmdBuf);
 
-	_spRenderContext->endRender();
+	_renderContext->endRender();
 	drawNeeded();
 }
 
@@ -121,24 +176,40 @@ void EditorApp::onCreate(CreateDesc& desc_)
 		String file = getExecutableFilename();
 		String path = FilePath::getDir(file);
 		path.append("/../../../../../../examples/Test101");
-		Directory::setCurrentDir(path);
 
-		auto dir = Directory::getCurrentDir();
-		SGE_LOG("dir = {}", dir);
+		auto* proj = ProjectSettings::instance();
+		proj->setProjectRoot(path);
 	}
+
+
+#if 1 // for quick testing
+	{
+		SHELLEXECUTEINFO ShExecInfo = {0};
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ShExecInfo.hwnd = NULL;
+		ShExecInfo.lpVerb = L"open";
+		ShExecInfo.lpFile = L"compile_shaders.bat";
+		ShExecInfo.lpParameters = L"";
+		ShExecInfo.lpDirectory = NULL;
+		ShExecInfo.nShow = SW_SHOW;
+		ShExecInfo.hInstApp = NULL; 
+		ShellExecuteEx(&ShExecInfo);
+		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+		CloseHandle(ShExecInfo.hProcess);
+	}
+#endif
 
 	Base::onCreate(desc_);
 
 	Renderer::CreateDesc renderDesc;
-	//renderDesc.apiType = Renderer::ApiType::OpenGL;
+	//renderDesc.apiType = OpenGL;
 	Renderer::create(renderDesc);
 
-	//--
+	//---
 	NativeUIWindow::CreateDesc winDesc;
 	winDesc.isMainWindow = true;
 	_mainWin.create(winDesc);
-	winDesc.rect.w = 800;
-	winDesc.rect.h = 600;
 	_mainWin.setWindowTitle("SGE Editor");
 }
 

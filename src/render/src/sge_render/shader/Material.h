@@ -46,7 +46,7 @@ protected:
 		void _setParam(const VarInfo* varInfo, const Tuple2f& value) { _setParamCheckType(varInfo, value, DataType::Float32x2); }
 		void _setParam(const VarInfo* varInfo, const Tuple3f& value) { _setParamCheckType(varInfo, value, DataType::Float32x3); }
 		void _setParam(const VarInfo* varInfo, const Tuple4f& value) { _setParamCheckType(varInfo, value, DataType::Float32x4); }
-		//void _setParam(const VarInfo* varInfo, const Mat4f&   value) { _setParamCheckType(varInfo, value, DataType::Float32_4x4); }
+		void _setParam(const VarInfo* varInfo, const Mat4f&   value) { _setParamCheckType(varInfo, value, DataType::Float32_4x4); }
 
 		template<class V>
 		void _setParamCheckType(const VarInfo* varInfo, const V& value, DataType dataType) {
@@ -151,7 +151,7 @@ public:
 	void setParam(StrView name, const Tuple2f& v) { _setParam(name, v); }
 	void setParam(StrView name, const Tuple3f& v) { _setParam(name, v); }
 	void setParam(StrView name, const Tuple4f& v) { _setParam(name, v); }
-	//void setParam(StrView name, const Mat4f&   v) { _setParam(name, v); }
+	void setParam(StrView name, const Mat4f&   v) { _setParam(name, v); }
 
 	using Pass			= MaterialPass;
 	using Stage			= MaterialPass_Stage;

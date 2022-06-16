@@ -7,16 +7,16 @@ class ShaderCompiler : public ConsoleApp {
 public:
 
 protected:
-	virtual void onRun() override {
+	virtual void onRun() {
 		{
 			String file = getExecutableFilename();
 			String path = FilePath::getDir(file);
 			path.append("/../../../../../../examples/Test101");
 			Directory::setCurrentDir(path);
 
-			auto dir = Directory::getCurrentDir();
-			SGE_LOG("dir = {}", dir);
-		}
+			auto* proj = ProjectSettings::instance();
+			proj->setProjectRoot(path);
+		}		
 
 		ShaderInfo info;
 

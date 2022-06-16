@@ -28,7 +28,10 @@ private:
 
 	static This* s_getThis(HWND hwnd_);
 
-	LRESULT _handleWin32Event(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_);
+	LRESULT _handleNativeEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	bool _handleNativeUIMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	UIEventModifier _getWin32Modifier();
 };
 
 SGE_INLINE NativeUIWindow_Win32* NativeUIWindow_Win32::s_getThis(HWND hwnd_) { return reinterpret_cast<NativeUIWindow_Win32*>(::GetWindowLongPtr(hwnd_, GWLP_USERDATA)); }
