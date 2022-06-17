@@ -163,7 +163,7 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 		 tmp += "^^^\n";
 	 }
 
-	 FmtTo(tmp, "file - {}:{}:{}\n", _filename, _line, _col);
+	 FmtTo(tmp, "  token={}\n  file={}:{}:{}\n", _filename, _line, _col);
 	 throw SGE_ERROR("{}", tmp);
  }
 

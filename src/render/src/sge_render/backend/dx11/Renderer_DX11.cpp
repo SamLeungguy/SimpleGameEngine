@@ -1,10 +1,10 @@
-#if SGE_RENDER_HAS_DX11
-
 #include "Renderer_DX11.h"
 #include "RenderContext_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
 #include "Shader_DX11.h"
 #include "Material_DX11.h"
+
+#if SGE_RENDER_HAS_DX11
 
 namespace sge{
 

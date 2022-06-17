@@ -1,11 +1,12 @@
-#if SGE_RENDER_HAS_DX11
 
 #include "RenderContext_DX11.h"
 #include "Renderer_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
 #include "Material_DX11.h"
-
+ 
 #include <d3d11shader.h>
+
+#if SGE_RENDER_HAS_DX11
 
 namespace sge {
 
@@ -293,6 +294,7 @@ void RenderContext_DX11::onEndRender()
 void RenderContext_DX11::onSetFrameBufferSize(Vec2f newSize_)
 {
 	_cpRenderTargetView.reset(nullptr); // release buffer and render target view before resize
+	_cpDepthStencilView.reset(nullptr);
 
 	auto hr = _cpSwapChain->ResizeBuffers(0
 		, static_cast<UINT>(Math::max(0.0f, newSize_.x))
