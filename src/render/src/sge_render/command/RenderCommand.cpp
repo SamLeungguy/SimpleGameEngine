@@ -18,14 +18,18 @@ void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMe
 {
 	if (!pMaterial_) { SGE_ASSERT(false); return; }
 
-	for (auto& pass : pMaterial_->passes())
+	auto passes = pMaterial_->passes();
+
+	for (size_t i = 0; i < passes.size(); i++)
 	{
 		auto* cmd = newCommand<RenderCommand_DrawCall>();
 
-#if _DEBUG
-		cmd->debugLoc = debugLoc_;
-#endif // _DEBUG
-		cmd->spMaterialPass	= pass.ptr();
+		#if _DEBUG
+				cmd->debugLoc = debugLoc_;
+		#endif // _DEBUG
+		cmd->spMaterial			= pMaterial_;
+		cmd->materialPassIndex	= i;
+
 		cmd->primitive		= subMesh_.getPrimitive();
 		cmd->pVertexLayout	= subMesh_.getVertexLayout();
 		cmd->spVertexBuffer	= subMesh_.getVertexBuffer();
