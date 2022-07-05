@@ -110,19 +110,19 @@ private:
 inline bool Lexer::Token::isNone() const					{ return type == TokenType::None; }
 
 inline bool Lexer::Token::isIdentifier() const				{ return type == TokenType::Identifier; }
-inline bool Lexer::Token::isIdentifier(StrView sv_) const	{ return type == TokenType::Identifier && str == sv_; }
+inline bool Lexer::Token::isIdentifier(StrView sv_) const	{ return type == TokenType::Identifier && sv_.compare(str) == 0; }
 
 inline bool Lexer::Token::isNumber() const					{ return type == TokenType::Number; }
-inline bool Lexer::Token::isNumber(StrView sv_) const		{ return type == TokenType::Number && str == sv_; }
+inline bool Lexer::Token::isNumber(StrView sv_) const		{ return type == TokenType::Number && sv_.compare(str) == 0; }
 
 inline bool Lexer::Token::isString() const					{ return type == TokenType::String; }
-inline bool Lexer::Token::isString(StrView sv_) const		{ return type == TokenType::String && str == sv_; }
+inline bool Lexer::Token::isString(StrView sv_) const		{ return type == TokenType::String && sv_.compare(str) == 0; }
 
 inline bool Lexer::Token::isOperator() const				{ return type == TokenType::Operator; }
-inline bool Lexer::Token::isOperator(StrView sv_) const		{ return type == TokenType::Operator && str == sv_; }
+inline bool Lexer::Token::isOperator(StrView sv_) const		{ return type == TokenType::Operator && sv_.compare(str) == 0; }
 
 inline bool Lexer::Token::isNewline() const					{ return type == TokenType::Newline; }
-inline bool Lexer::Token::isNewline(StrView sv_) const		{ return type == TokenType::Newline && str == sv_; }
+inline bool Lexer::Token::isNewline(StrView sv_) const		{ return type == TokenType::Newline && sv_.compare(str) == 0; }
 
 inline void Lexer::Token::setNone()							{ type = TokenType::None; str.clear(); }
 

@@ -1,13 +1,9 @@
 #include "VertexLayoutManager.h"
 
 namespace sge {
-VertexLayoutManager* VertexLayoutManager::s_pInstance = nullptr;
-
 
 VertexLayoutManager::VertexLayoutManager()
 {
-	s_pInstance = this;
-
 	registerLayout<Vertex_Pos>();
 	registerLayout<Vertex_PosNormal>();
 
@@ -39,7 +35,6 @@ VertexLayoutManager::VertexLayoutManager()
 
 VertexLayoutManager::~VertexLayoutManager()
 {
-	s_pInstance = nullptr;
 }
 
 VertexLayoutManager* VertexLayoutManager::instance()

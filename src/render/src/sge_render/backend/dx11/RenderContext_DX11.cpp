@@ -1,3 +1,4 @@
+#include "sge_render-pch.h"
 
 #include "RenderContext_DX11.h"
 #include "Renderer_DX11.h"
@@ -80,8 +81,8 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 
 	_setTestDefaultRenderState();
 
-	if (cmd_.spMaterialPass) {
-		cmd_.spMaterialPass->bind(this, cmd_.pVertexLayout);
+	if (auto* pass = cmd_.getMaterialPass()) {
+		pass->bind(this, cmd_.pVertexLayout);
 	} else {
 		_setTestShaders(cmd_.pVertexLayout);
 	}

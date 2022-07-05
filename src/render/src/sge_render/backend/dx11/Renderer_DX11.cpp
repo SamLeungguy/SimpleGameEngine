@@ -1,3 +1,5 @@
+#include "sge_render-pch.h"
+
 #include "Renderer_DX11.h"
 #include "RenderContext_DX11.h"
 #include "RenderGpuBuffer_DX11.h"

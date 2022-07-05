@@ -72,7 +72,10 @@ public:
 	SPtr<RenderGpuBuffer>	spVertexBuffer;
 	SPtr<RenderGpuBuffer>	spIndexBuffer;
 
-	SPtr<MaterialPass>		spMaterialPass;
+	SPtr<Material>			spMaterial;
+	size_t					materialPassIndex = 0;
+
+	MaterialPass*			getMaterialPass() { return spMaterial? spMaterial->getPass(materialPassIndex) : nullptr; }
 
 	size_t vertexCount = 0;
 	size_t indexCount = 0;

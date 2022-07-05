@@ -64,7 +64,6 @@ private:
 	virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) override {
 		return new MyPass(material, shaderPass);
 	}
-
 };
 
 }

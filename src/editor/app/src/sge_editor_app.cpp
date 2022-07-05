@@ -94,12 +94,6 @@ void MainWin::onCreate(CreateDesc& desc) {
 	for (size_t i = editMesh.colors.size(); i < editMesh.positions.size(); i++) {
 		editMesh.colors.emplace_back(255, 255, 255, 255);
 	}
-
-	//		editMesh.normal.clear();
-	// 
-	// the current shader has no uv
-	editMesh.uvs[0].clear();
-
 #else
 	editMesh.pos.emplace_back( 0.0f,  0.5f, 0.0f);
 	editMesh.pos.emplace_back( 0.5f, -0.5f, 0.0f);
