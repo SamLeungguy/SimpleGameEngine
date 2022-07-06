@@ -23,6 +23,8 @@ public:
 	void io(f32& v_);
 	void io(f64& v_);
 
+	void io(bool& v_);
+
 	template<class V> void io(V& data_);
 	template<class V> void named_io(const char* name_, V& data_);
 
@@ -98,6 +100,8 @@ inline void JsonDeserializer::io(i64& v_) { toValue(v_); }
 
 inline void JsonDeserializer::io(f32& v_) { toValue(v_); }
 inline void JsonDeserializer::io(f64& v_) { toValue(v_); }
+
+inline void JsonDeserializer::io(bool& v_) { toValue(v_); }
 
 template<class V> inline
 void JsonDeserializer::io(V& data_) { JsonIO<This, V>::io(*this, data_); }

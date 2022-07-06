@@ -1,9 +1,9 @@
-
-#if SGE_RENDER_HAS_DX11
-
+#include "sge_render-pch.h"
 #include "Shader_DX11.h"
 #include "Renderer_DX11.h"
 #include "RenderContext_DX11.h"
+
+#if SGE_RENDER_HAS_DX11
 
 namespace sge {
 
@@ -72,6 +72,19 @@ Shader_DX11::MyPass::MyPass(Shader_DX11* pShader_, StrView passPath_, ShaderInfo
 
 	if (info_.vsFunc.size()) { _myVertexStage.load(this, passPath_, dev); }
 	if (info_.psFunc.size()) {  _myPixelStage.load(this, passPath_, dev); }
+
+	enumTryParse(_renderState.rasterizerState.cullMode, info_.cull);
+
+	enumTryParse(_renderState.blendState.blendAlpha.op,  info_.blendAlpha.op);
+	enumTryParse(_renderState.blendState.blendAlpha.src, info_.blendAlpha.src);
+	enumTryParse(_renderState.blendState.blendAlpha.dst, info_.blendAlpha.dst);
+
+	enumTryParse(_renderState.blendState.blendRGB.op,  info_.blendRGB.op);
+	enumTryParse(_renderState.blendState.blendRGB.src, info_.blendRGB.src);
+	enumTryParse(_renderState.blendState.blendRGB.dst, info_.blendRGB.dst);
+
+	enumTryParse(_renderState.depthStencilState.depthTest, info_.depthTest);
+	_renderState.depthStencilState.isDepthWrite = info_.isDepthWrite;
 }
 
 }

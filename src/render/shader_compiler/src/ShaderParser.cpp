@@ -114,6 +114,29 @@ void ShaderParser::_readPass()
 
 		if (_token.isIdentifier("VsFunc")) { nextToken(); readIdentifier(o.vsFunc); continue; }
 		if (_token.isIdentifier("PsFunc")) { nextToken(); readIdentifier(o.psFunc); continue; }
+
+		if (_token.isIdentifier("Cull"))    { nextToken(); readIdentifier(o.cull);    continue; }
+
+		if (_token.isIdentifier("BlendRGB"))  
+		{  
+			nextToken(); 
+			readIdentifier(o.blendRGB.op);    
+			readIdentifier(o.blendRGB.src);    
+			readIdentifier(o.blendRGB.dst);    
+			continue; 
+		}
+		if (_token.isIdentifier("BlendAlpha"))  
+		{  
+			nextToken(); 
+			readIdentifier(o.blendAlpha.op);    
+			readIdentifier(o.blendAlpha.src);    
+			readIdentifier(o.blendAlpha.dst);    
+			continue; 
+		}
+
+		if (_token.isIdentifier("DepthTest"))		{ nextToken(); readIdentifier(o.depthTest);    continue; }
+		if (_token.isIdentifier("DepthWrite"))		{ nextToken(); readBool(o.isDepthWrite);    continue; }
+
 		return errorUnexpectedToken();
 	}
 }

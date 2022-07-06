@@ -1,9 +1,9 @@
 #pragma once
 
-#if SGE_RENDER_HAS_DX11
-
 #include <sge_render/shader/Shader.h>
 #include <sge_render/backend/dx11/Render_Common_DX11.h>
+
+#if SGE_RENDER_HAS_DX11
 
 namespace sge {
 

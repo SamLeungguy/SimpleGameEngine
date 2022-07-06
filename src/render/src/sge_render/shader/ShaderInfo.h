@@ -90,11 +90,37 @@ struct ShaderInfo {
 		String vsFunc;
 		String psFunc;
 
+		String cull;
+		struct Blend
+		{
+			String op;
+			String src;
+			String dst;
+
+			template<class SE>
+			void onJson(SE& se) {
+				SGE_NAMED_IO(se, op);
+				SGE_NAMED_IO(se, src);
+				SGE_NAMED_IO(se, dst);
+			}
+		};
+		Blend blendRGB;
+		Blend blendAlpha;
+
+		String  depthTest;
+		bool  isDepthWrite;
+
 		template<class SE>
 		void onJson(SE& se) {
 			SGE_NAMED_IO(se, name);
 			SGE_NAMED_IO(se, vsFunc);
 			SGE_NAMED_IO(se, psFunc);
+
+			SGE_NAMED_IO(se, cull);
+			SGE_NAMED_IO(se, blendRGB);
+			SGE_NAMED_IO(se, blendAlpha);
+			SGE_NAMED_IO(se, depthTest);
+			SGE_NAMED_IO(se, isDepthWrite);
 		}
 	};
 

@@ -71,6 +71,7 @@ public:
 
 	void readString(String& outStr_);
 	void readIdentifier(String& outStr_);
+	void readBool(bool& outBool_);
 
 	StrView getLastFewLines(size_t lineCount_);
 	StrView getRemainSource() const;

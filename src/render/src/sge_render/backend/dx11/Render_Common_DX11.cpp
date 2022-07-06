@@ -1,3 +1,4 @@
+#include "sge_render-pch.h"
 #include "Render_Common_DX11.h"
 
 namespace sge {

@@ -35,6 +35,11 @@ namespace sge {
 		void _setTestShaders(const VertexLayout* vertexLayout);
 		void _setTestDefaultRenderState();
 
+		void _setRenderState(RenderState v_);
+		void _setRasterizerState(RasterizerState v_);
+		void _setDepthStencilState(DepthStencilState v_);
+		void _setBlendState(BlendState v_);
+
 	protected:
 		Renderer_DX11* _pRenderer = nullptr;
 
@@ -55,6 +60,11 @@ namespace sge {
 		MemMapFile _testVertexMemMap;
 
 		VectorMap<const VertexLayout*, ComPtr<DX11_ID3DInputLayout>> _testInputLayouts;
+
+		VectorMap<RasterizerState, ComPtr<DX11_ID3DRasterizerState>>		_rasterizerStateCps;
+		VectorMap<DepthStencilState, ComPtr<DX11_ID3DDepthStencilState>>	_depthStencilStateCps;
+		VectorMap<BlendType, ComPtr<DX11_ID3DBlendState>>					_blendStateCps;
+		//VectorMap<>
 	};
 
 }

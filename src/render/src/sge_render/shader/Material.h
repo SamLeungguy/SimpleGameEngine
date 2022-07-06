@@ -119,6 +119,8 @@ public:
 
 	void bind(RenderContext* ctx, const VertexLayout* vertexLayout) { onBind(ctx, vertexLayout); }
 
+	RenderState renderState() { SGE_ASSERT(_shaderPass); return _shaderPass->renderState(); }
+
 	friend class Material;
 protected:
 
@@ -159,6 +161,10 @@ public:
 	using PixelStage	= MaterialPass_PixelStage;
 
 	Span<UPtr<Pass>>	passes() { return _passes; }
+
+	const SPtr<Shader>& shader() const	{ return _shader; }
+		  SPtr<Shader>& shader()		{ return _shader; }
+
 
 	Pass*	getPass(size_t index) {
 		if (index >= _passes.size()) {

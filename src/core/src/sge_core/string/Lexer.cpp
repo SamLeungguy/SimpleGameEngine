@@ -118,6 +118,16 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 	 nextToken();
  }
 
+ void Lexer::readBool(bool& outBool_)
+ {
+	 if (!_token.isIdentifier()) errorUnexpectedToken();
+	 if     (_token.str.compare("true") == 0)  { outBool_ = true; }
+	 else if (_token.str.compare("false") == 0)  { outBool_ = false; }
+	 else                      { errorUnexpectedToken(); }
+
+	 nextToken();
+ }
+
  StrView Lexer::getLastFewLines(size_t lineCount_)
  {
 	 if (!_cur) return StrView();

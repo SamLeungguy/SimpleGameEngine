@@ -72,6 +72,12 @@ struct DX11Util {
 
 	static const char* getDxStageProfile(ShaderStageMask s);
 
+	static D3D11_CULL_MODE			getCullMode(CullMode v_);
+	static D3D11_FILL_MODE			getFillMode(FillMode v_);
+	static D3D11_COMPARISON_FUNC	getDepthComparison(DepthComp v_);
+	static D3D11_BLEND_OP			getBlendOp(BlendOp v_);
+	static D3D11_BLEND				getBlendMode(BlendMode v_);
+
 	static ByteSpan toSpan(ID3DBlob* blob);
 	static StrView  toStrView(ID3DBlob* blob) { return StrView_make(toSpan(blob)); }
 
@@ -129,10 +135,10 @@ inline
 D3D11_PRIMITIVE_TOPOLOGY DX11Util::getDxPrimitiveTopology(RenderPrimitiveType t) {
 	using SRC = RenderPrimitiveType;
 	switch (t) {
-	case SRC::Points:		return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-	case SRC::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-	case SRC::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	default: throw SGE_ERROR("unknown RenderPrimitiveType");
+		case SRC::Points:		return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+		case SRC::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+		case SRC::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		default: throw SGE_ERROR("unknown RenderPrimitiveType");
 	}
 }
 
@@ -214,6 +220,81 @@ DXGI_FORMAT DX11Util::getDxFormat(RenderDataType v) {
 	default: throw SGE_ERROR("unsupported RenderDataType");
 	}
 }
+
+inline D3D11_CULL_MODE DX11Util::getCullMode(CullMode v_)
+{
+	using SRC = CullMode;
+	switch (v_) {
+		case SRC::None:		return D3D11_CULL_NONE;
+		case SRC::Off:		return D3D11_CULL_NONE;
+		case SRC::Back:		return D3D11_CULL_BACK;
+		case SRC::Front:	return D3D11_CULL_FRONT;
+		default: throw SGE_ERROR("unknown CullMode");
+	}
+}
+
+inline D3D11_FILL_MODE DX11Util::getFillMode(FillMode v_)
+{
+	using SRC = FillMode;
+	switch (v_) {
+		case SRC::Wire:		return D3D11_FILL_WIREFRAME;
+		case SRC::Solid:	return D3D11_FILL_SOLID;
+		default: throw SGE_ERROR("unknown FillMode");
+	}
+}
+
+inline D3D11_COMPARISON_FUNC DX11Util::getDepthComparison(DepthComp v_)
+{
+	using SRC = DepthComp;
+	switch (v_)
+	{
+		case SRC::Never:		return D3D11_COMPARISON_NEVER;
+		case SRC::Less:			return D3D11_COMPARISON_LESS;
+		case SRC::Equal:		return D3D11_COMPARISON_EQUAL;
+		case SRC::LessEqual:	return D3D11_COMPARISON_LESS_EQUAL;
+		case SRC::Greater:		return D3D11_COMPARISON_GREATER;
+		case SRC::NotEqual:		return D3D11_COMPARISON_NOT_EQUAL;
+		case SRC::GreaterEqual:	return D3D11_COMPARISON_GREATER_EQUAL;		
+		case SRC::Always:		return D3D11_COMPARISON_ALWAYS;
+		default: throw SGE_ERROR("unknown DepthComp");
+	}
+}
+
+inline D3D11_BLEND_OP DX11Util::getBlendOp(BlendOp v_)
+{
+	using SRC = BlendOp;
+	switch (v_)
+	{
+		case SRC::Add:				return D3D11_BLEND_OP_ADD;
+		case SRC::Subtract:			return D3D11_BLEND_OP_SUBTRACT;
+		case SRC::ReverseSubtract:	return D3D11_BLEND_OP_REV_SUBTRACT;
+		case SRC::Min:				return D3D11_BLEND_OP_MIN;
+		case SRC::Max:				return D3D11_BLEND_OP_MAX;
+		//case SRC::LogicalClear:		return ;
+		default: throw SGE_ERROR("unknown BlendOp");
+	}
+}
+
+inline D3D11_BLEND DX11Util::getBlendMode(BlendMode v_)
+{
+	using SRC = BlendMode;
+	switch (v_)
+	{
+		case SRC::Zero:				return D3D11_BLEND_ZERO;
+		case SRC::One:				return D3D11_BLEND_ONE;
+		case SRC::SrcColor:			return D3D11_BLEND_SRC_COLOR;
+		case SRC::OneMinusSrcColor:	return D3D11_BLEND_INV_SRC_COLOR;
+		case SRC::SrcAlpha:			return D3D11_BLEND_SRC_ALPHA;	
+		case SRC::OneMinusSrcAlpha:	return D3D11_BLEND_INV_SRC_ALPHA;	
+		case SRC::DstAlpha:			return D3D11_BLEND_DEST_ALPHA;
+		case SRC::OneMinusDstAlpha:	return D3D11_BLEND_INV_DEST_ALPHA;
+		case SRC::DstColor:			return D3D11_BLEND_DEST_COLOR;	
+		case SRC::OneMinusDstColor:	return D3D11_BLEND_INV_DEST_COLOR;
+		case SRC::SrcAlphaSaturate:	return D3D11_BLEND_SRC_ALPHA_SAT;	
+		default: throw SGE_ERROR("unknown BlendMode");
+	}
+}
+
 
 } // namespace
 

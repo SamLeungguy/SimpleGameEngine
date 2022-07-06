@@ -78,15 +78,15 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	}
 
 	auto* ctx = _pRenderer->d3dDeviceContext();
-
-	_setTestDefaultRenderState();
-
+	
 	if (auto* pass = cmd_.getMaterialPass()) {
 		pass->bind(this, cmd_.pVertexLayout);
+		_setRenderState(pass->renderState());
 	} else {
 		_setTestShaders(cmd_.pVertexLayout);
+		_setTestDefaultRenderState();
 	}
-
+	
 	auto primitive = Util::getDxPrimitiveTopology(cmd_.primitive);
 	ctx->IASetPrimitiveTopology(primitive);
 
@@ -266,6 +266,128 @@ void RenderContext_DX11::_setTestDefaultRenderState()
 
 	Color4f blendColor(1, 1, 1, 1);
 	ctx->OMSetBlendState(_cpTestBlendState, blendColor.data, 0xffffffff);
+}
+
+void RenderContext_DX11::_setRenderState(RenderState v_)
+{
+	_setRasterizerState(v_.rasterizerState);
+	_setDepthStencilState(v_.depthStencilState);
+	_setBlendState(v_.blendState);
+}
+
+void RenderContext_DX11::_setRasterizerState(RasterizerState v_)
+{
+	auto* dev = _pRenderer->d3dDevice();
+	auto* ctx = _pRenderer->d3dDeviceContext();
+
+	auto it = _rasterizerStateCps.find(v_);
+
+	if (it != _rasterizerStateCps.end())
+	{
+		ctx->RSSetState(it->second);
+		return;
+	}
+
+	auto& cp = _rasterizerStateCps[v_];
+
+	D3D11_RASTERIZER_DESC rasterDesc = {};
+	rasterDesc.AntialiasedLineEnable = true;
+	rasterDesc.CullMode = Util::getCullMode(v_.cullMode);
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+
+	rasterDesc.FillMode = Util::getFillMode(v_.fillMode);
+
+	rasterDesc.FrontCounterClockwise = true;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	auto hr = dev->CreateRasterizerState(&rasterDesc, cp.ptrForInit());
+	Util::throwIfError(hr);
+
+	ctx->RSSetState(cp);
+}
+void RenderContext_DX11::_setDepthStencilState(DepthStencilState v_)
+{
+	auto* dev = _pRenderer->d3dDevice();
+	auto* ctx = _pRenderer->d3dDeviceContext();
+
+	auto it = _depthStencilStateCps.find(v_);
+
+	if (it != _depthStencilStateCps.end())
+	{
+		ctx->OMSetDepthStencilState(it->second, 1);
+		return;
+	}
+
+	auto& cp = _depthStencilStateCps[v_];
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+
+	bool depthTest = !(v_.depthTest == DepthComp::None || v_.depthTest == DepthComp::Never);
+
+	if (depthTest) {
+		depthStencilDesc.DepthEnable	= true;
+		depthStencilDesc.DepthFunc		= Util::getDepthComparison(v_.depthTest);
+	} else {
+		depthStencilDesc.DepthEnable	= false;
+		depthStencilDesc.DepthFunc		= D3D11_COMPARISON_ALWAYS;
+	}
+
+	depthStencilDesc.DepthWriteMask = v_.isDepthWrite ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+
+	depthStencilDesc.StencilEnable		= false;
+	depthStencilDesc.StencilReadMask	= 0xFF;
+	depthStencilDesc.StencilWriteMask	= 0xFF;
+
+	auto hr = dev->CreateDepthStencilState(&depthStencilDesc, cp.ptrForInit());
+	Util::throwIfError(hr);
+
+	ctx->OMSetDepthStencilState(cp, 1);
+}
+void RenderContext_DX11::_setBlendState(BlendState v_)
+{
+	auto* dev = _pRenderer->d3dDevice();
+	auto* ctx = _pRenderer->d3dDeviceContext();
+
+	auto v = RenderStateUtil::make_Blend(v_);
+
+	auto it = _blendStateCps.find(v);
+	if (it != _blendStateCps.end())
+	{
+		Color4f blendColor(1,1,1,1);
+		ctx->OMSetBlendState(it->second, blendColor.data, 0xffffffff);
+		return;
+	}
+
+	auto& cp = _blendStateCps[v];
+
+	D3D11_BLEND_DESC blendStateDesc = {};
+	blendStateDesc.AlphaToCoverageEnable  = false;
+	blendStateDesc.IndependentBlendEnable = false;
+	auto& rtDesc = blendStateDesc.RenderTarget[0];
+
+	rtDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	bool blendEnable = v_.blendAlpha.op != BlendOp::None || v_.blendRGB.op != BlendOp::None;
+	if (blendEnable) {
+		rtDesc.BlendEnable	  = true;
+		rtDesc.BlendOp        = Util::getBlendOp(v_.blendRGB.op);
+		rtDesc.BlendOpAlpha   = Util::getBlendOp(v_.blendAlpha.op);
+		rtDesc.SrcBlend       = Util::getBlendMode(v_.blendRGB.src);
+		rtDesc.DestBlend      = Util::getBlendMode(v_.blendRGB.dst);
+		rtDesc.SrcBlendAlpha  = Util::getBlendMode(v_.blendAlpha.src);
+		rtDesc.DestBlendAlpha = Util::getBlendMode(v_.blendAlpha.dst);
+	}else{
+		rtDesc.BlendEnable	  = false;
+	}
+
+	auto hr = dev->CreateBlendState(&blendStateDesc, cp.ptrForInit());
+	Util::throwIfError(hr);
+
+	Color4f blendColor(1,1,1,1);
+	ctx->OMSetBlendState(cp, blendColor.data, 0xffffffff);
 }
 
 void RenderContext_DX11::onBeginRender()
