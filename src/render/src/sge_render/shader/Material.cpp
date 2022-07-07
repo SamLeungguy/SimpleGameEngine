@@ -28,6 +28,8 @@ MaterialPass_Stage::MaterialPass_Stage(MaterialPass* pass, ShaderStage* shaderSt
 		auto& cb = _constBuffers[i];	
 		cb.create(info->constBuffers[i]);
 	}
+
+	_textureResoruces.resize(info->textures.size());
 }
 
 void MaterialPass_Stage::ConstBuffer::create(const Info& info) {

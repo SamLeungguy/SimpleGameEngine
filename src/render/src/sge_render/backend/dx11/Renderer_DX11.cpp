@@ -5,6 +5,7 @@
 #include "RenderGpuBuffer_DX11.h"
 #include "Shader_DX11.h"
 #include "Material_DX11.h"
+#include "Texture_DX11.h"
 
 #if SGE_RENDER_HAS_DX11
 
@@ -119,6 +120,16 @@ SPtr<Shader> Renderer_DX11::onCreateShader(StrView filename_)
 SPtr<Material> Renderer_DX11::onCreateMaterial()
 {
 	return new Material_DX11();
+}
+
+SPtr<Texture> Renderer_DX11::onCreateTexture(StrView filename_, Texture_CreateDesc desc_)
+{
+	return new Texture_DX11(filename_, desc_);
+}
+
+SPtr<Texture> Renderer_DX11::onCreateTexture(Texture_CreateDesc desc_)
+{
+	return new Texture_DX11(desc_);
 }
 
 }

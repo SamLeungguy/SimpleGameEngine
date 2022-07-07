@@ -1,10 +1,10 @@
 #pragma once
 
-#if SGE_RENDER_HAS_DX11
-
 #include <sge_render/shader/Material.h>
 #include "Shader_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
+
+#if SGE_RENDER_HAS_DX11
 
 namespace sge {
 
@@ -31,8 +31,15 @@ private:
 			dc->VSSetConstantBuffers(bindPoint, 1, &d3dBuf);
 		}
 
-		Span<ConstBuffer> constBuffers() { return _constBuffers; }
-		Shader_DX11::MyVertexStage*	shaderStage() { return static_cast<Shader_DX11::MyVertexStage*>(_shaderStage); }
+		void _dxSetTexture(DX11_ID3DDeviceContext* dc_, UINT bindPoint_, DX11_ID3DShaderResourceView* d3dView_, DX11_ID3DSamplerState* d3dSampler_)
+		{
+			dc_->VSSetShaderResources(bindPoint_, 1, &d3dView_);
+			dc_->VSSetSamplers(bindPoint_, 1, &d3dSampler_);
+		}
+
+		Span<ConstBuffer> constBuffers()			{ return _constBuffers; }
+		Span<TextureResoruce> textureResoruces()	{ return _textureResoruces; }
+		Shader_DX11::MyVertexStage*	shaderStage()	{ return static_cast<Shader_DX11::MyVertexStage*>(_shaderStage); }
 
 		VectorMap<const VertexLayout*, ComPtr<DX11_ID3DInputLayout>> _inputLayoutsMap;
 	};
@@ -48,8 +55,15 @@ private:
 			dc->PSSetConstantBuffers(bindPoint, 1, &d3dBuf);
 		}
 
-		Span<ConstBuffer> constBuffers() { return _constBuffers; }
-		Shader_DX11::MyPixelStage*	shaderStage() { return static_cast<Shader_DX11::MyPixelStage*>(_shaderStage); }
+		void _dxSetTexture(DX11_ID3DDeviceContext* dc_, UINT bindPoint_, DX11_ID3DShaderResourceView* d3dView_, DX11_ID3DSamplerState* d3dSampler_)
+		{
+			dc_->PSSetShaderResources(bindPoint_, 1, &d3dView_);
+			dc_->PSSetSamplers(bindPoint_, 1, &d3dSampler_);
+		}
+
+		Span<ConstBuffer> constBuffers()			{ return _constBuffers; }
+		Span<TextureResoruce> textureResoruces()	{ return _textureResoruces; }
+		Shader_DX11::MyPixelStage*	shaderStage()	{ return static_cast<Shader_DX11::MyPixelStage*>(_shaderStage); }
 	};
 
 	struct MyPass : public Pass {

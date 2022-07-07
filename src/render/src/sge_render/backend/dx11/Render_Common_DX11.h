@@ -34,6 +34,9 @@ using DX11_ID3DTexture1D = ID3D11Texture1D;
 using DX11_ID3DTexture2D = ID3D11Texture2D;
 using DX11_ID3DTexture3D = ID3D11Texture3D;
 
+using DX11_ID3DSamplerState			= ID3D11SamplerState;
+using DX11_ID3DShaderResourceView	= ID3D11ShaderResourceView;
+
 using DX11_ID3DRenderTargetView = ID3D11RenderTargetView;
 using DX11_ID3DDepthStencilView = ID3D11DepthStencilView;
 

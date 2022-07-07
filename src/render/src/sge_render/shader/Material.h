@@ -1,7 +1,7 @@
 #pragma once
-
 #include "Shader.h"
 #include <sge_render/buffer/RenderGpuBuffer.h>
+#include <sge_render/texture/Texture.h>
 
 namespace sge {
 
@@ -74,6 +74,33 @@ protected:
 		bool			_gpuDirty = false;
 	};
 
+	struct TextureResoruce
+	{
+		using DataType		= ShaderStageInfo::DataType;
+		using TextureInfo	= ShaderStageInfo::Texture;
+		using SamplerInfo	= ShaderStageInfo::Sampler;
+
+		SPtr<Texture> texture;
+		//SPtr<Sampler> sampler;
+
+		TextureResoruce()
+		{
+
+		}
+
+		void setTexture(const TextureInfo& textureInfo_, const SamplerInfo& samplerInfo_, StrView name_, SPtr<Texture>& texture_) 
+		{ 
+			_textureInfo = &textureInfo_; _samplerInfo = &samplerInfo_; 
+			texture.reset(texture_.ptr()); 
+		}
+
+		u16 getBindPoint() const { SGE_ASSERT(_textureInfo->bindPoint == _samplerInfo->bindPoint); return _textureInfo->bindPoint; }
+
+	private:
+		const TextureInfo*		_textureInfo = nullptr;
+		const SamplerInfo*		_samplerInfo = nullptr;
+	};
+
 	template<class V>
 	void _setParam(StrView name, const V& v) {
 		if (!_shaderStage) return;
@@ -84,9 +111,21 @@ protected:
 		}
 	}
 
+	void _setTexture(StrView name_, SPtr<Texture>& v_)
+	{
+		if (!_shaderStage) return;
+		size_t i = info()->getTextureBindPoint(name_);
+		if (i == -1)
+			return;
+
+		SGE_ASSERT(i < info()->textures.size() && i < _textureResoruces.size());
+		_textureResoruces[i].setTexture(info()->textures[i], info()->samplers[i], name_, v_);
+	}
+
 	Pass*	_pass = nullptr;
 	ShaderStage* _shaderStage = nullptr;
-	Vector_<ConstBuffer, 4>	_constBuffers;
+	Vector_<ConstBuffer, 4>		_constBuffers;
+	Vector_<TextureResoruce, 8>	_textureResoruces;
 };
 
 struct MaterialPass_VertexStage : public MaterialPass_Stage
@@ -136,6 +175,11 @@ protected:
 		if (_pixelStage )  _pixelStage->_setParam(name, v);
 	}
 
+	void _setTexture(StrView name, SPtr<Texture>& v) {
+		if (_vertexStage) _vertexStage->_setTexture(name, v);
+		if (_pixelStage )  _pixelStage->_setTexture(name, v);
+	}
+
 	Material*	_material	= nullptr;
 	ShaderPass*	_shaderPass	= nullptr;
 
@@ -154,6 +198,8 @@ public:
 	void setParam(StrView name, const Tuple3f& v) { _setParam(name, v); }
 	void setParam(StrView name, const Tuple4f& v) { _setParam(name, v); }
 	void setParam(StrView name, const Mat4f&   v) { _setParam(name, v); }
+	
+	void setTexture(StrView name_, SPtr<Texture>& v_) { _setTexture(name_, v_); }
 
 	using Pass			= MaterialPass;
 	using Stage			= MaterialPass_Stage;
@@ -178,6 +224,12 @@ protected:
 	template<class V> void _setParam(StrView name, const V& v) {
 		for (auto& pass : _passes) {
 			if (pass) pass->_setParam(name, v);
+		}
+	}
+
+	void _setTexture(StrView name, SPtr<Texture>& v) {
+		for (auto& pass : _passes) {
+			if (pass) pass->_setTexture(name, v);
 		}
 	}
 

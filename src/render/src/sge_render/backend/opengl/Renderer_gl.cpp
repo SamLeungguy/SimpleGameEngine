@@ -1,8 +1,9 @@
-#if SGE_RENDER_HAS_GL
-
+#include "sge_render-pch.h"
 #include "Renderer_gl.h"
 #include "RenderContext_gl.h"
 #include "RenderGpuBuffer_gl.h"
+
+#if SGE_RENDER_HAS_GL
 
 namespace sge {
 
@@ -30,6 +31,15 @@ SPtr<Material> Renderer_gl::onCreateMaterial()
 	return nullptr;
 }
 
+SPtr<Texture> Renderer_gl::onCreateTexture(StrView filename_, Texture_CreateDesc desc_)
+{
+	return nullptr;
+}
+
+SPtr<Texture> Renderer_gl::onCreateTexture(Texture_CreateDesc desc_)
+{
+	return nullptr;
+}
 }
 
 #endif

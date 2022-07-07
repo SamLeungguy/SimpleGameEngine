@@ -30,6 +30,14 @@ void Material_DX11::_bindStageHelper(RenderContext_DX11* ctx, STAGE* stage) {
 
 		stage->_dxSetConstBuffer(dc, bindPoint, d3dBuf);
 	}
+
+	for (auto& res : stage->textureResoruces())
+	{
+		auto* tex = static_cast<Texture_DX11*>(res.texture.ptr());
+		auto* view = tex->getTextureView();
+		auto* sampler = tex->getSampler();
+		stage->_dxSetTexture(dc, res.getBindPoint(), view, sampler);
+	}
 }
 
 void Material_DX11::MyVertexStage::bind(RenderContext_DX11* ctx, const VertexLayout* vertexLayout) {

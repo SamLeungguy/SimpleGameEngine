@@ -6,6 +6,8 @@ Shader {
 		
 		[DisplayName="Color Test"]
 		Color4f	color = {1,1,1,1}
+
+		//_MyTexture ("My Texture", 2D) = "white" { }
 	}
 	
 	Pass {
@@ -28,6 +30,7 @@ struct VertexIn {
 	float4 positionOS : POSITION;
 	float4 color : COLOR;
 	float3 normal : NORMAL;
+	float2 uv : TEXCOORD0;
 };
 
 struct PixelIn {
@@ -35,6 +38,7 @@ struct PixelIn {
 	float4 positionWS  : TEXCOORD10;
 	float4 color  : COLOR;
 	float3 normal : NORMAL;
+	float2 uv : TEXCOORD0;
 };
 
 float4x4	sge_matrix_model;
@@ -51,6 +55,9 @@ float3		sge_light_color;
 float  test_float;
 float4 test_color;
 
+Texture2D texture0;
+SamplerState texture0_sampler;
+
 PixelIn vs_main(VertexIn i) {
 	PixelIn o;
 	o.positionWS  = mul(sge_matrix_model, i.positionOS);
@@ -59,6 +66,7 @@ PixelIn vs_main(VertexIn i) {
 	
 	o.color	 = i.color;
 	o.normal = i.normal;
+	o.uv 	 = i .uv;
 	return o;
 }
 
@@ -123,7 +131,12 @@ float4 ps_main(PixelIn i) : SV_TARGET
 	s.ambient    = float3(0.2, 0.2, 0.2);
 	s.diffuse	 = float3(1, 1, 1);
 	s.shininess	 = 1;
+
+	float4 textureColor = texture0.Sample(texture0_sampler, i.uv);
 	
 	float3 color = lighting_blinn_phong(s);
+	
+	color += textureColor.rgb;
+
 	return float4(Color_Linear_to_sRGB(color), 1);
 }

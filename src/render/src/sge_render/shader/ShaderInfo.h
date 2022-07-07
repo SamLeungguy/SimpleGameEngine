@@ -239,6 +239,16 @@ public:
 			SGE_NAMED_IO(se, dataType);
 		}
 	};
+	i16 getTextureBindPoint(StrView name_) const
+	{
+		for (auto& tex : textures)
+		{
+			if (tex.name == name_)
+				return tex.bindPoint;
+		}
+		return -1;
+	}
+
 	Vector_<Texture, 8>		textures;
 
 	//----------

@@ -47,8 +47,9 @@ public:
 	RenderCommandBuffer _cmdBuf;
 	RenderMesh	_renderMesh;
 	SPtr<Material> _material;
-
 	Math::Camera3f	_camera;
+
+	SPtr<Texture> _spTexture;
 
 private:
 };
@@ -147,6 +148,22 @@ void MainWin::onDraw()
 
 	_material->setParam("test_float", s * 0.5f);
 	_material->setParam("test_color", Color4f(s, s, s, 1));
+
+	Texture_CreateDesc desc;
+	desc.width = 2;
+	desc.height= 2;
+	Vector<Color4b> data;
+	data.reserve(desc.width * desc.height);
+	data.emplace_back(255, 0, 0, 0);
+	data.emplace_back(0, 255, 0, 0);
+	data.emplace_back(0, 0, 255, 0);
+	data.emplace_back(0, 255, 0, 0);
+	desc.data = data;
+
+	_spTexture = Renderer::instance()->createTexture(desc);
+
+	_material->setTexture("texture0", _spTexture);
+
 	//------
 
 	_renderContext->setFrameBufferSize(clientRect().size);
