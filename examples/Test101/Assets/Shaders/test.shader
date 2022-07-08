@@ -123,20 +123,19 @@ float4 ps_main(PixelIn i) : SV_TARGET
 //	return float4(i.normal, 1);
 //	return i.color * test_color;
 
+	float4 textureColor = texture0.Sample(texture0_sampler, i.uv);
+
 	Surface s;
 	s.positionWS = i.positionWS;
 	s.normal     = i.normal;
 	s.color	     = test_color;
 	s.specular   = float3(0.8, 0.8, 0.8);
 	s.ambient    = float3(0.2, 0.2, 0.2);
-	s.diffuse	 = float3(1, 1, 1);
+	s.diffuse	 = textureColor.rgb;
 	s.shininess	 = 1;
 
-	float4 textureColor = texture0.Sample(texture0_sampler, i.uv);
 	
 	float3 color = lighting_blinn_phong(s);
-	
-	color += textureColor.rgb;
 
 	return float4(Color_Linear_to_sRGB(color), 1);
 }

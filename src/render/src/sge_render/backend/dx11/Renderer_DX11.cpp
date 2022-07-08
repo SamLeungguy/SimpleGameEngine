@@ -127,10 +127,10 @@ SPtr<Texture> Renderer_DX11::onCreateTexture(StrView filename_, Texture_CreateDe
 	return new Texture_DX11(filename_, desc_);
 }
 
-SPtr<Texture> Renderer_DX11::onCreateTexture(Texture_CreateDesc desc_)
-{
-	return new Texture_DX11(desc_);
-}
+//SPtr<Texture> Renderer_DX11::onCreateTexture(Texture_CreateDesc desc_)
+//{
+//	return new Texture_DX11(desc_);
+//}
 
 }
 

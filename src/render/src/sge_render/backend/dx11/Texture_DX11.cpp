@@ -3,6 +3,8 @@
 
 #include "Renderer_DX11.h"
 
+#include <sge_render/image/ImageLoader.h>
+
 #if SGE_RENDER_HAS_DX11
 
 namespace sge {
@@ -11,22 +13,22 @@ Texture_DX11::Texture_DX11(StrView filepath_, CreateDesc& desc_)
 	:
 	Base(filepath_, desc_)
 {
-	_init(desc_);
+	_init(filepath_, desc_);
 }
 
-Texture_DX11::Texture_DX11(CreateDesc& desc_)
-	:
-	Base(desc_)
+void Texture_DX11::_init(StrView filepath_, CreateDesc& desc_)
 {
-	_init(desc_);
-}
+	PngReader reader;
+	TempString filepath = filepath_;
 
-void Texture_DX11::_init(CreateDesc& desc_)
-{
+	reader.loadFile(filepath.c_str(), false);
+
+	Base::_init(reader, desc_);
+
 	_initSampler(desc_);
 	_initTextureView(desc_);
 
-	uploadData(desc_.data);
+	uploadData(reader.pixels());
 }
 
 void Texture_DX11::_initSampler(CreateDesc& desc_)
@@ -103,16 +105,22 @@ void Texture_DX11::_initTextureView(CreateDesc& desc_)
 	ctx->GenerateMips(_cpTextureView);
 }
 
-inline void Texture_DX11::uploadData(Span<Color4b> data_)
+void Texture_DX11::uploadData(Span<const Color4b> data_)
+{
+	uploadData(data_.data());
+}
+
+void Texture_DX11::uploadData(const Color4b* data_)
 {
 	auto* pRenderer = Renderer_DX11::instance();
 	auto* ctx = pRenderer->d3dDeviceContext();
 
 	// Set the row pitch of the targa image data.
-	u32 rowPitch = (_width * 4) * sizeof(unsigned char);
+	u32 rowPitch = (_width * 4);
 
-	ctx->UpdateSubresource(_cpTexture, 0, NULL, data_.data(), rowPitch, 0);
+	ctx->UpdateSubresource(_cpTexture, 0, NULL, data_, rowPitch, 0);
 }
+
 
 }
 

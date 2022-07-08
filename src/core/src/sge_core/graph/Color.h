@@ -57,7 +57,7 @@ struct ColorRGBA {
 		struct { T r, g, b, a; };
 		T data[kElementCount];
 	};
-
+	ColorRGBA() = default;
 	ColorRGBA(const T& r_, const T& g_, const T& b_, const T& a_)
 		: r(r_), g(g_), b(b_), a(a_) {}
 

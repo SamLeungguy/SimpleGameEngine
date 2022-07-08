@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sge_render/image/ImageLoader.h>
+
 namespace sge {
 
 //struct TargaHeader
@@ -21,7 +23,6 @@ struct Texture_CreateDesc
 	TextureWrapper param;
 
 	u32 width, height = 0;
-	Span<Color4b> data;
 };
 
 class Texture : public Object
@@ -31,16 +32,17 @@ public:
 
 	Texture() = default;
 	Texture(StrView filepath_, CreateDesc& desc_);
-	Texture(CreateDesc& desc_);
 	virtual ~Texture() = default;
 
-	void loadFile(StrView filepath_, CreateDesc& desc_);
-	void loadMem(CreateDesc& desc_);
+	void loadMem(const Color4b* data_, CreateDesc& desc_);
 
 	//RenderDataType getType() const { return type_; }
 
 protected:
 	//RenderDataType type_;
+	void _init(const PngReader& reader_, CreateDesc& outDesc_);
+
+protected:
 
 	u32 _width, _height = 0;
 

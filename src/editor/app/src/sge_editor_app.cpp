@@ -150,6 +150,7 @@ void MainWin::onDraw()
 	_material->setParam("test_color", Color4f(s, s, s, 1));
 
 	Texture_CreateDesc desc;
+#if 0
 	desc.width = 2;
 	desc.height= 2;
 	Vector<Color4b> data;
@@ -158,9 +159,11 @@ void MainWin::onDraw()
 	data.emplace_back(0, 255, 0, 0);
 	data.emplace_back(0, 0, 255, 0);
 	data.emplace_back(0, 255, 0, 0);
-	desc.data = data;
-
+	desc.data = data.data();
 	_spTexture = Renderer::instance()->createTexture(desc);
+#else
+	_spTexture = Renderer::instance()->createTexture("Assets/Image/wail_pig.png", desc);
+#endif // 0
 
 	_material->setTexture("texture0", _spTexture);
 

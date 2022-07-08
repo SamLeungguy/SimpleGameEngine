@@ -36,10 +36,10 @@ SPtr<Texture> Renderer_gl::onCreateTexture(StrView filename_, Texture_CreateDesc
 	return nullptr;
 }
 
-SPtr<Texture> Renderer_gl::onCreateTexture(Texture_CreateDesc desc_)
-{
-	return nullptr;
-}
+//SPtr<Texture> Renderer_gl::onCreateTexture(Texture_CreateDesc desc_)
+//{
+//	return nullptr;
+//}
 }
 
 #endif

@@ -64,7 +64,7 @@ protected:
 	virtual SPtr<Shader>			onCreateShader		(StrView filename_)								= 0;
 	virtual SPtr<Material>			onCreateMaterial	()												= 0;
 	virtual SPtr<Texture>			onCreateTexture		(StrView filename_, Texture_CreateDesc desc_)	= 0;
-	virtual SPtr<Texture>			onCreateTexture		(Texture_CreateDesc desc_)						= 0;
+	//virtual SPtr<Texture>			onCreateTexture		(Texture_CreateDesc desc_)						= 0;
 
 protected:
 	static Renderer* s_pInstance;
@@ -84,6 +84,6 @@ inline SPtr<RenderContext>		Renderer::createContext(RenderContext_CreateDesc& de
 inline SPtr<RenderGpuBuffer>	Renderer::createGpuBuffer(RenderGpuBuffer_CreateDesc& desc_)			{ return onCreateGpuBuffer(desc_); }
 inline SPtr<Material>			Renderer::createMaterial()												{ return onCreateMaterial(); }
 inline SPtr<Texture>			Renderer::createTexture(StrView filename_, Texture_CreateDesc desc_)	{ return onCreateTexture(filename_, desc_); }
-inline SPtr<Texture>			Renderer::createTexture(Texture_CreateDesc desc_)						{ return onCreateTexture(desc_); }
+//inline SPtr<Texture>			Renderer::createTexture(Texture_CreateDesc desc_)						{ return onCreateTexture(desc_); }
 
 }

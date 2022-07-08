@@ -14,19 +14,20 @@ class Texture_DX11 : public Texture
 	using Util = DX11Util;
 public:
 	Texture_DX11(StrView filepath_, CreateDesc& desc_);
-	Texture_DX11(CreateDesc& desc_);
 
 	virtual ~Texture_DX11() = default;
 
 	DX11_ID3DShaderResourceView* getTextureView();
 	DX11_ID3DSamplerState* getSampler();
 
-	void uploadData(Span<Color4b> data_);
+	void uploadData(Span<const Color4b> data_);
+	void uploadData(const Color4b*		data_);
 
 private:
-	void _init(CreateDesc& desc_);
+	void _init(StrView filepath_, CreateDesc& desc_);
 	void _initSampler(CreateDesc& desc_);
 	void _initTextureView(CreateDesc& desc_);
+
 
 private:
 	ComPtr<DX11_ID3DTexture2D>			 _cpTexture;
