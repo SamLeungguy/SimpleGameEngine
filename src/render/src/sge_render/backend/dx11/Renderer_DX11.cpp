@@ -122,12 +122,12 @@ SPtr<Material> Renderer_DX11::onCreateMaterial()
 	return new Material_DX11();
 }
 
-SPtr<Texture> Renderer_DX11::onCreateTexture(StrView filename_, Texture_CreateDesc desc_)
+SPtr<Texture> Renderer_DX11::onCreateTexture(StrView filename_, Texture_CreateDesc& desc_)
 {
 	return new Texture_DX11(filename_, desc_);
 }
 
-//SPtr<Texture> Renderer_DX11::onCreateTexture(Texture_CreateDesc desc_)
+//SPtr<Texture> Renderer_DX11::onCreateTexture(Texture_CreateDesc& desc_)
 //{
 //	return new Texture_DX11(desc_);
 //}

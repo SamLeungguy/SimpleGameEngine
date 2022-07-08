@@ -108,6 +108,23 @@ void MainWin::onCreate(CreateDesc& desc) {
 	_renderMesh.create(editMesh);
 
 	// VertexLayoutManager::instance()->getLayout(Vertex_Pos::kType);
+
+
+	Texture_CreateDesc texDesc;
+#if 0
+	desc.width = 2;
+	desc.height= 2;
+	Vector<Color4b> data;
+	data.reserve(desc.width * desc.height);
+	data.emplace_back(255, 0, 0, 0);
+	data.emplace_back(0, 255, 0, 0);
+	data.emplace_back(0, 0, 255, 0);
+	data.emplace_back(0, 255, 0, 0);
+	desc.data = data.data();
+	_spTexture = Renderer::instance()->createTexture(desc);
+#else
+	_spTexture = Renderer::instance()->createTexture("Assets/Image/wail_pig.png", texDesc);
+#endif // 0
 }
 
 void MainWin::onCloseButton()
@@ -148,22 +165,6 @@ void MainWin::onDraw()
 
 	_material->setParam("test_float", s * 0.5f);
 	_material->setParam("test_color", Color4f(s, s, s, 1));
-
-	Texture_CreateDesc desc;
-#if 0
-	desc.width = 2;
-	desc.height= 2;
-	Vector<Color4b> data;
-	data.reserve(desc.width * desc.height);
-	data.emplace_back(255, 0, 0, 0);
-	data.emplace_back(0, 255, 0, 0);
-	data.emplace_back(0, 0, 255, 0);
-	data.emplace_back(0, 255, 0, 0);
-	desc.data = data.data();
-	_spTexture = Renderer::instance()->createTexture(desc);
-#else
-	_spTexture = Renderer::instance()->createTexture("Assets/Image/wail_pig.png", desc);
-#endif // 0
 
 	_material->setTexture("texture0", _spTexture);
 

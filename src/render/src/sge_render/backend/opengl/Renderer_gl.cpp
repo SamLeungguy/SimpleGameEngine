@@ -31,12 +31,12 @@ SPtr<Material> Renderer_gl::onCreateMaterial()
 	return nullptr;
 }
 
-SPtr<Texture> Renderer_gl::onCreateTexture(StrView filename_, Texture_CreateDesc desc_)
+SPtr<Texture> Renderer_gl::onCreateTexture(StrView filename_, Texture_CreateDesc& desc_)
 {
 	return nullptr;
 }
 
-//SPtr<Texture> Renderer_gl::onCreateTexture(Texture_CreateDesc desc_)
+//SPtr<Texture> Renderer_gl::onCreateTexture(Texture_CreateDesc& desc_)
 //{
 //	return nullptr;
 //}

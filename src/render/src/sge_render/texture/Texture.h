@@ -17,7 +17,6 @@ enum class TextureWrapper {
 	None,
 };
 
-// don't store it!!!
 struct Texture_CreateDesc
 {
 	TextureWrapper param;

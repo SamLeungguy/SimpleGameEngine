@@ -22,8 +22,8 @@ protected:
 	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc& desc_)				override;
 	virtual SPtr<Shader>			onCreateShader		(StrView filename_)								override;
 	virtual SPtr<Material>			onCreateMaterial	()												override;
-	virtual SPtr<Texture>			onCreateTexture		(StrView filename_, Texture_CreateDesc desc_)	override;
-	//virtual SPtr<Texture>			onCreateTexture		(Texture_CreateDesc desc_)						override;
+	virtual SPtr<Texture>			onCreateTexture		(StrView filename_, Texture_CreateDesc& desc_)	override;
+	//virtual SPtr<Texture>			onCreateTexture		(Texture_CreateDesc& desc_)						override;
 
 private:
 
