@@ -72,6 +72,10 @@ public:
 	void readString(String& outStr_);
 	void readIdentifier(String& outStr_);
 
+	void readBool(bool& v_);
+
+	template<class E> void readEnum(E& v_);
+
 	StrView getLastFewLines(size_t lineCount_);
 	StrView getRemainSource() const;
 
@@ -150,6 +154,21 @@ void Lexer::error(const Args &... args_)
 {
 	auto msg = Fmt(args_...);
 	_error(msg);
+}
+
+
+template<class E> inline
+void Lexer::readEnum(E& v) {
+	if (!_token.isIdentifier()) {
+		errorUnexpectedToken();
+		return;
+	}
+
+	if (!enumTryParse(v, _token.str)) {
+		error("read enum [{}]", _token.str);
+		return;
+	}
+	nextToken();
 }
 
 #endif

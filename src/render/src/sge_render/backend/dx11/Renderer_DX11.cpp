@@ -121,6 +121,12 @@ SPtr<Material> Renderer_DX11::onCreateMaterial()
 	return new Material_DX11();
 }
 
+void Renderer_DX11::validateContext() {
+	if (!_cpD3dDebug) return;
+	auto hr = _cpD3dDebug->ValidateContext(_cpD3dDeviceContext.ptr());
+	Util::throwIfError(hr);
+}
+
 }
 
 #endif // SGE_RENDER_HAS_DX11

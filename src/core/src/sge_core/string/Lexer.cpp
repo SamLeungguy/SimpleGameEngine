@@ -118,6 +118,17 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 	 nextToken();
  }
 
+ void Lexer::readBool(bool& v_) {
+	 if (!_token.isIdentifier()) errorUnexpectedToken();
+	 if (_token.str == "true")
+		 v_ = true;
+	 else if (_token.str == "false")
+		 v_ = false;
+	 else
+		 errorUnexpectedToken();
+	 nextToken();
+ }
+
  StrView Lexer::getLastFewLines(size_t lineCount_)
  {
 	 if (!_cur) return StrView();
@@ -163,7 +174,7 @@ void Lexer::Token::onFormat(fmt::format_context& ctx) const {
 		 tmp += "^^^\n";
 	 }
 
-	 FmtTo(tmp, "  token={}\n  file={}:{}:{}\n", _filename, _line, _col);
+	 FmtTo(tmp, "  token={}\n  file={}:{}:{}\n", _token, _filename, _line, _col);
 	 throw SGE_ERROR("{}", tmp);
  }
 

@@ -16,6 +16,8 @@ private:
 	void _readProperty();
 	void _readPass();
 
+	void _readBlendFunc(RenderState::BlendFunc& v);
+
 	template<class E> void _readEnum(E& v_);
 
 	MemMapFile _memMapFile;

@@ -3,6 +3,7 @@
 #include <sge_render/RenderDataType.h>
 #include <sge_render/vertex/Vertex.h>
 #include <sge_core/serializer/json/JsonUtil.h>
+#include "RenderState.h"
 
 namespace sge {
 
@@ -12,25 +13,16 @@ enum class ShaderStageMask {
 	Pixel = 1 << 1,
 };
 
-enum class ShaderPropType {
-	None,
-	Int,
-	Float,
-	Vec2f,
-	Vec3f,
-	Vec4f,
-	Color4f,
-};
-
 #define ShaderPropType_ENUM_LIST(E) \
-	E(Int) \
-	E(Float) \
-	E(Vec2f) \
-	E(Vec3f) \
-	E(Vec4f) \
-	E(Color4f) \
+	E(None,) \
+	E(Int,) \
+	E(Float,) \
+	E(Vec2f,) \
+	E(Vec3f,) \
+	E(Vec4f,) \
+	E(Color4f,) \
 //----
-SGE_ENUM_STR_UTIL(ShaderPropType)
+SGE_ENUM_CLASS(ShaderPropType, u32)
 
 struct ShaderPropTypeUtil {
 	ShaderPropTypeUtil() = delete;
@@ -89,12 +81,14 @@ struct ShaderInfo {
 		String name;
 		String vsFunc;
 		String psFunc;
+		RenderState	renderState;
 
 		template<class SE>
 		void onJson(SE& se) {
 			SGE_NAMED_IO(se, name);
 			SGE_NAMED_IO(se, vsFunc);
 			SGE_NAMED_IO(se, psFunc);
+			SGE_NAMED_IO(se, renderState);
 		}
 	};
 

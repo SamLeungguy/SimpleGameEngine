@@ -11,6 +11,8 @@ struct JsonSerializer : public NonCopyable
 public:
 	JsonSerializer(Json& json_);
 
+	void io(bool& v_) ;
+
 	void io(u8& v_) ;
 	void io(u16& v_);
 	void io(u32& v_);
@@ -108,6 +110,8 @@ struct JsonIO<JsonSerializer, String_<N>>
 #if 1    // JsonSerializer_Impl
 
 inline JsonSerializer::JsonSerializer(Json& json_) : _json(json_) { _stack.emplace_back(&_json); }
+
+inline void JsonSerializer::io(bool& v_)  { toValue(v_); }
 
 inline void JsonSerializer::io(u8& v_)  { toValue(v_); }
 inline void JsonSerializer::io(u16& v_) { toValue(v_); }
