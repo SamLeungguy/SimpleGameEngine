@@ -18,7 +18,7 @@ Shader {
 		//BlendAlpha	Add One OneMinusSrcAlpha
 
 		DepthTest	LessEqual
-		DepthWrite	false
+		DepthWrite	true
 		
 		VsFunc		vs_main
 		PsFunc		ps_main

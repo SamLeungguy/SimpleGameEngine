@@ -398,14 +398,15 @@ void RenderContext_DX11::onBeginRender()
 	}
 
 	DX11_ID3DRenderTargetView* rt[] = { _cpRenderTargetView };
-	//	ctx->OMSetRenderTargets(1, rt, _depthStencilView);
-	ctx->OMSetRenderTargets(1, rt, nullptr);
+	ctx->OMSetRenderTargets(1, rt, _cpDepthStencilView);
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = _frameBufferSize.x;
+	viewport.Width	= _frameBufferSize.x;
 	viewport.Height = _frameBufferSize.y;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	ctx->RSSetViewports(1, &viewport);
 }
