@@ -21,6 +21,7 @@ enum class ShaderStageMask {
 	E(Vec3f,) \
 	E(Vec4f,) \
 	E(Color4f,) \
+	E(Texture2D,) \
 //----
 SGE_ENUM_CLASS(ShaderPropType, u32)
 
@@ -37,6 +38,7 @@ struct ShaderPropTypeUtil {
 	//	template<> static constexpr	Type get<Vec3f>()	{ return Type::Vec3f; }
 	//	template<> static constexpr	Type get<Vec4f>()	{ return Type::Vec4f; }
 	template<> static constexpr	Type get<Color4f>() { return Type::Color4f; }
+	template<> static constexpr	Type get<Texture2D>() { return Type::Texture2D; }
 };
 
 struct ShaderPropValueConstPtr {

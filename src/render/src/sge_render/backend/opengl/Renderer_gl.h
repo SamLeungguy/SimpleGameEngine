@@ -18,10 +18,11 @@ public:
 	virtual ~Renderer_gl() = default;
 
 protected:
-	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc& desc_)	override;
-	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc& desc_)	override;
-	virtual SPtr<Shader>			onCreateShader		(StrView filename_)					override;
-	virtual SPtr<Material>			onCreateMaterial	()									override;
+	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc&		desc_)	override;
+	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc&	desc_)	override;
+	virtual SPtr<Texture2D>			onCreateTexture2D	(Texture2D_CreateDesc&			desc_)	override;
+	virtual SPtr<Shader>			onCreateShader		(StrView filename_)						override;
+	virtual SPtr<Material>			onCreateMaterial	()										override;
 
 private:
 

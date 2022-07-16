@@ -27,10 +27,11 @@ public:
 	void validateContext();
 
 protected:
-	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc& desc)	override;
-	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc& desc)	override;
-	virtual SPtr<Shader>			onCreateShader		(StrView filename_)					override;
-	virtual SPtr<Material>			onCreateMaterial	()									override;
+	virtual SPtr<RenderContext>		onCreateContext		(RenderContext_CreateDesc&		desc_)	override;
+	virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer	(RenderGpuBuffer_CreateDesc&	desc_)	override;
+	virtual SPtr<Texture2D>			onCreateTexture2D	(Texture2D_CreateDesc&			desc_)	override;
+	virtual SPtr<Shader>			onCreateShader		(StrView filename_)						override;
+	virtual SPtr<Material>			onCreateMaterial	()										override;
 
 	ComPtr<DX11_IDXGIFactory>		_cpDxgiFactory;
 	ComPtr<DX11_IDXGIDevice>		_cpDxgiDevice;

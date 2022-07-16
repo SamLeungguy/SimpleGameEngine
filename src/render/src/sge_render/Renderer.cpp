@@ -50,6 +50,16 @@ Renderer* Renderer::create(CreateDesc& desc_)
 		default: throw SGE_ERROR("unsupported graphic api!");
 	}
 
+	{
+		p->stockTextures.white		= p->createSolidColorTexture2D(Color4b(255, 255, 255, 255));
+		p->stockTextures.black		= p->createSolidColorTexture2D(Color4b(0,   0,   0,   255));
+		p->stockTextures.red		= p->createSolidColorTexture2D(Color4b(255, 0,   0,   255));
+		p->stockTextures.green		= p->createSolidColorTexture2D(Color4b(0,   255, 0,   255));
+		p->stockTextures.blue		= p->createSolidColorTexture2D(Color4b(0,   0,   255, 255));
+		p->stockTextures.magenta	= p->createSolidColorTexture2D(Color4b(255, 0,   255, 255));
+		p->stockTextures.error		= p->createSolidColorTexture2D(Color4b(255, 0,   255, 255));
+	}
+
 	return p;
 }
 
@@ -70,6 +80,27 @@ SPtr<Shader> Renderer::createShader(StrView filename_)
 void Renderer::onShaderDestory(Shader* pShader_)
 {
 	_shaders.erase(pShader_->filename().c_str());
+}
+
+SPtr<Texture2D>	Renderer::createSolidColorTexture2D(const Color4b& color_)
+{
+	int w = 4;
+	int h = 4;
+	Texture2D_CreateDesc texDesc;
+	texDesc.colorType = ColorType::RGBAb;
+	texDesc.mipmapCount = 1;
+	texDesc.size.set(w, h);
+
+	auto& image = texDesc.imageToUpload;
+	image.create(Color4b::kColorType(), w, h);
+
+	for (int y = 0; y < w; y++) {
+		auto span = image.row<Color4b>(y);
+		for (int x = 0; x < h; x++) {
+			span[x] = color_;
+		}
+	}
+	return createTexture2D(texDesc);
 }
 
 }

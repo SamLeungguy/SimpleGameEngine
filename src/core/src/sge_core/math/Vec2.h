@@ -15,5 +15,5 @@ template<class T> using Vec2 = Vec2_Basic<T>;
 
 using Vec2f = Vec2<float>;
 using Vec2d = Vec2<double>;
-
+using Vec2i = Vec2<int>;
 }
