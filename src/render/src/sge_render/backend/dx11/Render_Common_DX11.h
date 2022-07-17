@@ -231,10 +231,10 @@ inline
 D3D11_CULL_MODE DX11Util::getDxCullMode(RenderState_Cull v) {
 	using SRC = RenderState_Cull;
 	switch (v) {
-	case SRC::Back:		return D3D11_CULL_BACK;
-	case SRC::Front:	return D3D11_CULL_FRONT;
-	case SRC::None:		return D3D11_CULL_NONE;
-	default: throw SGE_ERROR("unsupported CullMode");
+		case SRC::None:		return D3D11_CULL_NONE;
+		case SRC::Back:		return D3D11_CULL_BACK;
+		case SRC::Front:	return D3D11_CULL_FRONT;
+		default: throw SGE_ERROR("unsupported CullMode");
 	}
 }
 
@@ -242,15 +242,15 @@ inline
 D3D11_COMPARISON_FUNC DX11Util::getDxDepthTestOp(RenderState_DepthTestOp v) {
 	using SRC = RenderState_DepthTestOp;
 	switch (v) {
-	case SRC::Always:		return  D3D11_COMPARISON_ALWAYS;
-	case SRC::Less:			return  D3D11_COMPARISON_LESS;
-	case SRC::Equal:		return  D3D11_COMPARISON_EQUAL;
-	case SRC::LessEqual:	return  D3D11_COMPARISON_LESS_EQUAL;
-	case SRC::Greater:		return  D3D11_COMPARISON_GREATER;
-	case SRC::GreaterEqual:	return  D3D11_COMPARISON_GREATER_EQUAL;
-	case SRC::NotEqual:		return  D3D11_COMPARISON_NOT_EQUAL;
-	case SRC::Never:		return  D3D11_COMPARISON_NEVER;
-	default: throw SGE_ERROR("unsupported DepthTestOp");
+		case SRC::Always:		return  D3D11_COMPARISON_ALWAYS;
+		case SRC::Less:			return  D3D11_COMPARISON_LESS;
+		case SRC::Equal:		return  D3D11_COMPARISON_EQUAL;
+		case SRC::LessEqual:	return  D3D11_COMPARISON_LESS_EQUAL;
+		case SRC::Greater:		return  D3D11_COMPARISON_GREATER;
+		case SRC::GreaterEqual:	return  D3D11_COMPARISON_GREATER_EQUAL;
+		case SRC::NotEqual:		return  D3D11_COMPARISON_NOT_EQUAL;
+		case SRC::Never:		return  D3D11_COMPARISON_NEVER;
+		default: throw SGE_ERROR("unsupported DepthTestOp");
 	}
 }
 
@@ -258,12 +258,12 @@ inline
 D3D11_BLEND_OP DX11Util::getDxBlendOp(RenderState_BlendOp v) {
 	using SRC = RenderState_BlendOp;
 	switch (v) {
-	case SRC::Add:		return D3D11_BLEND_OP_ADD;
-	case SRC::Min:		return D3D11_BLEND_OP_MIN;
-	case SRC::Max:		return D3D11_BLEND_OP_MAX;
-	case SRC::Sub:		return D3D11_BLEND_OP_SUBTRACT;
-	case SRC::RevSub:	return D3D11_BLEND_OP_REV_SUBTRACT;
-	default: throw SGE_ERROR("unsupported BlendOp");
+		case SRC::Add:		return D3D11_BLEND_OP_ADD;
+		case SRC::Min:		return D3D11_BLEND_OP_MIN;
+		case SRC::Max:		return D3D11_BLEND_OP_MAX;
+		case SRC::Sub:		return D3D11_BLEND_OP_SUBTRACT;
+		case SRC::RevSub:	return D3D11_BLEND_OP_REV_SUBTRACT;
+		default: throw SGE_ERROR("unsupported BlendOp");
 	}
 }
 
@@ -271,22 +271,22 @@ inline
 D3D11_BLEND DX11Util::getDxBlendFactor(RenderState_BlendFactor v) {
 	using SRC = RenderState_BlendFactor;
 	switch (v) {
-	case SRC::Zero:					return D3D11_BLEND_ZERO;
-	case SRC::One:					return D3D11_BLEND_ONE;
-	case SRC::SrcAlpha:				return D3D11_BLEND_SRC_ALPHA;
-	case SRC::DstAlpha:				return D3D11_BLEND_DEST_ALPHA;
-	case SRC::SrcColor:				return D3D11_BLEND_SRC_COLOR;
-	case SRC::DstColor:				return D3D11_BLEND_DEST_COLOR;
-	case SRC::ConstColor:			return D3D11_BLEND_BLEND_FACTOR;
-		//		case SRC::ConstAlpha:			return 
-	case SRC::OneMinusSrcAlpha:		return D3D11_BLEND_INV_SRC_ALPHA;
-	case SRC::OneMinusSrcColor:		return D3D11_BLEND_INV_SRC_COLOR;
-	case SRC::OneMinusDstAlpha:		return D3D11_BLEND_INV_DEST_ALPHA;
-	case SRC::OneMinusDstColor:		return D3D11_BLEND_INV_DEST_COLOR;
-	case SRC::OneMinusConstColor:	return D3D11_BLEND_INV_BLEND_FACTOR;
-		//		case SRC::OneMinusConstAlpha:	return 
-	case SRC::SrcAlphaSaturate:		return D3D11_BLEND_SRC_ALPHA_SAT;
-	default: throw SGE_ERROR("unsupported BlendFactor");
+		case SRC::Zero:					return D3D11_BLEND_ZERO;
+		case SRC::One:					return D3D11_BLEND_ONE;
+		case SRC::SrcAlpha:				return D3D11_BLEND_SRC_ALPHA;
+		case SRC::DstAlpha:				return D3D11_BLEND_DEST_ALPHA;
+		case SRC::SrcColor:				return D3D11_BLEND_SRC_COLOR;
+		case SRC::DstColor:				return D3D11_BLEND_DEST_COLOR;
+		case SRC::ConstColor:			return D3D11_BLEND_BLEND_FACTOR;
+			//		case SRC::ConstAlpha:			return 
+		case SRC::OneMinusSrcAlpha:		return D3D11_BLEND_INV_SRC_ALPHA;
+		case SRC::OneMinusSrcColor:		return D3D11_BLEND_INV_SRC_COLOR;
+		case SRC::OneMinusDstAlpha:		return D3D11_BLEND_INV_DEST_ALPHA;
+		case SRC::OneMinusDstColor:		return D3D11_BLEND_INV_DEST_COLOR;
+		case SRC::OneMinusConstColor:	return D3D11_BLEND_INV_BLEND_FACTOR;
+			//		case SRC::OneMinusConstAlpha:	return 
+		case SRC::SrcAlphaSaturate:		return D3D11_BLEND_SRC_ALPHA_SAT;
+		default: throw SGE_ERROR("unsupported BlendFactor");
 	}
 }
 
@@ -294,27 +294,27 @@ inline
 DXGI_FORMAT DX11Util::getDxColorType(ColorType v) {
 	using SRC = ColorType;
 	switch (v) {
-	case SRC::Rb:		return DXGI_FORMAT_R8_UNORM;
-	case SRC::Rf:		return DXGI_FORMAT_R32_FLOAT;
+		case SRC::Rb:		return DXGI_FORMAT_R8_UNORM;
+		case SRC::Rf:		return DXGI_FORMAT_R32_FLOAT;
 
-	case SRC::RGb:		return DXGI_FORMAT_R8G8_UNORM;
-	case SRC::RGf:		return DXGI_FORMAT_R32G32_FLOAT;
+		case SRC::RGb:		return DXGI_FORMAT_R8G8_UNORM;
+		case SRC::RGf:		return DXGI_FORMAT_R32G32_FLOAT;
 
-		//case SRC::RGBb:	return DXGI_FORMAT_R8G8B8_UNORM;		// DX Not Support
-		//case SRC::RGBf:	return DXGI_FORMAT_R32G32B32_FLOAT;		// DX Not Support
+			//case SRC::RGBb:	return DXGI_FORMAT_R8G8B8_UNORM;		// DX Not Support
+			//case SRC::RGBf:	return DXGI_FORMAT_R32G32B32_FLOAT;		// DX Not Support
 
-	case SRC::RGBAb:	return DXGI_FORMAT_R8G8B8A8_UNORM;
-	case SRC::RGBAf:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		//
-	case SRC::BC1:		return DXGI_FORMAT_BC1_UNORM;
-	case SRC::BC2:		return DXGI_FORMAT_BC2_UNORM;
-	case SRC::BC3:		return DXGI_FORMAT_BC3_UNORM;
-	case SRC::BC4:		return DXGI_FORMAT_BC4_UNORM;
-	case SRC::BC5:		return DXGI_FORMAT_BC5_UNORM;
-	case SRC::BC6h:		return DXGI_FORMAT_BC6H_UF16;
-	case SRC::BC7:		return DXGI_FORMAT_BC7_UNORM;
+		case SRC::RGBAb:	return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case SRC::RGBAf:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			//
+		case SRC::BC1:		return DXGI_FORMAT_BC1_UNORM;
+		case SRC::BC2:		return DXGI_FORMAT_BC2_UNORM;
+		case SRC::BC3:		return DXGI_FORMAT_BC3_UNORM;
+		case SRC::BC4:		return DXGI_FORMAT_BC4_UNORM;
+		case SRC::BC5:		return DXGI_FORMAT_BC5_UNORM;
+		case SRC::BC6h:		return DXGI_FORMAT_BC6H_UF16;
+		case SRC::BC7:		return DXGI_FORMAT_BC7_UNORM;
 
-	default: throw SGE_ERROR("unsupported ColorType");
+		default: throw SGE_ERROR("unsupported ColorType");
 	}
 }
 

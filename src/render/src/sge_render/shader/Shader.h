@@ -54,7 +54,7 @@ public:
 protected:
 	String	_filename;
 	ShaderInfo	_info;
-	Vector_<UPtr<ShaderPass>, 1> _passes;
+	Vector_<UPtr<ShaderPass>, 2> _passes;
 };
 
 }

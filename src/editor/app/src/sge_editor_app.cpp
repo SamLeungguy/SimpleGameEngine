@@ -85,15 +85,23 @@ void MainWin::onCreate(CreateDesc& desc) {
 	_camera.setAim(0,0,0);
 
 	{
+		Texture2D_CreateDesc texDesc;
+		auto& image = texDesc.imageToUpload;
+
+#if 1
+		image.loadFile("Assets/Textures/uvChecker.png");
+
+		texDesc.size = image.size();
+		texDesc.colorType = image.colorType();
+
+#else
 		int w = 256;
 		int h = 256;
-		Texture2D_CreateDesc texDesc;
-		texDesc.colorType = ColorType::RGBAb;
-		texDesc.mipmapCount = 1;
-		texDesc.size.set(w, h);
 
-		auto& image = texDesc.imageToUpload;
-		image.create(Color4b::kColorType(), w, h);
+		texDesc.size.set(w, h);
+		texDesc.colorType = ColorType::RGBAb;
+
+		image.create(Color4b::kColorType, w, h);
 
 		for (int y = 0; y < w; y++) {
 			auto span = image.row<Color4b>(y);
@@ -104,6 +112,7 @@ void MainWin::onCreate(CreateDesc& desc) {
 					255);
 			}
 		}
+#endif
 
 		_testTexture = renderer->createTexture2D(texDesc);
 	}

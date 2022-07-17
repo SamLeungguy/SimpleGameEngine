@@ -87,8 +87,8 @@ private:
 		ComPtr<DX11_ID3DBlendState>			_blendState;
 	};
 
-	virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) override {
-		return new MyPass(material, shaderPass);
+	virtual UPtr<Pass> onCreatePass(ShaderPass* shaderPass) override {
+		return UPtr<Pass>(new MyPass(this, shaderPass));
 	}
 };
 

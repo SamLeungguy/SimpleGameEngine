@@ -85,8 +85,8 @@ SGE_INLINE const int			Image::width			()	const { return _info.size.x; }
 SGE_INLINE const int			Image::height			()	const { return _info.size.y; }
 SGE_INLINE const ColorType		Image::colorType		()	const { return _info.colorType; }
 
-template<typename COLOR> SGE_INLINE Span<		COLOR> Image::row(int y_)		{ _checkType(COLOR::kColorType()); return row_noCheck<COLOR>(y_); }
-template<typename COLOR> SGE_INLINE Span<const	COLOR> Image::row(int y_) const { _checkType(COLOR::kColorType()); return row_noCheck<COLOR>(y_); }
+template<typename COLOR> SGE_INLINE Span<		COLOR> Image::row(int y_)		{ _checkType(COLOR::kColorType); return row_noCheck<COLOR>(y_); }
+template<typename COLOR> SGE_INLINE Span<const	COLOR> Image::row(int y_) const { _checkType(COLOR::kColorType); return row_noCheck<COLOR>(y_); }
 
 template<typename COLOR> SGE_INLINE Span<		COLOR> Image::row_noCheck(int y_)		{ return Span<		COLOR>(reinterpret_cast<	  COLOR*>(rowBytes(y_).data()), width()); }
 template<typename COLOR> SGE_INLINE Span<const	COLOR> Image::row_noCheck(int y_) const { return Span<const COLOR>(reinterpret_cast<const COLOR*>(rowBytes(y_).data()), width()); }

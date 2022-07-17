@@ -8,14 +8,28 @@ struct ColorUtil
 {
 	ColorUtil() = delete;
 
-	static int pixelSizeInBytes(ColorType t_);
+	static constexpr int pixelSizeInBytes(ColorType t);
+
+	static constexpr ColorElementType	elementType(ColorType t) { return static_cast<ColorElementType>(enumInt(t) & 0xff); }
+	static constexpr ColorModel			colorModel( ColorType t) { return static_cast<ColorModel>((enumInt(t) >> 8) & 0xff); }
+
+	static constexpr bool hasAlpha(ColorType t);
 };
 
 #if 0
 #pragma mark ===================== ColorUtil
 #endif // 0
 #if 1
-inline int ColorUtil::pixelSizeInBytes(ColorType t_)
+
+constexpr bool ColorUtil::hasAlpha(ColorType t) {
+	auto model = colorModel(t);
+	switch (model) {
+	case ColorModel::RGBA: return true;
+	}
+	return false;
+}
+
+constexpr int ColorUtil::pixelSizeInBytes(ColorType t_)
 {
 	using SRC = ColorType;
 	switch (t_)
