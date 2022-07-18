@@ -29,8 +29,12 @@ public:
 	void loadPngFile	(StrView filename_);
 	void loadPngMem		(ByteSpan data_);
 
+	void loadDdsFile	(StrView filename);
+	void loadDdsMem	(ByteSpan data);
+
 	void create			(ColorType colorType_, int width_, int height_);
 	void create			(ColorType colorType_, int width_, int height_, int strideInBytes_);
+	void create			(ColorType colorType, int width, int height, int strideInBytes, int mipmapCount, size_t dataSizeInBytes);
 
 	template<class COLOR> void fill(const COLOR& color);
 
@@ -54,8 +58,11 @@ public:
 	SGE_INLINE Span<const u8>	rowBytes(int y_) const;
 
 	const void* dataPtr() const;
+
+	void copyToPixelData(ByteSpan src);
+
 private:
-	void _create(ColorType colorType_, int width_, int height_, int strideInBytes_, int mipmapCount_, int dataSizeInBytes_);
+	void _create(ColorType colorType_, int width_, int height_, int strideInBytes_, int mipmapCount_, size_t dataSizeInBytes_);
 	void _checkType(ColorType colorType) const;
 	void _checkBoundary(int x_, int y_) const;
 
@@ -98,6 +105,8 @@ SGE_INLINE Span<u8>			Image::rowBytes(int y_)			{ return Span<		u8>(&_pixelData[
 SGE_INLINE Span<const u8>	Image::rowBytes(int y_) const	{ return Span<const u8>(&_pixelData[y_ * strideInBytes()], width() * _info.pixelSizeInBytes()); }
 
 SGE_INLINE const void* Image::dataPtr() const { return _pixelData.data(); }
+
+inline void Image::copyToPixelData(ByteSpan src) { _pixelData.assign(src.begin(), src.end()); }
 
 inline void Image::_checkType(ColorType colorType_) const 
 {
