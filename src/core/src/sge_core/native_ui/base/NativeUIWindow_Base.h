@@ -62,6 +62,12 @@ namespace sge {
 		virtual void onUINativeMouseEvent(UIMouseEvent& ev);
 		virtual void onUIMouseEvent(UIMouseEvent& ev) {}
 
+		virtual void onUINativeKeyboardEvent(UIKeyboardEvent& ev);
+		virtual void onUIKeyboardEvent(UIKeyboardEvent& ev) {}
+
+		bool isKeyDown(UIKeyEventButton button_)	{ return _keys[enumInt(button_)] == UIKeyEventType::Down || _keys[enumInt(button_)] == UIKeyEventType::Hold; }
+		bool isKeyUp(UIKeyEventButton button_)		{ return _keys[enumInt(button_)] == UIKeyEventType::Up; }
+
 	protected:
 		virtual void onCreate(CreateDesc& desc_) {}
 		virtual void onSetWindowTitleBar(StrView title_) {}
@@ -72,5 +78,7 @@ namespace sge {
 
 		UIMouseEventButton _pressedMouseButtons = UIMouseEventButton::None;
 		Vec2f _mousePos{0,0};
+
+		UIKeyEventType _keys[enumInt(UIKeyEventButton::_COUNT)];
 	};
 }

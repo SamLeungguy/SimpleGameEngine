@@ -30,6 +30,7 @@ private:
 
 	LRESULT _handleNativeEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	bool _handleNativeUIMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	bool _handleNativeUIKeyEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	UIEventModifier _getWin32Modifier();
 };

@@ -235,8 +235,50 @@ namespace sge {
 		return true;
 	}
 
+	bool NativeUIWindow_Win32::_handleNativeUIKeyEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		UIKeyboardEvent ev;
+
+		using Button = UIKeyEventButton;
+		using Type   = UIKeyEventType;
+
+		//auto* thisObj = s_getThis(hwnd);
+
+		switch (msg) {
+			case WM_KEYDOWN:
+			case WM_SYSKEYDOWN:
+			case WM_KEYUP:
+			case WM_SYSKEYUP:
+			{
+				int keycode = static_cast<UINT>(wParam);
+				ev.type = ((HIWORD(lParam) & KF_UP) == KF_UP) ? Type::Up : Type::Down;
+				//int repeatCount = static_cast<int>(LOWORD(lParam));
+
+				// check if is repeat
+				if ((lParam & (0x1 << 30)) && ev.type == Type::Down)
+					ev.type = Type::Hold;
+				ev.button = static_cast<Button>(keycode);
+			}break;
+
+			case WM_CHAR:
+			case WM_SYSCHAR:
+			case WM_UNICHAR:
+			{
+
+			} break;
+
+			default:
+				return false;
+		}
+
+		onUINativeKeyboardEvent(ev);
+		return true;
+	}
+
+
 	LRESULT NativeUIWindow_Win32::_handleNativeEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		if (_handleNativeUIMouseEvent(hwnd, msg, wParam, lParam)) return 0;
+		if (_handleNativeUIMouseEvent(hwnd, msg, wParam, lParam))	return 0;
+		if (_handleNativeUIKeyEvent(hwnd, msg, wParam, lParam))		return 0;
 		return ::DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 

@@ -8,8 +8,8 @@ void NativeUIWindow_Base::onUINativeMouseEvent(UIMouseEvent& ev) {
 	using Type   = UIMouseEventType;
 
 	switch (ev.type) {
-	case Type::Down: { BitUtil::set(  _pressedMouseButtons, ev.button); } break;
-	case Type::Up:   { BitUtil::unset(_pressedMouseButtons, ev.button); } break;
+		case Type::Down: { BitUtil::set(  _pressedMouseButtons, ev.button); } break;
+		case Type::Up:   { BitUtil::unset(_pressedMouseButtons, ev.button); } break;
 	}
 
 	ev.pressedButtons = _pressedMouseButtons;
@@ -19,4 +19,16 @@ void NativeUIWindow_Base::onUINativeMouseEvent(UIMouseEvent& ev) {
 
 	onUIMouseEvent(ev);
 }
+
+void NativeUIWindow_Base::onUINativeKeyboardEvent(UIKeyboardEvent& ev)
+{
+	using Button = UIKeyEventButton;
+	using Type   = UIKeyEventType;
+
+	_keys[enumInt(ev.button)] = ev.type;
+
+	onUIKeyboardEvent(ev);
+}
+
+
 }
