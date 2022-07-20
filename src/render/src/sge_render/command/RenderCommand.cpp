@@ -1,6 +1,8 @@
 #include "RenderCommand.h"
 #include "../mesh/RenderMesh.h"
 
+#include <sge_render/terrain/Terrain.h>
+
 namespace sge {
 RenderCommandBuffer::RenderCommandBuffer()
 {
@@ -73,6 +75,14 @@ void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMes
 		cmd->spRenderShader.reset(spMaterial_->getShaderPasses()[0]._spRenderShader);
 	}*/
 }
+
+void RenderCommandBuffer::test_drawTerrain(const SrcLoc& debugLoc_, const Terrain& terrain_,  Material* pMaterial_)
+{
+	for (auto& sm : terrain_.getRenderMesh().subMeshes()) {
+		drawSubMesh(debugLoc_, sm, pMaterial_);
+	}
+}
+
 
 void RenderCommandBuffer::reset()
 {

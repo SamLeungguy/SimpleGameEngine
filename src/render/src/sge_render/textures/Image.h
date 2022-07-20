@@ -38,12 +38,13 @@ public:
 
 	template<class COLOR> void fill(const COLOR& color);
 
-	SGE_INLINE const Info&		info			()	const;
-	SGE_INLINE const Vec2i&		size			()	const;
-	SGE_INLINE const int		strideInBytes	()	const;
-	SGE_INLINE const int		width			()	const;
-	SGE_INLINE const int		height			()	const;
-	SGE_INLINE const ColorType	colorType		()	const;
+	SGE_INLINE const Info&		info				()	const;
+	SGE_INLINE const Vec2i&		size				()	const;
+	SGE_INLINE const int		strideInBytes		()	const;
+	SGE_INLINE const int		pixelSizeInBytes	()	const;
+	SGE_INLINE const int		width				()	const;
+	SGE_INLINE const int		height				()	const;
+	SGE_INLINE const ColorType	colorType			()	const;
 
 	template<typename COLOR> SGE_INLINE Span<		COLOR> row(int y_);
 	template<typename COLOR> SGE_INLINE Span<const	COLOR> row(int y_) const;
@@ -88,6 +89,7 @@ inline int ImageInfo::pixelSizeInBytes() const { return ColorUtil::pixelSizeInBy
 SGE_INLINE const Image::Info&	Image::info				()	const { return _info; }
 SGE_INLINE const Vec2i&			Image::size				()	const { return _info.size; }
 SGE_INLINE const int			Image::strideInBytes	()	const { return _info.strideInBytes; }
+SGE_INLINE const int			Image::pixelSizeInBytes	()	const { return _info.pixelSizeInBytes(); }
 SGE_INLINE const int			Image::width			()	const { return _info.size.x; }
 SGE_INLINE const int			Image::height			()	const { return _info.size.y; }
 SGE_INLINE const ColorType		Image::colorType		()	const { return _info.colorType; }
@@ -98,8 +100,8 @@ template<typename COLOR> SGE_INLINE Span<const	COLOR> Image::row(int y_) const {
 template<typename COLOR> SGE_INLINE Span<		COLOR> Image::row_noCheck(int y_)		{ return Span<		COLOR>(reinterpret_cast<	  COLOR*>(rowBytes(y_).data()), width()); }
 template<typename COLOR> SGE_INLINE Span<const	COLOR> Image::row_noCheck(int y_) const { return Span<const COLOR>(reinterpret_cast<const COLOR*>(rowBytes(y_).data()), width()); }
 
-template<typename COLOR> SGE_INLINE		  COLOR& Image::pixel(int x_, int y_)		{ _checkBoundary(x_, y_); return row<COLOR>(y)[x];; }
-template<typename COLOR> SGE_INLINE const COLOR& Image::pixel(int x_, int y_) const { _checkBoundary(x_, y_); return row<COLOR>(y)[x];; }
+template<typename COLOR> SGE_INLINE		  COLOR& Image::pixel(int x_, int y_)		{ _checkBoundary(x_, y_); return row<COLOR>(y_)[x_];; }
+template<typename COLOR> SGE_INLINE const COLOR& Image::pixel(int x_, int y_) const { _checkBoundary(x_, y_); return row<COLOR>(y_)[x_];; }
 
 SGE_INLINE Span<u8>			Image::rowBytes(int y_)			{ return Span<		u8>(&_pixelData[y_ * strideInBytes()], width() * _info.pixelSizeInBytes()); }
 SGE_INLINE Span<const u8>	Image::rowBytes(int y_) const	{ return Span<const u8>(&_pixelData[y_ * strideInBytes()], width() * _info.pixelSizeInBytes()); }

@@ -6,6 +6,8 @@
 #include <sge_render/vertex/Vertex.h>
 #include <sge_render/vertex/VertexLayoutManager.h>
 
+#include <sge_render/terrain/Terrain.h>
+
 namespace sge {
 
 class MainWin : public NativeUIWindow
@@ -38,6 +40,63 @@ public:
 		}
 	}
 
+	virtual void onUIKeyboardEvent(UIKeyboardEvent& ev) override
+	{
+		switch (ev.button)
+		{
+			case KeyButton::A:
+			{
+				if (ev.isUp())
+				{
+				}
+				else if (ev.isDown())
+				{
+				}
+				else if (ev.isHold())
+				{
+				}
+			}break;
+
+			default: break;
+		}
+
+		if (isKeyDown(KeyButton::Key_1))
+		{
+			cameraSpeed *= 2.0f;
+			if (cameraSpeed > 100.0f)
+			{
+				cameraSpeed = 100.0f;
+			}
+		}
+		if (isKeyDown(KeyButton::Key_2))
+		{
+			cameraSpeed /= 2.0f;
+			if (cameraSpeed < 1.0f)
+			{
+				cameraSpeed = 1.0f;
+			}
+		}
+
+		if (isKeyDown(KeyButton::W))
+		{
+			_camera.move(0.0f, 0.0f, cameraSpeed);
+		}
+
+		if (isKeyDown(KeyButton::A))
+		{
+			_camera.move(cameraSpeed, 0.0f, 0.0f);
+		}
+
+		if (isKeyDown(KeyButton::S))
+		{
+			_camera.move(0.0f, 0.0f, -cameraSpeed);
+		}
+
+		if (isKeyDown(KeyButton::D))
+		{
+			_camera.move(-cameraSpeed, 0.0f, 0.0f);
+		}
+	}
 
 	virtual void onDraw() override;
 
@@ -49,6 +108,9 @@ public:
 	SPtr<Texture2D>	_testTexture;
 
 	Math::Camera3f	_camera;
+	float cameraSpeed = 1.0f;
+
+	Terrain _terrain;
 
 private:
 };
@@ -123,7 +185,9 @@ void MainWin::onCreate(CreateDesc& desc) {
 	_material = renderer->createMaterial();
 	_material->setShader(shader);
 
-	_material->setParam("mainTex", _testTexture);
+	//_material->setParam("mainTex", _testTexture);
+	_material->setParam("mainTex", renderer->stockTextures.magenta);
+
 
 	EditMesh editMesh;
 
@@ -146,6 +210,17 @@ void MainWin::onCreate(CreateDesc& desc) {
 	_renderMesh.create(editMesh);
 
 	// VertexLayoutManager::instance()->getLayout(Vertex_Pos::kType);
+
+	{
+		Terrain_CreateDesc terrainDesc;
+		auto& heightMap = terrainDesc.heightMap;
+		//heightMap.loadFile("Assets/Terrain/TerrainTest/iceland_heightmap.png");
+		heightMap.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
+
+		terrainDesc.size = heightMap.size();
+
+		_terrain.create(terrainDesc);
+	}
 }
 
 void MainWin::onCloseButton()
@@ -194,7 +269,9 @@ void MainWin::onDraw()
 
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({0, 0, 0.2f, 1});
-	_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
+	//_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
+	_cmdBuf.test_drawTerrain(SGE_LOC, _terrain, _material);
+
 	_cmdBuf.swapBuffers();
 
 	_renderContext->commit(_cmdBuf);

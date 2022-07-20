@@ -10,6 +10,7 @@ namespace sge {
 
 class RenderMesh;
 class RenderSubMesh;
+class Terrain;
 
 enum class RenderCommandType {
 	None,
@@ -93,6 +94,7 @@ public:
 	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_, Material* pMaterial_);
 
 	void test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_);
+	void test_drawTerrain	(const SrcLoc& debugLoc_, const Terrain& terrain_,		 Material* pMaterial_);
 
 	void reset();
 

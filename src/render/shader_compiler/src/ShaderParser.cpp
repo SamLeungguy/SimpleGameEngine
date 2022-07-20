@@ -117,6 +117,8 @@ void ShaderParser::_readPass()
 
 		if (_token.isIdentifier("Cull")) { nextToken(); readEnum(o.renderState.cull); continue; }
 
+		if (_token.isIdentifier("Wireframe")) { nextToken(); readBool(o.renderState.wireframe); continue; }
+
 		if (_token.isIdentifier("DepthTest") ) { nextToken(); readEnum(o.renderState.depthTest.op); continue; }
 		if (_token.isIdentifier("DepthWrite")) { nextToken(); readBool(o.renderState.depthTest.writeMask); continue; }
 

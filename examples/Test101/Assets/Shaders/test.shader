@@ -12,15 +12,17 @@ Shader {
 	
 	Pass {
 		// Queue	"Transparent"
-//		Cull		None
+		Cull		Back
 
 		DepthTest	LessEqual
 
 //		DepthTest	Always
 //		DepthWrite	false
 
-		BlendRGB 	Add One OneMinusSrcAlpha
-		BlendAlpha	Add One OneMinusSrcAlpha
+		Wireframe true
+
+		//BlendRGB 	Add One OneMinusSrcAlpha
+		//BlendAlpha	Add One OneMinusSrcAlpha
 		
 		VsFunc		vs_main
 		PsFunc		ps_main
@@ -62,6 +64,11 @@ SamplerState mainTex_Sampler;
 
 PixelIn vs_main(VertexIn i) {
 	PixelIn o;
+
+	float height = mainTex.SampleLevel(mainTex_Sampler, i.uv, 4).r;
+	//i.positionOS.y = tex2Dlod(mainTex_Sampler, float4(i.uv.x, i.uv.y, 0.0, 0.0)).r;
+	//i.positionOS.y = height * 6.0f;
+
 	o.positionWS  = mul(sge_matrix_model, i.positionOS);
 	o.positionHCS = mul(sge_matrix_mvp,   i.positionOS);
 	o.positionHCS.y += test_float;

@@ -1,5 +1,4 @@
 #pragma once
-#include "sge_render-config.h"
 
 #if SGE_RENDER_HAS_DX11
 
@@ -299,6 +298,9 @@ DXGI_FORMAT DX11Util::getDxColorType(ColorType v) {
 
 		case SRC::RGb:		return DXGI_FORMAT_R8G8_UNORM;
 		case SRC::RGf:		return DXGI_FORMAT_R32G32_FLOAT;
+
+		case SRC::Ls:		return DXGI_FORMAT_R16_UNORM;
+
 
 			//case SRC::RGBb:	return DXGI_FORMAT_R8G8B8_UNORM;		// DX Not Support
 			//case SRC::RGBf:	return DXGI_FORMAT_R32G32B32_FLOAT;		// DX Not Support

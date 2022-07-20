@@ -11,6 +11,8 @@ struct ColorUtil
 	static constexpr int pixelSizeInBytes(ColorType t);
 	static constexpr int bytesPerPixelBlock(ColorType type);
 
+	static constexpr int bytesPerElement(ColorType type_);
+
 	static constexpr ColorElementType	elementType(ColorType t) { return static_cast<ColorElementType>(enumInt(t) & 0xff); }
 	static constexpr ColorModel			colorModel( ColorType t) { return static_cast<ColorModel>((enumInt(t) >> 8) & 0xff); }
 
@@ -36,24 +38,39 @@ constexpr int ColorUtil::pixelSizeInBytes(ColorType t_)
 	switch (t_)
 	{
 		//case SRC::None:		return sizeof();
-		//case SRC::Rf:			return sizeof();	
-		//case SRC::Rb:			return sizeof();	
-		//case SRC::RGf:		return sizeof();	
-		//case SRC::RGb:		return sizeof();	
-		//case SRC::RGBf:		return sizeof();	
-		//case SRC::RGBb:		return sizeof();	
-		case SRC::RGBAf:	return sizeof(ColorRGBAf);	
-		case SRC::RGBAb:	return sizeof(ColorRGBAb);	
-		//case SRC::BC1:		return sizeof();	
-		//case SRC::BC2:		return sizeof();	
-		//case SRC::BC3:		return sizeof();	
-		//case SRC::BC4:		return sizeof();	
-		//case SRC::BC5:		return sizeof();	
-		//case SRC::BC6h:		return sizeof();	
-		//case SRC::BC7:		return sizeof();	
+		//case SRC::Rb:		return sizeof();
+		//case SRC::Rs:		return sizeof();
+		//case SRC::Rh:		return sizeof();
+		//case SRC::Rf:		return sizeof();
+		//case SRC::Lb:		return sizeof();
+		case SRC::Ls:		return sizeof(ColorR<u16>);
+		//case SRC::Lh:		return sizeof();
+		//case SRC::Lf:		return sizeof();
+		//case SRC::LAb:		return sizeof();
+		//case SRC::LAs:		return sizeof();
+		//case SRC::LAh:		return sizeof();
+		//case SRC::LAf:		return sizeof();
+		//case SRC::RGb:		return sizeof();
+		//case SRC::RGs:		return sizeof();
+		//case SRC::RGh:		return sizeof();
+		//case SRC::RGf:		return sizeof();
+		//case SRC::RGBb:		return sizeof();
+		//case SRC::RGBs:		return sizeof();
+		//case SRC::RGBh:		return sizeof();
+		//case SRC::RGBf:		return sizeof();
+		case SRC::RGBAb:	return sizeof(ColorRGBAb);
+		//case SRC::RGBAs:	return sizeof();
+		//case SRC::RGBAh:	return sizeof();
+		case SRC::RGBAf:	return sizeof(ColorRGBAf);
+		//case SRC::BC1:		return sizeof();
+		//case SRC::BC2:		return sizeof();
+		//case SRC::BC3:		return sizeof();
+		//case SRC::BC4:		return sizeof();
+		//case SRC::BC5:		return sizeof();
+		//case SRC::BC6h:		return sizeof();
+		//case SRC::BC7:		return sizeof();
+		default: throw SGE_ERROR("pixelSizeInBytes()");
 	}
-	SGE_ASSERT(false);
-	return 0;
 }
 
 constexpr int ColorUtil::bytesPerPixelBlock(ColorType type) {
@@ -72,6 +89,13 @@ constexpr int ColorUtil::bytesPerPixelBlock(ColorType type) {
 	}
 	return 0;
 }
+
+constexpr int bytesPerElement(ColorType type_)
+{
+	//ColorElementType elementType = ColorUtil::elementType(type_);
+	return 0;
+}
+
 
 #endif // 1
 

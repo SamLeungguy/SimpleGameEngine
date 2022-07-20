@@ -22,6 +22,10 @@ struct Vec2_Basic : public DATA {
 	SGE_INLINE Vec2(const Tuple2<T> & v) { set(v); }
 	SGE_INLINE Vec2(const T& x_, const T& y_) { set(x_, y_); }
 
+	template<typename U>
+	SGE_INLINE Vec2(const U& x_, const U& y_) { set(static_cast<T>(x_), static_cast<T>(y_)); }
+	
+
 	SGE_INLINE void set(const Tuple2<T> & v) { DATA::set(v); }
 	SGE_INLINE void set(const T& x_, const T& y_) { set(Tuple2<T>(x_, y_)); }
 

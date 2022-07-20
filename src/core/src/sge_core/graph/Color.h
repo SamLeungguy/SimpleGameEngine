@@ -201,6 +201,24 @@ using ColorRGBAs = ColorRGBA<u16>;
 using Color4f = ColorRGBAf;
 using Color4b = ColorRGBAb;
 
+template<class T>
+struct ColorL {
+	using ElementType = T;
+	static const size_t kElementCount = 1;
+	static constexpr int kAlphaBits	= 0;
+	static constexpr ColorType kColorType = ColorType_make(ColorModel::L, ColorElementType_get<T>());
+
+	union {
+		struct { T r; };
+		T data[kElementCount];
+	};
+
+	ColorL() = default;
+	ColorL(const T& r_)
+		: r(r_) {}
+};
+using ColorLs = ColorL<u16>;
+
 struct ColorBC1 {
 	using Element = void;
 	static constexpr ColorType kColorType = ColorType::BC1;
