@@ -81,6 +81,10 @@ void RenderCommandBuffer::test_drawTerrain(const SrcLoc& debugLoc_, const Terrai
 	for (auto& sm : terrain_.getRenderMesh().subMeshes()) {
 		drawSubMesh(debugLoc_, sm, pMaterial_);
 	}
+
+	for (auto& sm : terrain_.getRenderMesh2().subMeshes()) {
+		drawSubMesh(debugLoc_, sm, pMaterial_);
+	}
 }
 
 

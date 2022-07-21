@@ -46,6 +46,8 @@ constexpr i32 next_pow2(i32 v) {
 	return v; 
 }
 
+template<class T> constexpr T pow2(T v_) { return (0x01 << v_); }
+
 template<typename T> constexpr T log2 (T val) {
 	//static_assert(std::is_unsigned_v<T>());
 	if (val == 0) return std::numeric_limits<T>::max();

@@ -44,9 +44,14 @@ public:
 		  RenderMesh& getRenderMesh()		{ return _testRenderMesh; }
 	const RenderMesh& getRenderMesh() const { return _testRenderMesh; }
 
+		  RenderMesh& getRenderMesh2()		 { return _testRenderMesh2; }
+	const RenderMesh& getRenderMesh2() const { return _testRenderMesh2; }
+
 private:
 	void _create(int width_, int height_) {};
-	void _initMesh(CreateDesc& desc_, RenderMesh& outMesh_);
+	void _initMesh(const CreateDesc& desc_, RenderMesh& outMesh_, int lod_, Vec2i offset_);
+
+	//void moveVertices()
 
 private:
 	Vec2i _size{ 0, 0 };
@@ -55,6 +60,7 @@ private:
 	Vector_<SPtr<RenderGpuBuffer>, 16> _indexBufferSPtrs;
 
 	RenderMesh _testRenderMesh;
+	RenderMesh _testRenderMesh2;
 
 	IndexChunks _indexChunks;
 };
