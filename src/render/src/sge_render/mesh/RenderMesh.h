@@ -23,6 +23,8 @@ public:
 	RenderPrimitiveType getPrimitive() const;
 	const VertexLayout* getVertexLayout() const;
 
+	void setIndexBuffer(SPtr<RenderGpuBuffer>& sp_, RenderDataType indexType_) { _spIndexBuffer.reset(sp_); _indexCount = _spIndexBuffer->bufferSize() / RenderDataTypeUtil::getByteSize(indexType_); _indexType = indexType_; }
+
 friend class RenderMesh;
 protected:
 	RenderMesh* _pMesh = nullptr;

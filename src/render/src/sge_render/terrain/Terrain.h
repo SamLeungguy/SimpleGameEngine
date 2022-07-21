@@ -1,6 +1,7 @@
 #pragma once
 #include <sge_render/textures/Texture.h>
 #include <sge_render/buffer/RenderGpuBuffer.h>
+#include <sge_render/mesh/RenderMesh.h>
 
 namespace sge {
 
@@ -15,10 +16,24 @@ struct Terrain_CreateDesc
 	//SPtr<Texture2D> heightMap;
 };
 
+class Terrain_Patch
+{
+	u32 _indexOffset = 0;
+	u32 _size = 17;
+	Vec2f _widthHeightOffset;
+	Vec3f _center;
+};
+
 class Terrain
 {
 public:
+	static constexpr int kMaxLOD = 5;
+	static constexpr int kMaxCombination = 16;
+
 	using CreateDesc = Terrain_CreateDesc;
+	using IndexChunks = Vector_<Vector_<SPtr<RenderGpuBuffer>, kMaxCombination>, Terrain::kMaxLOD>;
+	using IndexType = u32;
+
 	Terrain() = default;
 	Terrain(CreateDesc& desc_);
 
@@ -40,6 +55,8 @@ private:
 	Vector_<SPtr<RenderGpuBuffer>, 16> _indexBufferSPtrs;
 
 	RenderMesh _testRenderMesh;
+
+	IndexChunks _indexChunks;
 };
 
 #if 0

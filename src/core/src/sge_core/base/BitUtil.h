@@ -15,6 +15,9 @@ public:
 	template<class T>	constexpr	static int	count0	(T  value) { return count1(~value); }
 	template<class T>	constexpr	static int	highest	(T  value);
 	template<class T>	constexpr	static int	lowest	(T  value);
+
+	template<class T>	constexpr	static T	bit		(T bits_)			{ return 0x01 << bits_;  }
+	template<class T>	constexpr	static bool	hasBit	(T value, T bits)	{ return has(value, bit(bits)); }
 };
 
 template<class T> constexpr

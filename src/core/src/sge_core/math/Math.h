@@ -33,6 +33,31 @@ template< class T > constexpr bool	isNaN	( const T& v )	{ return std::isnan(v); 
 template < class T > constexpr T	inf		()				{ return std::numeric_limits<T>::infinity(); }
 template < class T > constexpr bool	isInf	( const T& v )	{ return std::numeric_limits<T>::has_infinity && v == inf<T>(); }
 
+constexpr i32 next_pow2(i32 v) { 
+	if (v <= 0)
+		return 0; 
+	v--;
+	v|=v>>1; 
+	v|=v>>2; 
+	v|=v>>4; 
+	v|=v>>8; 
+	v|=v>>16;
+	v++;
+	return v; 
+}
+
+template<typename T> constexpr T log2 (T val) {
+	//static_assert(std::is_unsigned_v<T>());
+	if (val == 0) return std::numeric_limits<T>::max();
+	if (val == 1) return 0;
+	T ret = 0;
+	while (val > 1) {
+		val >>= 1;
+		ret++;
+	}
+	return ret;
+}
+
 //--------
 
 //Splits a floating-point value into fractional and integer parts
@@ -116,6 +141,8 @@ SGE_INLINE void sincos( double rad, double & out_sin, double & out_cos ) { out_s
 #if 0
 #pragma mark ----------------
 #endif
+
+template<class T> T pow(const T& left, const T& right) { return std::pow(left, right); }
 
 template<class T> T abs(const T& v) { return v < 0 ? -v : v; }
 

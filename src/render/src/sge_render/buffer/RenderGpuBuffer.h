@@ -33,6 +33,8 @@ public:
 		onUploadToGpu(data_, offset_);
 	}
 
+	size_t bufferSize() { return _desc.bufferSize; }
+
 protected:
 	virtual void onUploadToGpu(ByteSpan data_, size_t offset_) = 0;
 	CreateDesc _desc;

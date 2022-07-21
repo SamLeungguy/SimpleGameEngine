@@ -68,7 +68,7 @@ public:
 
 	RenderPrimitiveType		primitive = RenderPrimitiveType::None;
 	const VertexLayout* pVertexLayout = nullptr;
-	RenderDataType			indexType = RenderDataType::UInt16;
+	RenderDataType			indexType = RenderDataType::UInt32;
 
 	SPtr<RenderGpuBuffer>	spVertexBuffer;
 	SPtr<RenderGpuBuffer>	spIndexBuffer;
