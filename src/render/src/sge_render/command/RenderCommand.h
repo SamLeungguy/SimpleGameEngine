@@ -6,11 +6,14 @@
 
 #include <sge_core/allocator/LinearAllocator.h>
 
+#include <sge_render/terrain/Terrain.h>
+
 namespace sge {
 
 class RenderMesh;
 class RenderSubMesh;
 class Terrain;
+class _Terrain_Patch;
 
 enum class RenderCommandType {
 	None,
@@ -80,6 +83,8 @@ public:
 
 	size_t vertexCount = 0;
 	size_t indexCount = 0;
+
+	SPtr<_Terrain_Patch> _spTerrainPatch;
 };
 
 class RenderCommandBuffer : public NonCopyable {
@@ -94,7 +99,7 @@ public:
 	void drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMesh& subMesh_, Material* pMaterial_);
 
 	void test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_);
-	void test_drawTerrain	(const SrcLoc& debugLoc_, const Terrain& terrain_,		 Material* pMaterial_);
+	void test_drawTerrain	(const SrcLoc& debugLoc_, Terrain& terrain_,		 Material* pMaterial_);
 
 	void reset();
 

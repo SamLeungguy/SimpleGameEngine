@@ -18,6 +18,8 @@ public:
 
 	template<class T>	constexpr	static T	bit		(T bits_)			{ return 0x01 << bits_;  }
 	template<class T>	constexpr	static bool	hasBit	(T value, T bits)	{ return has(value, bit(bits)); }
+	template<class T>	constexpr	static void	set		(T& value, int bits) { value |= bits; }
+	template<class T>	constexpr	static void	unset	(T& value, int bits) { value &= ~bits; }
 };
 
 template<class T> constexpr

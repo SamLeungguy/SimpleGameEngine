@@ -5,104 +5,9 @@
 
 #include "sge_render/vertex/VertexLayoutManager.h"
 
+#define _SGE_TERRRAIN_DEBUG 0
+
 namespace sge {
-
-#if 0
-struct TerrainSplit
-{
-	using IndexChunks = Vector_<VectorMap<u8, SPtr<RenderGpuBuffer>>, Terrain::kMaxLOD>;
-	IndexChunks* pOut = nullptr;
-
-	void split(IndexChunks& chunk_, Vec2i vertexSize_)
-	{
-		pOut = &chunk_;
-
-		i32 lod = Math::ceil(log2(vertexSize_.x - 1)) - 1;
-		_currentLod = lod;
-		pOut->resize(lod - 1);
-		if (lod - 1 == 0)
-		{
-			// insert the triangle to index buffer
-		}
-		_vertexCount = vertexSize_;
-		//_halfCurrentSize = _currentSize / 2;
-
-		_split({ 0, 0 }, { _vertexCount.x - 1, 0 }, { _vertexCount.x / 2, _vertexCount.y / 2}, 0);
-
-	}
-
-	void _split(Vec2i pt0_, Vec2i pt1_, Vec2i pt2_, int depth_)
-	{
-
-		auto line0 = pt1_ - pt0_;
-		auto line1 = pt2_ - pt1_;
-		auto line2 = pt0_ - pt2_;
-
-		auto spt0 = line0 / 2;
-		auto spt1 = line1 / 2;
-		auto spt2 = line2 / 2;
-
-		// check cannot split anymore
-		/*if (spt0)
-		{
-
-		}*/
-
-		if (_currentLod == depth_)
-		{
-			// lod - 1
-			// insert the triangle to index buffer
-		}
-
-		//if (_currentLod + 1 == depth_)
-		//{
-		//	// max lod, add straight line to split
-		//}
-
-		else
-		{
-			auto nextDepth = depth_+ 1;
-
-			// for top and left
-			_split(pt0_, spt0, spt2, nextDepth);
-
-			// for top
-			_split(spt0, pt1_, spt1, nextDepth);
-
-			// for left
-			// split(spt2, spt1, pt2_);
-
-
-			if (true)
-			{
-
-			}
-
-			// recur
-		}
-	}
-
-	void _spiltQuad(Vec2i pt0_, Vec2i pt1_, Vec2i pt2_, Vec2i pt3_)
-	{
-		Vec2i center = (pt0_ + pt1_ + pt2_ + pt3_) / 4;
-
-
-	}
-
-	int index(int x, int y) { return y * _vertexCount.x + x; }
-
-private:
-	u32 _currentLod = 0;
-	Vec2i _vertexCount;
-
-	Vector<u32> _lod0Indices;
-	Vector<u32> _lod1Indices;
-
-
-	//u32 _currentSize = 0;
-	//u32 _halfCurrentSize = 0;
-};
-#endif // 0
 
 #if 1
 
@@ -114,7 +19,7 @@ struct LODIndices
 	{
 		_init(lod_, vertexSize_);
 		_createTopBottonEdgeIndices();
-		_createLeftEightEdgeIndices();
+		_createLeftRightEdgeIndices();
 	}
 
 	void next()
@@ -126,15 +31,11 @@ struct LODIndices
 
 		_update();
 		_createTopBottonEdgeIndices();
-		_createLeftEightEdgeIndices();
+		_createLeftRightEdgeIndices();
 	}
 
 	u32 index(int x, int y, int width_) { return y * width_ + x; }
-#if 1
-	u32 index(int x, int y) { return y * vertexSize.x + x; }
-#else
-	u32 index(int x, int y )			{ return (y + maxLod - currentLod) * vertexSize.x + x * (maxLod - currentLod + 1); }
-#endif // 0
+	u32 index(int x, int y)				{ return y * vertexSize.x + x; }
 
 	u32 index(Vec2i coord_)				{ return coord_.y * vertexSize.x + coord_.x; }
 
@@ -183,15 +84,6 @@ private:
 		dst_.emplace_back(index(x0_, y0_)); dst_.emplace_back(index(x1_, y1_)); dst_.emplace_back(index(x2_, y2_)); 
 		tmpIndices.emplace_back(leftToRight_Index(x0_, y0_)); tmpIndices.emplace_back(leftToRight_Index(x2_, y2_)); tmpIndices.emplace_back(leftToRight_Index(x1_, y1_));
 	}
-
-#if 0
-	void _lod0_emplace_back_TopBottom(int x_, int y_)		{ lod0Indices.emplace_back(index(x_, y_)); tmpIndices.emplace_back(index(x_, vertexSize.y - 1 - y_)); }
-	void _lod1_emplace_back_TopBottom(int x_, int y_)		{ lod1Indices.emplace_back(index(x_, y_)); tmpIndices.emplace_back(index(x_, vertexSize.y - 1 - y_)); }
-
-	void _lod0_emplace_back_LeftRight(int x_, int y_)		{ lod0Indices.emplace_back(index(x_, y_)); tmpIndices.emplace_back(index(vertexSize.x - 1 - x_, y_)); }
-	void _lod1_emplace_back_LeftRight(int x_, int y_)		{ lod1Indices.emplace_back(index(x_, y_)); tmpIndices.emplace_back(index(vertexSize.x - 1 - x_, y_)); }
-
-#endif // 0
 
 	void _mergeAndClearIndicesChunk(Vector<u32>& dst_, size_t offset_, Vector<u32>& src_)
 	{
@@ -263,7 +155,7 @@ private:
 			_mergeAndClearIndicesChunk(lod1Indices, lod1Indices.size(), tmpIndices);
 		}
 	}
-	void _createLeftEightEdgeIndices()
+	void _createLeftRightEdgeIndices()
 	{
 		int end = static_cast<int>(Math::pow(2.0f, static_cast<float>(currentLod))) - 1;
 
@@ -276,7 +168,7 @@ private:
 			if (end == 0)
 			{
 				auto start = 0 * factor1;
-				_emplace_back_TopBottom(lod0Indices,	   0,		start + 0, factor0,		start + factor0, 0, start + factor1);
+				_emplace_back_LeftRight(lod0Indices,	   0,		start + 0, factor0,		start + factor0, 0, start + factor1);
 			}
 
 			// similar to top
@@ -345,7 +237,6 @@ private:
 		tmpIndices.clear();
 		//stride0 = 0, stride1 = 0;
 	}
-
 	void _update()
 	{
 		inverseLod = maxLod - currentLod;
@@ -395,19 +286,19 @@ public:
 			{
 				// Top
 				if (BitUtil::hasBit(tblr, 3))		_copyTo(indices, lodIndices.getTopEdgeIndices_lod1());
-				else										_copyTo(indices, lodIndices.getTopEdgeIndices_lod0());
+				else								_copyTo(indices, lodIndices.getTopEdgeIndices_lod0());
 
 				// Bottom
 				if (BitUtil::hasBit(tblr, 2))		_copyTo(indices, lodIndices.getBottomEdgeIndices_lod1());
-				else										_copyTo(indices, lodIndices.getBottomEdgeIndices_lod0());
+				else								_copyTo(indices, lodIndices.getBottomEdgeIndices_lod0());
 
 				// Left
 				if (BitUtil::hasBit(tblr, 1))		_copyTo(indices, lodIndices.getLeftEdgeIndices_lod1());
-				else										_copyTo(indices, lodIndices.getLeftEdgeIndices_lod0());
+				else								_copyTo(indices, lodIndices.getLeftEdgeIndices_lod0());
 
 				// Right
 				if (BitUtil::hasBit(tblr, 0))		_copyTo(indices, lodIndices.getRightEdgeIndices_lod1());
-				else										_copyTo(indices, lodIndices.getRightEdgeIndices_lod0());
+				else								_copyTo(indices, lodIndices.getRightEdgeIndices_lod0());
 
 				auto& dst = indicesChunks[tblr];
 
@@ -447,7 +338,6 @@ private:
 private:
 	IndexChunks* pOut = nullptr;
 	int _maxLod = 0;
-	Vec2i _vertexCount;
 
 	Vector<u32> indices;
 };
@@ -457,7 +347,6 @@ private:
 Terrain::Terrain(CreateDesc& desc_)
 {
 	//desc_.heightMap.<Color4b>();
-
 	_size = desc_.heightMap.size();
 
 }
@@ -467,78 +356,357 @@ void Terrain::create(CreateDesc& desc_)
 	auto mapSize = desc_.heightMap.size();
 	_size = mapSize;
 	//_size = { 5, 5 };
-	_size = { 17, 17 };
+	_size = { 256, 256 };
 
-	int lodIndex = Math::log2(_size.x - 1) - 1;
+	_patchCount = desc_.patchCount;
+	_patchSize = _size / _patchCount;
+	_patches.reserve(_patchCount.x * _patchCount.y);
 
-	_initMesh(desc_, _testRenderMesh, lodIndex, {0, 0});
-	_initMesh(desc_, _testRenderMesh2, lodIndex - 1, {_size.x - 1, 0});
+	_patchSize.x = Math::next_pow2(_patchSize.x) + 1;
+	_patchSize.y = _patchSize.x;
+	_size = _patchCount * _patchSize;
+
+	int lodIndex = Math::log2(_patchSize.x) - 1;
+	if (lodIndex >= kMaxLOD)
+		throw SGE_ERROR("lodIndex > kMaxLOD");
+	_maxLodIndex = lodIndex;
+
+	_heightMapImage = std::move(desc_.heightMap);
+
+	ChunkIndexGenerator generator;
+	if (_indexChunks.size() == 0)
+		generator.generate(_indexChunks, _patchSize);
+
+	_init();
 }
 
-void Terrain::_initMesh(const CreateDesc& desc_, RenderMesh& outMesh_, int lod_, Vec2i offset_)
+void Terrain::update(const Math::Camera3f& camera_)
 {
-	auto cellSize = _size - 1;
-	auto vertexCount = _size.x * _size.y;
-	auto triangleCount = cellSize.x * cellSize.y * 3;
-	Vec2f size_f{ _size.x, _size.y };
+	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+	{
+		//update();
+		Vec2i startPatch = getPatchCoord(camera_);
+		
+		_updatePatchLOD(startPatch);
 
-	EditMesh editMesh;
+		//SGE_LOG("{}, {}", startPatch.x, startPatch.y);
+
+		if (iPatch.x >= _patchCount.x - 1)
+		{
+			iPatch.y++;
+			iPatch.x = 0;
+			continue;
+		}
+		iPatch.x++;
+	}
+}
+
+void Terrain::_init()
+{
+	auto vertexCount = _patchSize.x * _patchSize.y;
+
+	EditMesh tmpEditMesh;
+	EditMesh& editMesh = tmpEditMesh;
 	editMesh.positions.reserve(vertexCount);
 	editMesh.uvs[0].reserve(vertexCount);
 	editMesh.colors.resize(vertexCount);						// TODO: remove
 	editMesh.normals.resize(vertexCount);						// TODO: remove
-	editMesh.indices.reserve(triangleCount * 3);				// TODO: remove
+
+	{
+		Vec2i iPatch_{0, 0};
+		Vec2i offset		{		  iPatch_.x * _patchSize.x, iPatch_.y * _patchSize.y};
+		Vec2f posOffset		{	 -_patchSize.x / 2 * offset.x, -_patchSize.y / 2 * offset.y};
+		Vec2f uvOffset		{ 1.0f / _patchCount.x * offset.x, 1.0f / _patchCount.y * offset.y};
+
+		for (Vec2i iPatchSize{0, 0}; iPatchSize.y < _patchSize.y;)
+		{
+			//auto height = _heightMapImage.pixel<ColorLs>(iPatchSize.x + offset.x, iPatchSize.y + offset.y).r * _normalizeFactor * _heightFactor - _heightOffset;
+			auto height = -1;
+
+			editMesh.positions.emplace_back(posOffset.x + iPatchSize.x, height, posOffset.y + iPatchSize.y);
+			editMesh.uvs[0].emplace_back(iPatchSize.x / _size.x + uvOffset.x, iPatchSize.y / _size.y + uvOffset.y);
+
+			if (iPatchSize.x >= _patchSize.x - 1)
+			{
+				iPatchSize.y++;
+				iPatchSize.x = 0;
+				continue;
+			}
+			iPatchSize.x++;
+		}
+	}
+
+	auto& renderMesh = _testRenderMesh;
+	renderMesh.create(editMesh);
+
+	auto& subMesh = renderMesh.subMeshes()[0];
+
+	u8 tblr = 0b00000000;
+
+	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+	{
+		Vec2i offset		{ iPatch.x * (_patchSize.x - 1), iPatch.y * (_patchSize.y - 1)};
+		auto& patch = _patches.emplace_back(new Patch);
+
+		patch->offset = offset;
+		patch->spVertexBuffer = subMesh.getVertexBuffer();
+		patch->spIndexBuffer.reset(_indexChunks[_maxLodIndex][tblr + 0]);
+		patch->modelMatrix = Mat4f::s_translate(Vec3f(static_cast<float>(patch->offset.x), 0.0f, static_cast<float>(patch->offset.y)));
+
+		if (iPatch.x >= _patchCount.x - 1)
+		{
+			iPatch.y++;
+			iPatch.x = 0;
+			continue;
+		}
+		iPatch.x++;
+	}
+}
+
+void Terrain::_updatePatchLOD(Vec2i startPatch_)
+{
+	//Vec2i startPatch{ 3, 7 };
+	getPatch(startPatch_)->lod = _maxLodIndex;
+
+	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+	{
+		//update();
+		if (iPatch != startPatch_)
+		{
+			auto& patch = getPatch_unsafe(iPatch);
+			auto diff = startPatch_ - iPatch;
+			diff.x = Math::abs(diff.x);
+			diff.y = Math::abs(diff.y);
+
+			auto dist = _maxLodIndex - (diff.x + diff.y);
+			if (dist > _maxLodIndex || dist <= 0)
+				patch->lod = 0;
+			else
+				patch->lod = dist;
+		}
+			
+		if (iPatch.x >= _patchCount.x - 1)
+		{
+			iPatch.y++;
+			iPatch.x = 0;
+			continue;
+		}
+		iPatch.x++;
+	}
+
+	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+	{
+		/*
+		 --------> +x
+		 |
+		 |
+		\|/
+		 +y
+		*/
+		auto& current	= getPatch_unsafe(iPatch);
+		auto& top		= getPatch_clamp(Vec2i{	   iPatch.x, iPatch.y - 1});
+		auto& bottom	= getPatch_clamp(Vec2i{	   iPatch.x, iPatch.y + 1});
+		auto& left		= getPatch_clamp(Vec2i{iPatch.x - 1, iPatch.y});
+		auto& right		= getPatch_clamp(Vec2i{iPatch.x + 1, iPatch.y});
+
+		u8 tblr = 0b0000;
+		if (top->lod <= current->lod)		BitUtil::unset(tblr, 0b1000);
+		else								BitUtil::set(  tblr, 0b1000);
+
+		if (bottom->lod <= current->lod)		BitUtil::unset(tblr, 0b0100);
+		else								BitUtil::set(  tblr, 0b0100);
+
+		if (left->lod <= current->lod)		BitUtil::unset(tblr, 0b0010);
+		else								BitUtil::set(  tblr, 0b0010);
+
+		if (right->lod <= current->lod)		BitUtil::unset(tblr, 0b0001);
+		else								BitUtil::set(  tblr, 0b0001);
+
+#if 0
+		{
+			TempString rowStr;
+			auto str = std::to_string(tblr);
+			rowStr.append(str.c_str());
+			rowStr.append(": ");
+			//FmtTo(rowStr, "{},{}: = {} |", iPatch.x, iPatch.y, lod.c_str());
+			if (top->lod <= current->lod)		rowStr.push_back('0');
+			else								rowStr.push_back('1');
+			if (bottom->lod <= current->lod)	rowStr.push_back('0');
+			else								rowStr.push_back('1');
+			if (left->lod <= current->lod)		rowStr.push_back('0');
+			else								rowStr.push_back('1');
+			if (right->lod <= current->lod)		rowStr.push_back('0');
+			else								rowStr.push_back('1');
+			rowStr.append("\n");
+			SGE_LOG("{}", rowStr);
+
+		}
+#endif // 0
+
+		current->spIndexBuffer.reset(_indexChunks[current->lod][tblr]);
+
+		if (iPatch.x >= _patchCount.x - 1)
+		{
+			iPatch.y++;
+			iPatch.x = 0;
+			continue;
+}
+		iPatch.x++;
+	}
+
+#if _SGE_TERRRAIN_DEBUG
+	static u64 tick = 0;
+	if (tick % 14400 == 0)
+	{
+		TempString rowStr;
+		for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+		{
+			auto& patch = getPatch_unsafe(iPatch);
+			auto lod = std::to_string(patch->lod);
+			FmtTo(rowStr, "{},{}: = {} |", iPatch.x, iPatch.y, lod.c_str());
+
+			if (iPatch.x >= _patchCount.x - 1)
+			{
+				iPatch.y++;
+				iPatch.x = 0;
+
+				SGE_LOG(rowStr.c_str());
+				SGE_LOG("\n");
+				rowStr.clear();
+				continue;
+			}
+			iPatch.x++;
+		}
+		SGE_LOG("===============End");
+		SGE_LOG("\n");
+	}
+	tick++;
+#endif // 1
+}
+
+Vec2i Terrain::getPatchCoord(const Math::Camera3f& camera_)
+{
+	Vec2i startPatch{ 0, 0 };
+	startPatch.x = static_cast<int>(camera_.pos().x / _patchSize.x);
+	startPatch.y = static_cast<int>(camera_.pos().z / _patchSize.y);
+	clampBoundary(startPatch);
+	return startPatch;
+}
+
+#if 0
+void Terrain::_init(const CreateDesc& desc_, RenderMesh& outMesh_, int lodIndex_, Vec2i offset_)
+{
+#if 1
+	auto vertexCount = _patchSize.x * _patchSize.y;
+
+	EditMesh tmpEditMesh;
+	EditMesh& editMesh = tmpEditMesh;
+
+
+	editMesh.positions.reserve(vertexCount);
+	editMesh.uvs[0].reserve(vertexCount);
+	editMesh.colors.resize(vertexCount);						// TODO: remove
+	editMesh.normals.resize(vertexCount);						// TODO: remove
+																//tmpEditMesh.indices.reserve(triangleCount * 3);				// TODO: remove
 
 	float normalizeFactor = 1.0f / std::numeric_limits<u16>::max(), yOffset = 400.0f;
 	float heightFactor = 800.0f;
 
-	for (int j = 0; j < _size.y; j++)
+	for (int j = 0; j < _patchSize.y; j++)
 	{
-		auto* row = desc_.heightMap.row<ColorLs>(j).data();
-		for (int i = 0; i < _size.x; i++)
+		auto* row = _heightMapImage.row<ColorLs>(j).data();
+		for (int i = 0; i < _patchSize.x; i++)
 		{
 			auto height = row->r * normalizeFactor * heightFactor - yOffset;
 			height = -1;
-			editMesh.positions.emplace_back(-size_f.x / 2.0f + i + offset_.x, height, -size_f.y / 2.0f + j + offset_.y);
+			editMesh.positions.emplace_back(-_patchSize.x / 2.0f + i + offset_.x, height, -_patchSize.y / 2.0f + j + offset_.y);
 			row++;
 		}
 	}
-	for (int j = 0; j < _size.y; j++)
+	for (int j = 0; j < _patchSize.y; j++)
 	{
-		for (int i = 0; i < _size.x; i++)
+		for (int i = 0; i < _patchSize.x; i++)
 		{
-			editMesh.uvs[0].emplace_back(i / size_f.x, j / size_f.y);
+			editMesh.uvs[0].emplace_back(i / _patchSize.x, j / _patchSize.y);
 		}
 	}
 
-#if 0
-	for (int j = 0; j < cellSize.y; j++)
-	{
-		for (int i = 0; i < cellSize.x; i++)
-		{
-			editMesh.indices.emplace_back( j	  * _size.x + i + 0);
-			editMesh.indices.emplace_back((j + 1) * _size.x + i + 0);
-			editMesh.indices.emplace_back( j	  * _size.x + i + 1);
-
-			editMesh.indices.emplace_back( j	  * _size.x + i + 1);
-			editMesh.indices.emplace_back((j + 1) * _size.x + i + 0);
-			editMesh.indices.emplace_back((j + 1) * _size.x + i + 1);
-		}
-	}
-#else
-	ChunkIndexGenerator generator;
-	if (_indexChunks.size() == 0)
-	{
-		generator.generate(_indexChunks, _size);
-	}
-
-#endif // 0
-
-	outMesh_.create(editMesh);
+	outMesh_.create(tmpEditMesh);
 
 	u8 tblr = 0b00000000;
-	outMesh_.subMeshes()[0].setIndexBuffer(_indexChunks[lod_][tblr + 12], RenderDataTypeUtil::get<IndexType>());
+	outMesh_.subMeshes()[0].setIndexBuffer(_indexChunks[lodIndex_][tblr + 0]);
+#endif // 0
+
+#if 0
+	auto vertexCount = _patchSize.x * _patchSize.y;
+
+	EditMesh tmpEditMesh;
+	tmpEditMesh.positions.reserve(vertexCount);
+	tmpEditMesh.uvs[0].reserve(vertexCount);
+	tmpEditMesh.colors.resize(vertexCount);				// TODO: remove
+	tmpEditMesh.normals.resize(vertexCount);			// TODO: remove
+
+	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
+	{
+		//update();
+		_initMesh(tmpEditMesh, iPatch);
+
+		if (iPatch.x >= _patchCount.x - 1)
+		{
+			iPatch.y++;
+			iPatch.x = 0;
+			continue;
+		}
+		iPatch.x++;
+}
+#endif // 0
 
 }
+
+void Terrain::_initMesh(EditMesh& editMesh_, Vec2i iPatch_)
+{
+	//auto& patch = _patches[patchIndex(iPatch_)];
+	auto& patch = *_patches.emplace_back(new Patch);
+
+	Vec2i offset		{		  iPatch_.x * _patchSize.x, iPatch_.y * _patchSize.y};
+	Vec2f posOffset		{	 -_patchSize.x / 2 * offset.x, -_patchSize.y / 2 * offset.y};
+	Vec2f uvOffset		{ 1.0f / _patchCount.x * offset.x, 1.0f / _patchCount.y * offset.y};
+
+	patch.offset = offset;
+	patch.modelMatrix = Mat4f::s_translate(Vec3f{static_cast<float>(patch.offset.x), 0, static_cast<float>(patch.offset.y)});
+
+	auto& editMesh = editMesh_;
+
+	for (Vec2i iPatchSize{0, 0}; iPatchSize.y < _patchSize.y; )
+	{
+		auto height = _heightMapImage.pixel<ColorLs>(iPatchSize.x + offset.x, iPatchSize.y + offset.y).r * _normalizeFactor * _heightFactor - _heightOffset;
+#if 0
+		int vi = _patchSize.x * iPatchSize.y + iPatchSize.x;
+		auto& pos = editMesh.positions[vi];
+		pos.set(posOffset.x + iPatchSize.x, height, posOffset.y + iPatchSize.y);
+
+		auto& uv = editMesh.uvs[0][vi];
+		uv.set(iPatchSize.x / _size.x + uvOffset.x, iPatchSize.y / _size.y + uvOffset.y);
+#else
+		editMesh.positions.emplace_back(posOffset.x + iPatchSize.x, height, posOffset.y + iPatchSize.y);
+		editMesh.uvs[0].emplace_back(iPatchSize.x / _size.x + uvOffset.x, iPatchSize.y / _size.y + uvOffset.y);
+#endif // 0
+
+		if (iPatchSize.x >= _patchSize.x - 1)
+		{
+			iPatchSize.y++;
+			iPatchSize.x = 0;
+			continue;
+		}
+		iPatchSize.x++;
+	}
+
+	/*patch.renderMesh.create(editMesh);
+	auto& mesh = patch.renderMesh.subMeshes()[0];
+	mesh.setIndexBuffer(_indexChunks[patch.lod][patch.tblr]);*/
+
+	editMesh.clear();
+}
+#endif // 0
 
 }

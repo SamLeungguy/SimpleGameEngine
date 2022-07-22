@@ -148,6 +148,8 @@ template<class T> T pow(const T& left, const T& right) { return std::pow(left, r
 
 template<class T> T abs(const T& v) { return v < 0 ? -v : v; }
 
+//template<class T> Vec2<T> abs(const Vec2<T>& v) { return {v.x < 0 ? -v.x : v.x, v.y < 0 ? -v.y : v.y}; }
+
 template<class T> constexpr T epsilon();
 template<>	constexpr int	epsilon<int >() { return 0; }
 template<>	constexpr f32	epsilon<f32 >() { return FLT_EPSILON; }

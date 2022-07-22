@@ -218,6 +218,7 @@ void MainWin::onCreate(CreateDesc& desc) {
 		heightMap.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
 
 		terrainDesc.size = heightMap.size();
+		terrainDesc.patchCount = { 16, 16 };
 
 		_terrain.create(terrainDesc);
 	}
@@ -233,18 +234,22 @@ void MainWin::onDraw()
 	Base::onDraw();
 	if (!_renderContext) return;
 
+
 	_camera.setViewport(clientRect());
 
 	{
 		auto model	= Mat4f::s_identity();
 		auto view	= _camera.viewMatrix();
 		auto proj	= _camera.projMatrix();
-		auto mvp	= proj * view * model;
+		auto vp		= proj * view;
+		auto mvp	= vp * model;
 
 		_material->setParam("sge_matrix_model", model);
 		_material->setParam("sge_matrix_view",  view);
 		_material->setParam("sge_matrix_proj",  proj);
 		_material->setParam("sge_matrix_mvp",   mvp);
+
+		_material->setParam("sge_matrix_vp",   vp);
 
 		_material->setParam("sge_camera_pos", _camera.pos());
 
@@ -270,6 +275,8 @@ void MainWin::onDraw()
 	_cmdBuf.reset();
 	_cmdBuf.clearFrameBuffers()->setColor({0, 0, 0.2f, 1});
 	//_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
+
+	_terrain.update(_camera);
 	_cmdBuf.test_drawTerrain(SGE_LOC, _terrain, _material);
 
 	_cmdBuf.swapBuffers();

@@ -1,7 +1,6 @@
 #include "RenderCommand.h"
 #include "../mesh/RenderMesh.h"
 
-#include <sge_render/terrain/Terrain.h>
 
 namespace sge {
 RenderCommandBuffer::RenderCommandBuffer()
@@ -44,10 +43,10 @@ void RenderCommandBuffer::drawSubMesh(const SrcLoc& debugLoc_, const RenderSubMe
 
 void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMesh& mesh_, SPtr<Material>& spMaterial_)
 {
-	auto* cmd = newCommand<RenderCommand_DrawCall>();
+	//auto* cmd = newCommand<RenderCommand_DrawCall>();
 
 #if _DEBUG
-	cmd->debugLoc = debugLoc_;
+	//cmd->debugLoc = debugLoc_;
 #endif // _DEBUG
 
 	/*for (auto& pass : spMaterial_->getShaderPasses())
@@ -76,15 +75,44 @@ void RenderCommandBuffer::test_drawMesh(const SrcLoc& debugLoc_, const RenderMes
 	}*/
 }
 
-void RenderCommandBuffer::test_drawTerrain(const SrcLoc& debugLoc_, const Terrain& terrain_,  Material* pMaterial_)
+void RenderCommandBuffer::test_drawTerrain(const SrcLoc& debugLoc_, Terrain& terrain_,  Material* pMaterial_)
 {
+	//terrain_.update();
+
+#if 1
+	auto& renderMesh = terrain_.getRenderMesh();
+	auto& subMesh = renderMesh.subMeshes()[0];
+
+	for (auto& patch : terrain_.getPatches())
+	{
+		auto* cmd = newCommand<RenderCommand_DrawCall>();
+
+#if _DEBUG
+		cmd->debugLoc = debugLoc_;
+#endif // _DEBUG
+		cmd->spMaterial			= pMaterial_;
+		cmd->materialPassIndex	= 0;
+
+		cmd->primitive		= RenderPrimitiveType::Triangles;
+		cmd->pVertexLayout	= subMesh.getVertexLayout();
+		cmd->spVertexBuffer.reset(patch->spVertexBuffer);
+		cmd->vertexCount	= patch->spVertexBuffer->elementCount();
+		cmd->spIndexBuffer.reset(patch->spIndexBuffer);
+		cmd->indexType		= RenderDataTypeUtil::get<Terrain::IndexType>();
+		cmd->indexCount		= patch->spVertexBuffer->elementCount();
+
+		cmd->_spTerrainPatch.reset(patch);
+	}
+#else
 	for (auto& sm : terrain_.getRenderMesh().subMeshes()) {
 		drawSubMesh(debugLoc_, sm, pMaterial_);
 	}
-
+	
 	for (auto& sm : terrain_.getRenderMesh2().subMeshes()) {
 		drawSubMesh(debugLoc_, sm, pMaterial_);
 	}
+#endif // 0
+	
 }
 
 

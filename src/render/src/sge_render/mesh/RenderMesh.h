@@ -23,7 +23,22 @@ public:
 	RenderPrimitiveType getPrimitive() const;
 	const VertexLayout* getVertexLayout() const;
 
-	void setIndexBuffer(SPtr<RenderGpuBuffer>& sp_, RenderDataType indexType_) { _spIndexBuffer.reset(sp_); _indexCount = _spIndexBuffer->bufferSize() / RenderDataTypeUtil::getByteSize(indexType_); _indexType = indexType_; }
+	void uploadVertices(ByteSpan data_, size_t offset_ = 0) { _spVertexBuffer->uploadToGpu(data_); }
+
+	void setVertexBuffer(SPtr<RenderGpuBuffer>& sp_) { _spVertexBuffer.reset(sp_); _vertexCount = _spVertexBuffer->elementCount(); }
+	void setIndexBuffer(SPtr<RenderGpuBuffer>& sp_)  
+	{ 
+		_spIndexBuffer.reset(sp_);   
+#if 1
+		_indexCount = _spIndexBuffer->elementCount(); 
+		if (_spIndexBuffer->stride() == 16)			_indexType = RenderDataType::UInt16;
+		else if (_spIndexBuffer->stride() == 32)	_indexType = RenderDataType::UInt32;
+		else throw SGE_ERROR("unsupport index type");
+#else
+		_indexCount = _spIndexBuffer->bufferSize() / RenderDataTypeUtil::getByteSize(indexType_); _indexType = indexType_; 
+#endif // 0
+
+	}
 
 friend class RenderMesh;
 protected:

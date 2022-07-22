@@ -49,6 +49,7 @@ float4x4	sge_matrix_model;
 float4x4	sge_matrix_view;
 float4x4	sge_matrix_proj;
 float4x4	sge_matrix_mvp;
+float4x4	sge_matrix_vp;
 
 float3		sge_camera_pos;
 float3		sge_light_pos;
@@ -70,7 +71,12 @@ PixelIn vs_main(VertexIn i) {
 	//i.positionOS.y = height * 6.0f;
 
 	o.positionWS  = mul(sge_matrix_model, i.positionOS);
-	o.positionHCS = mul(sge_matrix_mvp,   i.positionOS);
+	//o.positionHCS = mul(sge_matrix_mvp,   i.positionOS);
+
+	float4x4 mvp = mul(sge_matrix_vp, sge_matrix_model);
+	//float4x4 mvp = mul(sge_matrix_model, sge_matrix_vp);
+	o.positionHCS = mul(mvp,   i.positionOS);
+
 	o.positionHCS.y += test_float;
 	
 	o.uv     = i.uv;

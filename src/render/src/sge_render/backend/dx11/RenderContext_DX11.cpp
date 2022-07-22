@@ -4,6 +4,8 @@
 #include "Renderer_DX11.h"
 #include "RenderGpuBuffer_DX11.h"
 #include "Material_DX11.h"
+
+#include <sge_render/terrain/Terrain.h>
  
 #include <d3d11shader.h>
 
@@ -80,6 +82,13 @@ void RenderContext_DX11::onCmd_DrawCall(RenderCommand_DrawCall& cmd_)
 	auto* ctx = _pRenderer->d3dDeviceContext();
 
 	_setTestDefaultRenderState();
+
+	if (cmd_._spTerrainPatch)
+	{
+		auto& patch = cmd_._spTerrainPatch;
+		auto& material = cmd_.spMaterial;
+		material->setParam("sge_matrix_model", patch->modelMatrix);
+	}
 
 	if (auto* pass = cmd_.getMaterialPass()) {
 		pass->bind(this, cmd_.pVertexLayout);

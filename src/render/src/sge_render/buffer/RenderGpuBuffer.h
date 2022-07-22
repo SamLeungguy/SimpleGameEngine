@@ -33,7 +33,10 @@ public:
 		onUploadToGpu(data_, offset_);
 	}
 
-	size_t bufferSize() { return _desc.bufferSize; }
+	size_t stride()			{ return _desc.stride; }
+	size_t bufferSize()		{ return _desc.bufferSize; }
+	size_t elementCount()	{ return _desc.bufferSize / (_desc.stride / 8); }
+
 
 protected:
 	virtual void onUploadToGpu(ByteSpan data_, size_t offset_) = 0;
