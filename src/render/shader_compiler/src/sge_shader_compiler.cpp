@@ -20,7 +20,8 @@ protected:
 
 		ShaderInfo info;
 
-		StrView shaderFilename = "Assets/Shaders/test.shader";
+		//StrView shaderFilename = "Assets/Shaders/test.shader";
+		StrView shaderFilename = "Assets/Shaders/terrain.shader";
 
 		String outputPath = Fmt("LocalTemp/Imported/{}", shaderFilename);
 		Directory::create(outputPath);

@@ -18,6 +18,9 @@ struct Tuple4 {
 	SGE_INLINE Tuple4() = default;
 	SGE_INLINE Tuple4(const T& x_, const T& y_, const T& z_, const T& w_) { set(x_, y_, z_, w_); }
 
+	template<class U>
+	SGE_INLINE Tuple4(Tuple4<U> rhs_){ set(static_cast<T>(rhs_.x), static_cast<T>(rhs_.y), static_cast<T>(rhs_.z), static_cast<T>(rhs_.w)); };
+
 	SGE_INLINE void set(const Tuple4<T>& v) { *this = v; }
 	SGE_INLINE void set(const T& x_, const T& y_, const T& z_, const T& w_) {
 		x = x_; y = y_; z = z_; w = w_;

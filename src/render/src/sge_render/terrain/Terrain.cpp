@@ -336,6 +336,7 @@ public:
 		pOut = &indexChunks_;
 
 		int lod = Math::log2(vertexSize_.x - 1);
+		lod = lod <= 0 ? 1 : lod;
 		pOut->resize(lod);
 		_maxLod = lod - 1;
 
@@ -425,7 +426,8 @@ void Terrain::create(CreateDesc& desc_)
 	auto mapSize = desc_.heightMap.size();
 	_size = mapSize;
 	//_size = { 5, 5 };
-	_size = { 256, 256 };
+	//_size = { 256, 256 };
+	//_size = { 8, 8 };
 
 	_patchCount = desc_.patchCount;
 	_patchSize = _size / _patchCount;
@@ -485,7 +487,7 @@ void Terrain::_init()
 		Vec2i iPatch_{0, 0};
 		Vec2i offset		{		  iPatch_.x * _patchSize.x, iPatch_.y * _patchSize.y};
 		Vec2f posOffset		{	 -_patchSize.x / 2 * offset.x, -_patchSize.y / 2 * offset.y};
-		Vec2f uvOffset		{ 1.0f / _patchCount.x * offset.x, 1.0f / _patchCount.y * offset.y};
+		Vec2f uvFactor		{ 1.0f / (_patchCount.x * (_patchSize.x - 1)), 1.0f / (_patchCount.y * (_patchSize.y - 1))};
 
 		for (Vec2i iPatchSize{0, 0}; iPatchSize.y < _patchSize.y;)
 		{
@@ -493,7 +495,7 @@ void Terrain::_init()
 			auto height = -1;
 
 			editMesh.positions.emplace_back(posOffset.x + iPatchSize.x, height, posOffset.y + iPatchSize.y);
-			editMesh.uvs[0].emplace_back(iPatchSize.x / _size.x + uvOffset.x, iPatchSize.y / _size.y + uvOffset.y);
+			editMesh.uvs[0].emplace_back(iPatchSize.x * uvFactor.x, iPatchSize.y * uvFactor.y);
 
 			if (iPatchSize.x >= _patchSize.x - 1)
 			{
@@ -517,10 +519,9 @@ void Terrain::_init()
 		Vec2i offset		{ iPatch.x * (_patchSize.x - 1), iPatch.y * (_patchSize.y - 1)};
 		auto& patch = _patches.emplace_back(new Patch);
 
-		patch->offset = offset;
 		patch->spVertexBuffer = subMesh.getVertexBuffer();
 		patch->spIndexBuffer.reset(_indexChunks[_maxLodIndex][tblr + 0]);
-		patch->modelMatrix = Mat4f::s_translate(Vec3f(static_cast<float>(patch->offset.x), 0.0f, static_cast<float>(patch->offset.y)));
+		patch->modelMatrix = Mat4f::s_translate(Vec3f(static_cast<float>(offset.x), 0.0f, static_cast<float>(offset.y)));
 
 		if (iPatch.x >= _patchCount.x - 1)
 		{
@@ -563,6 +564,7 @@ void Terrain::_updatePatchLOD(Vec2i startPatch_)
 		iPatch.x++;
 	}
 
+	Vec2f invPatchCount{ 1.0f / _patchCount.x, 1.0f / _patchCount.y};
 	for (Vec2i iPatch{0, 0}; iPatch.y < _patchCount.y; )
 	{
 		/*
@@ -582,7 +584,7 @@ void Terrain::_updatePatchLOD(Vec2i startPatch_)
 		if (top->lod <= current->lod)		BitUtil::unset(tblr, 0b1000);
 		else								BitUtil::set(  tblr, 0b1000);
 
-		if (bottom->lod <= current->lod)		BitUtil::unset(tblr, 0b0100);
+		if (bottom->lod <= current->lod)	BitUtil::unset(tblr, 0b0100);
 		else								BitUtil::set(  tblr, 0b0100);
 
 		if (left->lod <= current->lod)		BitUtil::unset(tblr, 0b0010);
@@ -613,6 +615,11 @@ void Terrain::_updatePatchLOD(Vec2i startPatch_)
 #endif // 0
 
 		current->spIndexBuffer.reset(_indexChunks[current->lod][tblr]);
+
+		int patchSize = Math::pow2(current->lod) + 1;
+		Vec2f uvOffset		{ invPatchCount.x * iPatch.x, invPatchCount.y * iPatch.y};
+		current->size = Vec4i(patchSize, patchSize, _patchCount.x, _patchCount.y);
+		current->info = Vec4f(static_cast<float>(iPatch.x), static_cast<float>(iPatch.y), uvOffset.x, uvOffset.y);
 
 		if (iPatch.x >= _patchCount.x - 1)
 		{

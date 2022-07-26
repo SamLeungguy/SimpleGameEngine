@@ -14,6 +14,7 @@ template<class T> using Vec4 = Vec4_SSE<T>;
 template<class T> using Vec4 = Vec4_Basic<T>;
 #endif
 
+using Vec4i = Vec4<int>;
 using Vec4f = Vec4<float>;
 using Vec4d = Vec4<double>;
 

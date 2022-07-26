@@ -27,9 +27,12 @@ public:
 	u8 tblr = 0b0000;
 	int lod = 0;
 
-	Vec2i offset;
+	//Vec2i offset;
 	Mat4f modelMatrix;
 
+	// x, y: indexOffset, z, w: patchSize
+	Vec4f info;
+	Vec4i size;
 	//RenderMesh* pMesh = nullptr;
 
 	SPtr<RenderGpuBuffer> spVertexBuffer;

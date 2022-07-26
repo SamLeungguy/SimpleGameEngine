@@ -104,8 +104,10 @@ public:
 	RenderCommandBuffer _cmdBuf;
 	RenderMesh	_renderMesh;
 	SPtr<Material> _material;
+	SPtr<Material> _terrainMaterial;
 
 	SPtr<Texture2D>	_testTexture;
+	SPtr<Texture2D>	_heightTexture;
 
 	Math::Camera3f	_camera;
 	float cameraSpeed = 1.0f;
@@ -181,7 +183,7 @@ void MainWin::onCreate(CreateDesc& desc) {
 		_testTexture = renderer->createTexture2D(texDesc);
 	}
 
-	auto shader = renderer->createShader("Assets/Shaders/test.shader");
+	auto shader = renderer->createShader("Assets/Shaders/terrain.shader");
 	_material = renderer->createMaterial();
 	_material->setShader(shader);
 
@@ -219,8 +221,18 @@ void MainWin::onCreate(CreateDesc& desc) {
 
 		terrainDesc.size = heightMap.size();
 		terrainDesc.patchCount = { 16, 16 };
+		//terrainDesc.patchCount = { 2, 2 };
 
 		_terrain.create(terrainDesc);
+
+		Texture2D_CreateDesc texDesc;
+		auto& image = texDesc.imageToUpload;
+		image.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
+
+		texDesc.size = image.size();
+		texDesc.colorType = image.colorType();
+		_heightTexture = renderer->createTexture2D(texDesc);
+		_material->setParam("heightTex", _heightTexture);
 	}
 }
 
