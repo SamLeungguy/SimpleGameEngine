@@ -15,11 +15,10 @@ struct LODIndices
 {
 	using IndexType = Terrain::IndexType;
 
-	void createEdgeIndices(int lod_, Vec2i vertexSize_)
+	void create(int lod_, Vec2i vertexSize_, int squareToTriangleRatio_ = 4)
 	{
-		_init(lod_, vertexSize_);
-		_createTopBottonEdgeIndices();
-		_createLeftRightEdgeIndices();
+		_init(lod_, vertexSize_, squareToTriangleRatio_);
+		_createIndices();
 	}
 
 	void next()
@@ -30,8 +29,12 @@ struct LODIndices
 			return;
 
 		_update();
-		_createTopBottonEdgeIndices();
-		_createLeftRightEdgeIndices();
+		_createIndices();
+	}
+
+	void setSquareToTriangleRatio(int squareToTriangleRatio_)
+	{
+		squareToTriangleRatio = squareToTriangleRatio_;
 	}
 
 	u32 index(int x, int y, int width_) { return y * width_ + x; }
@@ -52,8 +55,10 @@ struct LODIndices
 	Span<const u32> getLeftEdgeIndices_lod1()	{ return Span<const u32>(lod1Indices.begin() + stride1 * 2, lod1Indices.begin() + stride1 * 3); }
 	Span<const u32> getRightEdgeIndices_lod1()	{ return Span<const u32>(lod1Indices.begin() + stride1 * 3, lod1Indices.begin() + stride1 * 4); }
 
+	Span<const u32> getInsideIndices()			{ return Span<const u32>(tmpIndices.begin(), tmpIndices.end()); }
+
 private:
-	void _init(int lod_, Vec2i vertexSize_)
+	void _init(int lod_, Vec2i vertexSize_, int squareToTriangleRatio_)
 	{
 		SGE_ASSERT(!_isCreated);
 		SGE_ASSERT(vertexSize_.x == vertexSize_.y);
@@ -65,15 +70,20 @@ private:
 		currentLod = lodIndex;
 		maxLod = lodIndex;
 
+		squareToTriangleRatio = squareToTriangleRatio_;
+
 		_update();
 
 		lod0Indices.reserve(stride0 * 4);
 		lod1Indices.reserve(stride1 * 4);
 
-		tmpIndices.reserve(stride1);
+		tmpIndices.reserve(maxLod * squareToTriangleRatio * 3);
 	}
 
-
+	void _emplace_back(Vector<u32>& dst_, int x0_, int y0_, int x1_, int y1_, int x2_, int y2_)
+	{
+		dst_.emplace_back(index(x0_, y0_)); dst_.emplace_back(index(x1_, y1_)); dst_.emplace_back(index(x2_, y2_)); 
+	}
 	void _emplace_back_TopBottom(Vector<u32>& dst_, int x0_, int y0_, int x1_, int y1_, int x2_, int y2_)
 	{
 		dst_.emplace_back(index(x0_, y0_)); dst_.emplace_back(index(x1_, y1_)); dst_.emplace_back(index(x2_, y2_)); 
@@ -83,6 +93,19 @@ private:
 	{
 		dst_.emplace_back(index(x0_, y0_)); dst_.emplace_back(index(x1_, y1_)); dst_.emplace_back(index(x2_, y2_)); 
 		tmpIndices.emplace_back(leftToRight_Index(x0_, y0_)); tmpIndices.emplace_back(leftToRight_Index(x2_, y2_)); tmpIndices.emplace_back(leftToRight_Index(x1_, y1_));
+	}
+
+	void _createIndices()
+	{
+		int end = static_cast<int>(Math::pow(2.0f, static_cast<float>(currentLod))) - 1;
+
+		auto factor0 = Math::pow2(inverseLod);		// 1, 2, 4, ...
+		auto factor1 = Math::pow2(inverseLod + 1);	// 2, 4, 8, ...
+		auto factor2 = Math::pow2(inverseLod + 2);	// 4, 8, 16, ...
+
+		_createTopBottonEdgeIndices(end, factor0, factor1, factor2);
+		_createLeftRightEdgeIndices(end, factor0, factor1, factor2);
+		_createInsideIndices(end, factor0, factor1, factor2);
 	}
 
 	void _mergeAndClearIndicesChunk(Vector<u32>& dst_, size_t offset_, Vector<u32>& src_)
@@ -97,13 +120,19 @@ private:
 		src_.clear();
 	}
 
-	void _createTopBottonEdgeIndices()
+	void _mergeIndicesChunk(Vector<u32>& dst_, size_t offset_, Vector<u32>& src_)
 	{
-		int end = Math::pow2(currentLod) - 1;
+		if (src_.size() == 0)
+			return;
 
-		auto factor0 = Math::pow2(inverseLod);		// 1, 2, 4, ...
-		auto factor1 = Math::pow2(inverseLod + 1);	// 2, 4, 8, ...
-		auto factor2 = Math::pow2(inverseLod + 2);	// 4, 8, 16, ...
+		dst_.resize(dst_.size() + src_.size());
+		auto* pDst = dst_.data() + offset_;
+		memcpy(pDst, src_.data(), src_.size() * sizeof(u32));
+	}
+
+	void _createTopBottonEdgeIndices(int end_, int factor0_, int factor1_, int factor2_)
+	{
+		auto end = end_, factor0 = factor0_, factor1 = factor1_, factor2 = factor2_;
 
 		// LOD: lod - 1
 		{
@@ -155,13 +184,9 @@ private:
 			_mergeAndClearIndicesChunk(lod1Indices, lod1Indices.size(), tmpIndices);
 		}
 	}
-	void _createLeftRightEdgeIndices()
+	void _createLeftRightEdgeIndices(int end_, int factor0_, int factor1_, int factor2_)
 	{
-		int end = static_cast<int>(Math::pow(2.0f, static_cast<float>(currentLod))) - 1;
-
-		auto factor0 = Math::pow2(inverseLod);		// 1, 2, 4, ...
-		auto factor1 = Math::pow2(inverseLod + 1);	// 2, 4, 8, ...
-		auto factor2 = Math::pow2(inverseLod + 2);	// 4, 8, 16, ...
+		auto end = end_, factor0 = factor0_, factor1 = factor1_, factor2 = factor2_;
 
 		// LOD: lod - 1
 		{
@@ -226,6 +251,46 @@ private:
 			_mergeAndClearIndicesChunk(lod1Indices, lod1Indices.size(), tmpIndices);
 		}
 	}
+	void _createInsideIndices(int end_, int factor0_, int factor1_, int factor2_)
+	{
+		auto end = end_, factor0 = factor0_, factor1 = factor1_;
+		// split inside square to triangle
+		tmpIndices.clear();
+		if (squareToTriangleRatio == 4)
+		{
+			for (int j = 0; j < end_; j++)
+			{
+				auto yStart = j * factor1 + factor0;
+				for (int i = 0; i < end; i++)
+				{
+					auto xStart = i * factor1 + factor0;
+
+					_emplace_back(tmpIndices,			xStart,			  yStart, xStart + factor1,		      yStart,   xStart + factor0, yStart + factor0);
+					_emplace_back(tmpIndices, xStart + factor1,			  yStart, xStart + factor1, yStart + factor1,   xStart + factor0, yStart + factor0);
+					_emplace_back(tmpIndices, xStart + factor0, yStart + factor0, xStart + factor1, yStart + factor1,			  xStart, yStart + factor1);
+					_emplace_back(tmpIndices,			xStart,			  yStart, xStart + factor0, yStart + factor0,			  xStart, yStart + factor1);
+				}
+			}
+		}
+		else if (squareToTriangleRatio == 2)
+		{
+			for (int j = 0; j < end_; j++)
+			{
+				auto yStart = j * factor1 + factor0;
+				for (int i = 0; i < end; i++)
+				{
+					auto xStart = i * factor1 + factor0;
+
+					_emplace_back(tmpIndices, xStart, yStart, xStart + factor1,		      yStart,   xStart + factor1, yStart + factor1);
+					_emplace_back(tmpIndices, xStart, yStart, xStart + factor1, yStart + factor1,			  xStart, yStart + factor1);
+				}
+			}
+		}
+		else
+		{
+			throw SGE_ERROR("invalid squareToTriangleRatio");
+		}
+	}
 
 	u32 topToBotton_Index(int x_, int y_) { return index(					x_, vertexSize.y - 1 - y_); }
 	u32 leftToRight_Index(int x_, int y_) { return index(vertexSize.x - 1 - x_, y_); }
@@ -256,6 +321,8 @@ public:
 	int maxLod = 0;
 	int inverseLod = 0;
 	u32 stride0 = 0, stride1 = 0;
+
+	int squareToTriangleRatio = 0;
 };
 
 class ChunkIndexGenerator
@@ -273,7 +340,7 @@ public:
 		_maxLod = lod - 1;
 
 		LODIndices lodIndices;
-		lodIndices.createEdgeIndices(_maxLod, vertexSize_);
+		lodIndices.create(_maxLod, vertexSize_);
 
 #if 1
 		auto* renderer = Renderer::instance();
@@ -300,6 +367,8 @@ public:
 				if (BitUtil::hasBit(tblr, 0))		_copyTo(indices, lodIndices.getRightEdgeIndices_lod1());
 				else								_copyTo(indices, lodIndices.getRightEdgeIndices_lod0());
 
+				_copyTo(indices, lodIndices.getInsideIndices());
+
 				auto& dst = indicesChunks[tblr];
 
 				RenderGpuBuffer::CreateDesc desc;
@@ -315,7 +384,7 @@ public:
 				indices.clear();
 				tblr++;
 			}
-
+			lodIndices.setSquareToTriangleRatio(2);
 			lodIndices.next();
 		}
 		

@@ -96,6 +96,7 @@ private:
 	Vector<SPtr<Patch>> _patches;
 
 	IndexChunks _indexChunks;
+	int _squareToTriangleRatio = 2;
 
 	float _normalizeFactor = 1.0f / std::numeric_limits<u16>::max();
 	float _heightOffset = 400.0f;
