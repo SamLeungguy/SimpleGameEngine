@@ -417,32 +417,33 @@ private:
 Terrain::Terrain(CreateDesc& desc_)
 {
 	//desc_.heightMap.<Color4b>();
-	_size = desc_.heightMap.size();
+	_size = desc_.heightMap->size();
 
 }
 
 void Terrain::create(CreateDesc& desc_)
 {
-	auto mapSize = desc_.heightMap.size();
+	auto mapSize = desc_.heightMap->size();
 	_size = mapSize;
 	//_size = { 5, 5 };
 	//_size = { 256, 256 };
-	//_size = { 8, 8 };
+	//_size = { 3, 3 };
 
 	_patchCount = desc_.patchCount;
 	_patchSize = _size / _patchCount;
 	_patches.reserve(_patchCount.x * _patchCount.y);
 
-	_patchSize.x = Math::next_pow2(_patchSize.x) + 1;
-	_patchSize.y = _patchSize.x;
-	_size = _patchCount * _patchSize;
-
 	int lodIndex = Math::log2(_patchSize.x) - 1;
 	if (lodIndex >= kMaxLOD)
 		throw SGE_ERROR("lodIndex > kMaxLOD");
+
 	_maxLodIndex = lodIndex;
 
-	_heightMapImage = std::move(desc_.heightMap);
+	_patchSize.x = Math::pow2(_maxLodIndex + 1) + 1;
+	_patchSize.y = _patchSize.x;
+	_size = _patchCount * _patchSize;
+
+	_heightMap.reset(desc_.heightMap);
 
 	ChunkIndexGenerator generator;
 	if (_indexChunks.size() == 0)
@@ -479,20 +480,20 @@ void Terrain::_init()
 	EditMesh tmpEditMesh;
 	EditMesh& editMesh = tmpEditMesh;
 	editMesh.positions.reserve(vertexCount);
-	editMesh.uvs[0].reserve(vertexCount);
+	editMesh.uvs[0].reserve(vertexCount);						// TODO: remove
 	editMesh.colors.resize(vertexCount);						// TODO: remove
 	editMesh.normals.resize(vertexCount);						// TODO: remove
 
 	{
 		Vec2i iPatch_{0, 0};
 		Vec2i offset		{		  iPatch_.x * _patchSize.x, iPatch_.y * _patchSize.y};
-		Vec2f posOffset		{	 -_patchSize.x / 2 * offset.x, -_patchSize.y / 2 * offset.y};
-		Vec2f uvFactor		{ 1.0f / (_patchCount.x * (_patchSize.x - 1)), 1.0f / (_patchCount.y * (_patchSize.y - 1))};
+		//Vec2f posOffset		{	 -_patchSize.x / 2 * offset.x, -_patchSize.y / 2 * offset.y};
+		Vec2f posOffset		{	 0.0f, 0.0f };
 
+		Vec2f uvFactor		{ 1.0f / (_patchCount.x * (_patchSize.x - 1)), 1.0f / (_patchCount.y * (_patchSize.y - 1))};
 		for (Vec2i iPatchSize{0, 0}; iPatchSize.y < _patchSize.y;)
 		{
-			//auto height = _heightMapImage.pixel<ColorLs>(iPatchSize.x + offset.x, iPatchSize.y + offset.y).r * _normalizeFactor * _heightFactor - _heightOffset;
-			auto height = -1;
+			auto height = 0.0f;
 
 			editMesh.positions.emplace_back(posOffset.x + iPatchSize.x, height, posOffset.y + iPatchSize.y);
 			editMesh.uvs[0].emplace_back(iPatchSize.x * uvFactor.x, iPatchSize.y * uvFactor.y);

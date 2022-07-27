@@ -99,7 +99,7 @@ void RenderCommandBuffer::test_drawTerrain(const SrcLoc& debugLoc_, Terrain& ter
 		cmd->vertexCount	= patch->spVertexBuffer->elementCount();
 		cmd->spIndexBuffer.reset(patch->spIndexBuffer);
 		cmd->indexType		= RenderDataTypeUtil::get<Terrain::IndexType>();
-		cmd->indexCount		= patch->spVertexBuffer->elementCount();
+		cmd->indexCount		= patch->spIndexBuffer->elementCount();
 
 		cmd->_spTerrainPatch.reset(patch);
 	}

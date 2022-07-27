@@ -107,7 +107,6 @@ public:
 	SPtr<Material> _terrainMaterial;
 
 	SPtr<Texture2D>	_testTexture;
-	SPtr<Texture2D>	_heightTexture;
 
 	Math::Camera3f	_camera;
 	float cameraSpeed = 1.0f;
@@ -187,9 +186,11 @@ void MainWin::onCreate(CreateDesc& desc) {
 	_material = renderer->createMaterial();
 	_material->setShader(shader);
 
-	//_material->setParam("mainTex", _testTexture);
+#if 0
+	_material->setParam("mainTex", _testTexture);
+#else
 	_material->setParam("mainTex", renderer->stockTextures.magenta);
-
+#endif // 0
 
 	EditMesh editMesh;
 
@@ -214,25 +215,24 @@ void MainWin::onCreate(CreateDesc& desc) {
 	// VertexLayoutManager::instance()->getLayout(Vertex_Pos::kType);
 
 	{
-		Terrain_CreateDesc terrainDesc;
-		auto& heightMap = terrainDesc.heightMap;
-		//heightMap.loadFile("Assets/Terrain/TerrainTest/iceland_heightmap.png");
-		heightMap.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
-
-		terrainDesc.size = heightMap.size();
-		terrainDesc.patchCount = { 16, 16 };
-		//terrainDesc.patchCount = { 2, 2 };
-
-		_terrain.create(terrainDesc);
-
 		Texture2D_CreateDesc texDesc;
 		auto& image = texDesc.imageToUpload;
 		image.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
-
 		texDesc.size = image.size();
 		texDesc.colorType = image.colorType();
-		_heightTexture = renderer->createTexture2D(texDesc);
-		_material->setParam("heightTex", _heightTexture);
+
+		Terrain_CreateDesc terrainDesc;
+		terrainDesc.heightMap = renderer->createTexture2D(texDesc);
+		auto& heightMap = terrainDesc.heightMap;
+
+		terrainDesc.size = heightMap->size();
+		terrainDesc.patchCount = { 8, 8 };
+		//terrainDesc.patchCount = { 2, 2 };
+		//terrainDesc.patchCount = { 1, 1 };
+
+		_terrain.create(terrainDesc);
+
+		_material->setParam("heightTex", terrainDesc.heightMap);
 	}
 }
 

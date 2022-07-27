@@ -14,9 +14,8 @@ struct Terrain_CreateDesc
 	Vec2i size{0, 0};
 	Vec2i patchCount{1, 1};
 
-	Image heightMap;
-
-	//SPtr<Texture2D> heightMap;
+	//Image heightMap;
+	SPtr<Texture2D> heightMap;
 };
 
 class _Terrain_Patch : public RefCountBase
@@ -101,11 +100,9 @@ private:
 	IndexChunks _indexChunks;
 	int _squareToTriangleRatio = 2;
 
-	float _normalizeFactor = 1.0f / std::numeric_limits<u16>::max();
-	float _heightOffset = 400.0f;
-	float _heightFactor = 800.0f;
+	SPtr<Texture2D> _heightMap;
 
-	Image _heightMapImage;
+	SPtr<RenderGpuBuffer> spIndexBuffer;
 };
 
 #if 0
