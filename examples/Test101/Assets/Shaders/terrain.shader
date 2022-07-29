@@ -76,9 +76,9 @@ PixelIn vs_main(VertexIn i) {
 	o.uv = i.uv + float2(patch_info.z, patch_info.w);
 	o.uv.x = 1.0 - o.uv.x;
 
-	float height = heightTex.SampleLevel(heightTex_Sampler, o.uv, 0).r;
-	height = height * 60.0f - 20.0f;
-	//i.positionOS.y = height;
+	float height = heightTex.SampleLevel(heightTex_Sampler, o.uv, 0).r * 200.0f;
+	//height = height * 60.0f - 20.0f;
+	i.positionOS.y = height;
 
 	o.positionWS  = mul(sge_matrix_model, i.positionOS);
 	//o.positionHCS = mul(sge_matrix_mvp,   i.positionOS);
@@ -88,6 +88,7 @@ PixelIn vs_main(VertexIn i) {
 	o.positionHCS = mul(mvp,   i.positionOS);
 
 	//o.positionHCS.y += test_float;
+	o.positionWS.w = height;
 
 	//o.uv     = i.uv;
 	o.color	 = i.color;

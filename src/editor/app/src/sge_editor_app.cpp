@@ -220,6 +220,9 @@ void MainWin::onCreate(CreateDesc& desc) {
 		image.loadFile("Assets/Terrain/TerrainTest/TerrainHeight_Small.png");
 		texDesc.size = image.size();
 		texDesc.colorType = image.colorType();
+		texDesc.samplerState.filter = TextureFilter::Point;
+		texDesc.samplerState.wrapU  = TextureWrap::Clamp;
+		texDesc.samplerState.wrapV  = TextureWrap::Clamp;
 
 		Terrain_CreateDesc terrainDesc;
 		terrainDesc.heightMap = renderer->createTexture2D(texDesc);
@@ -234,6 +237,7 @@ void MainWin::onCreate(CreateDesc& desc) {
 
 		_material->setParam("heightTex", terrainDesc.heightMap);
 	}
+
 }
 
 void MainWin::onCloseButton()
